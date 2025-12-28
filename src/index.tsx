@@ -10,7 +10,7 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename="/automation-mail">
       <App />
     </BrowserRouter>
   </React.StrictMode>
