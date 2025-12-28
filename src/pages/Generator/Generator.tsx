@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Button from "../../components/Button/Button";
 import styles from "./Generator.module.scss";
+import { API_URL } from "../../config";
 
 interface GenerateResult {
   companyName: string;
@@ -49,7 +50,7 @@ const Generator: React.FC = () => {
     setEditablePhone("");
 
     try {
-      const response = await fetch("http://localhost:3001/api/generate", {
+      const response = await fetch(`${API_URL}/api/generate`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

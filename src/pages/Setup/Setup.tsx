@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./Setup.module.scss";
+import { API_URL } from "../../config";
 
 interface SetupStatus {
   isSetupComplete: boolean;
@@ -29,7 +30,7 @@ const Setup: React.FC = () => {
 
   const checkStatus = useCallback(async () => {
     try {
-      const response = await fetch("http://localhost:3001/api/setup/status");
+      const response = await fetch(`${API_URL}/api/setup/status`);
       const data = await response.json();
       setStatus(data);
 
@@ -55,7 +56,7 @@ const Setup: React.FC = () => {
     setSuccessMessage("");
 
     try {
-      const response = await fetch("http://localhost:3001/api/setup/validate", {
+      const response = await fetch(`${API_URL}/api/setup/validate`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
