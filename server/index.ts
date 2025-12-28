@@ -19,9 +19,10 @@ if (process.env.NODE_ENV === "production") {
 }
 app.use(
   cors({
-    origin: process.env.NODE_ENV === "production" 
-      ? "https://martinfjeld.github.io" 
-      : "http://localhost:3000",
+    origin:
+      process.env.NODE_ENV === "production"
+        ? "https://martinfjeld.github.io"
+        : "http://localhost:3000",
     credentials: true,
     maxAge: 86400,
   })

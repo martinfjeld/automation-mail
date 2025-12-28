@@ -127,6 +127,18 @@ const Generator: React.FC = () => {
     return `https://mail.google.com/mail/u/0/?view=cm&fs=1&tf=1&to=${to}&su=${subject}&body=${body}`;
   })();
 
+  const mailtoUrl = (() => {
+    if (!result) return "";
+
+    const subject = encodeURIComponent(
+      `No Offence, men hva med ${servicePhrase[service] || service}?`
+    );
+    const body = encodeURIComponent(composedEmailContent);
+    const to = encodeURIComponent(editableEmail || result.email || "");
+
+    return `mailto:${to}?subject=${subject}&body=${body}`;
+  })();
+
   if (checkingSetup) {
     return (
       <div className={styles.generator}>
@@ -271,6 +283,14 @@ const Generator: React.FC = () => {
               <Button onClick={handleCopyToClipboard}>
                 📋 Copy to Clipboard
               </Button>
+              {result.email && mailtoUrl && (
+                <Button
+                  variant="secondary"
+                  href={mailtoUrl}
+                >
+                  📧 Open in Mail App
+                </Button>
+              )}
               {result.email && gmailComposeUrl && (
                 <Button
                   variant="secondary"
@@ -278,7 +298,7 @@ const Generator: React.FC = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  📧 Open in Gmail
+                  📧 Open in Gmail (Web)
                 </Button>
               )}
             </div>

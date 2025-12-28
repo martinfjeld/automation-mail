@@ -10,7 +10,9 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
-    <BrowserRouter basename="/automation-mail">
+    <BrowserRouter
+      basename={process.env.NODE_ENV === "production" ? "/automation-mail" : ""}
+    >
       <App />
     </BrowserRouter>
   </React.StrictMode>

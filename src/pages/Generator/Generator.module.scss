@@ -2,11 +2,16 @@
 @import "../../styles/mixins";
 
 .generator {
-  min-height: calc(100vh - 200px);
+  min-height: 100vh;
   padding: $spacing-lg;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   @include respond(mobile) {
     padding: $spacing-md;
+    align-items: flex-start;
+    padding-top: $spacing-lg * 2;
   }
 }
 
