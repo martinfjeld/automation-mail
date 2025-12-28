@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: automation-mail-backend
+    env: node
+    buildCommand: npm install
+    startCommand: npx ts-node server/index.ts
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: NOTION_TOKEN
+        sync: false
+      - key: NOTION_DATABASE_ID
+        sync: false
