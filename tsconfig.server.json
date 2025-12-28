@@ -11,7 +11,7 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "outDir": "./dist",
-    "rootDir": "./server"
+    "rootDir": "."
   },
   "include": ["server/**/*"],
   "exclude": ["node_modules"]

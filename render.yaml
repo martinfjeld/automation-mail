@@ -2,8 +2,8 @@ services:
   - type: web
     name: automation-mail-backend
     env: node
-    buildCommand: npm install
-    startCommand: npx ts-node server/index.ts
+    buildCommand: npm install && npm run build:server
+    startCommand: npm run start:server
     envVars:
       - key: NODE_ENV
         value: production
