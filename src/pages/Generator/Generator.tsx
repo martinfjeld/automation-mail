@@ -249,7 +249,17 @@ const Generator: React.FC = () => {
       <div className={styles.container}>
         <h1 className={styles.title}>No Offence</h1>
 
-        <p className={styles.subtitle}>Salgsverktøy</p>
+        <p
+          className={styles.subtitle}
+          style={{
+            fontSize: ".7rem",
+            fontWeight: "bold",
+            textTransform: "uppercase",
+            letterSpacing: "5px",
+          }}
+        >
+          Salgsautomatisering™
+        </p>
 
         <div className={styles.form}>
           <div className={styles.field}>

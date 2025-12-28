@@ -237,6 +237,7 @@ class GenerateController {
       let enrichedCompanyName = companyInfo.companyName;
       let enrichedContactPerson = companyInfo.styretsleder;
       let contactPersonPageUrl = "";
+      let linkedInProfile = "";
       let industry = "";
 
       try {
@@ -272,7 +273,23 @@ class GenerateController {
         console.log("- Website (from scraped HTML only):", finalWebsite);
         console.log("- Email:", finalEmail);
         console.log("- Phone:", finalPhone);
-        console.log("==================================");
+        console.log("==================================\n");
+
+        // Search for LinkedIn profile
+        if (finalContactPerson && enrichedCompanyName) {
+          try {
+            sendProgress("Searching for LinkedIn profile...");
+            linkedInProfile = await openaiService.searchLinkedInProfile(
+              finalContactPerson,
+              enrichedCompanyName
+            );
+            if (linkedInProfile) {
+              console.log("✅ LinkedIn profile found:", linkedInProfile);
+            }
+          } catch (error) {
+            console.log("⚠️ LinkedIn search failed, continuing without it");
+          }
+        }
 
         // Warn if no website found from scraping
         if (!finalWebsite) {
@@ -572,6 +589,7 @@ class GenerateController {
         companyName: companyName,
         contactPerson: finalContactPerson,
         contactPersonUrl: contactPersonPageUrl,
+        linkedInProfile: linkedInProfile,
         email: finalEmail,
         phone: finalPhone,
         website: finalWebsite,
@@ -587,6 +605,7 @@ class GenerateController {
           companyName: companyName,
           contactPerson: finalContactPerson,
           contactPersonUrl: contactPersonPageUrl,
+          linkedInProfile: linkedInProfile,
           email: finalEmail,
           phone: finalPhone,
           website: finalWebsite,

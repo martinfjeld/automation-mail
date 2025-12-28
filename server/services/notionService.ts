@@ -4,6 +4,7 @@ export interface NotionEntry {
   companyName: string;
   contactPerson: string;
   contactPersonUrl?: string;
+  linkedInProfile?: string;
   email: string;
   phone?: string;
   website: string;
@@ -133,6 +134,12 @@ export class NotionService {
       if (entry.website) {
         properties["Hjemmeside"] = {
           url: entry.website,
+        };
+      }
+
+      if (entry.linkedInProfile) {
+        properties["LinkedIn"] = {
+          url: entry.linkedInProfile,
         };
       }
 

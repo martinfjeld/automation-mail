@@ -645,4 +645,65 @@ Svar kun i JSON:
       };
     }
   }
+
+  /**
+   * Search for LinkedIn profile of a person
+   */
+  async searchLinkedInProfile(
+    personName: string,
+    companyName: string
+  ): Promise<string> {
+    if (!this.client) {
+      throw new Error("OpenAI client not initialized");
+    }
+
+    const prompt = `Finn LinkedIn-profilen til personen basert på navnet og selskapet.
+
+Person: "${personName}"
+Selskap: "${companyName}"
+
+VIKTIG:
+- Bruk websøk for å finne personens LinkedIn-profil
+- Returner BARE den fullstendige LinkedIn URL-en (https://www.linkedin.com/in/...)
+- Hvis du finner flere profiler, velg den som best matcher både navn og selskap
+- Hvis du ikke finner en LinkedIn-profil, returner en tom streng
+
+Søk etter:
+- "${personName}" "${companyName}" LinkedIn
+- site:linkedin.com/in "${personName}" "${companyName}"
+
+Svar kun med LinkedIn URL-en (ingen forklaring, ingen JSON, bare URL-en):`;
+
+    try {
+      console.log(`\n🔍 Searching for LinkedIn profile: ${personName} at ${companyName}...`);
+      
+      const completion = await this.client.chat.completions.create({
+        model: "gpt-4o-search-preview",
+        web_search_options: {},
+        messages: [
+          {
+            role: "user",
+            content: prompt,
+          },
+        ],
+      } as any);
+
+      const raw = completion.choices[0]?.message?.content?.trim() || "";
+      console.log("LinkedIn search raw response:", raw);
+
+      // Extract LinkedIn URL from response
+      const linkedInMatch = raw.match(/https:\/\/(www\.)?linkedin\.com\/in\/[^\s\])}]+/i);
+      if (linkedInMatch) {
+        const linkedInUrl = linkedInMatch[0];
+        console.log(`✅ Found LinkedIn profile: ${linkedInUrl}`);
+        return linkedInUrl;
+      }
+
+      console.log("⚠️ No LinkedIn profile found");
+      return "";
+    } catch (error: any) {
+      console.error("LinkedIn search failed:", error.message);
+      return "";
+    }
+  }
 }
