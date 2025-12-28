@@ -2,7 +2,7 @@ services:
   - type: web
     name: automation-mail-backend
     env: node
-    buildCommand: npm install && npm run build:server
+    buildCommand: npm install --legacy-peer-deps && npm run build:server
     startCommand: npm run start:server
     envVars:
       - key: NODE_ENV
