@@ -511,7 +511,7 @@ class GenerateController {
           screenshots = await screenshotService.takeScreenshots(finalWebsite);
 
           if (screenshots.desktop && screenshots.mobile) {
-            console.log("✅ Screenshots captured successfully");
+            console.log("✅ Screenshots captured successfully with data");
 
             sendProgress("Uploading to Sanity...");
             sanityPresentationId = await sanityService.createPresentation({

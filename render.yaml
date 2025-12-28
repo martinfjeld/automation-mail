@@ -1,12 +1,13 @@
 services:
   - type: web
     name: automation-mail-backend
-    env: node
-    buildCommand: npm install --legacy-peer-deps && npx puppeteer browsers install chrome && npm run build:server
-    startCommand: npm run start:server
+    env: docker
+    dockerfilePath: ./Dockerfile
     envVars:
-      - key: PUPPETEER_CACHE_DIR
-        value: /opt/render/.cache/puppeteer
+      - key: PUPPETEER_SKIP_CHROMIUM_DOWNLOAD
+        value: true
+      - key: PUPPETEER_EXECUTABLE_PATH
+        value: /usr/bin/google-chrome-stable
       - key: NODE_ENV
         value: production
       - key: PORT

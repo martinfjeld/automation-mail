@@ -15,6 +15,9 @@ dotenv.config({ path: path.resolve(__dirname, "../.env") });
 const app: Application = express();
 const PORT = process.env.PORT || 3001;
 
+// Trust proxy - required when running behind Render's reverse proxy
+app.set('trust proxy', 1);
+
 // Middleware - relaxed for development
 if (process.env.NODE_ENV === "production") {
   app.use(helmet());
