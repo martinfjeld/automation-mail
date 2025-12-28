@@ -1,0 +1,53 @@
+@import "../../styles/variables";
+@import "../../styles/mixins";
+
+.nav {
+  background: $primary-color;
+  padding: $spacing-md 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 $spacing-md;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  @include respond(mobile) {
+    flex-direction: column;
+    gap: $spacing-sm;
+  }
+}
+
+.logo {
+  color: $text-light;
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-decoration: none;
+  transition: opacity 0.3s ease;
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+.links {
+  display: flex;
+  list-style: none;
+  gap: $spacing-md;
+  margin: 0;
+  padding: 0;
+}
+
+.link {
+  color: $text-light;
+  text-decoration: none;
+  font-weight: 500;
+  transition: opacity 0.3s ease;
+
+  &:hover {
+    opacity: 0.8;
+  }
+}

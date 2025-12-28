@@ -1,8 +1,122 @@
-# Getting Started with Create React App
+# Figma Automator
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A powerful Norwegian outreach automation tool that generates personalized sales emails for companies listed on Proff.no.
 
-## Available Scripts
+## Features
+
+- 🔐 **Secure Setup Flow**: First-run setup with credential validation for OpenAI, Notion, and optional scraping APIs
+- 🔍 **Company Intelligence**: Automatically scrapes Proff.no for company information and Styrets leder
+- 🌐 **Website Analysis**: Analyzes company websites and generates contextual observations
+- 🤖 **AI-Powered Emails**: Uses GPT-4 to generate professional Norwegian outreach emails
+- 📊 **Notion Integration**: Automatically creates CRM entries with follow-up dates
+- 🎯 **Service-Specific**: Supports Video, Images, Web, and Branding services
+- 🔒 **Security First**: Server-side secret management, rate limiting, and no credential exposure
+
+## Tech Stack
+
+- **Frontend**: React 19, TypeScript, SCSS Modules, React Router
+- **Backend**: Express, Node.js, TypeScript
+- **AI**: OpenAI GPT-4
+- **Database**: Notion API
+- **Scraping**: Cheerio, Axios
+- **Security**: Helmet, CORS, Express Rate Limit
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 16+
+- npm or yarn
+- OpenAI API key
+- Notion integration token and database ID
+
+### Installation
+
+1. Clone the repository
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+3. Set up your Notion database with these properties:
+
+   - Selskap (title)
+   - Kontaktperson (text)
+   - E-post (email)
+   - Hjemmeside (url)
+   - Proff-link (url)
+   - Tjeneste (select: Video, Images, Web, Branding)
+   - Status (select: Ongoing)
+   - Contact Date (date)
+   - Follow-up Date (date)
+   - Melding jeg sendte (text)
+
+4. Start the development servers:
+
+```bash
+npm run dev
+```
+
+This will start:
+
+- Backend server on http://localhost:3001
+- Frontend app on http://localhost:3000
+
+### Initial Setup
+
+1. Navigate to http://localhost:3000
+2. You'll be redirected to the setup page
+3. Enter your API credentials:
+   - OpenAI API Key (from https://platform.openai.com/api-keys)
+   - Notion Token (from https://www.notion.so/my-integrations)
+   - Notion Database ID (from your database URL)
+4. Click "Save & Test" to validate credentials
+5. Once validated, you'll be redirected to the main app
+
+## Usage
+
+1. **Paste Proff.no URL**: Enter the URL of a company from Proff.no
+2. **Select Service**: Choose Video, Images, Web, or Branding
+3. **Generate**: Click the generate button
+4. **Review**: Check the generated email, company info, and contact details
+5. **Action**: Copy to clipboard or open in your email client
+6. **Track**: Entry is automatically created in Notion for follow-up
+
+## Development Scripts
+
+```bash
+npm start          # Start frontend only
+npm run server     # Start backend only
+npm run dev        # Start both (recommended)
+npm run build      # Build for production
+npm test           # Run tests
+```
+
+## Environment Variables
+
+See `.env.example` for all required environment variables.
+
+## Rate Limits
+
+- Setup endpoints: 10 requests per 15 minutes
+- Generation endpoint: 20 requests per hour
+- Per IP address
+
+## Security Features
+
+- ✅ Server-side secret storage
+- ✅ Password-masked inputs
+- ✅ No credentials sent to client
+- ✅ Rate limiting on all endpoints
+- ✅ Helmet security headers
+- ✅ CORS configuration
+- ✅ Input validation
+- ✅ Error sanitization in production
+
+## License
+
+MIT
 
 In the project directory, you can run:
 

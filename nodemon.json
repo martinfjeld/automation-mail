@@ -1,0 +1,10 @@
+{
+  "watch": ["server"],
+  "ext": "ts,js",
+  "ignore": ["server/**/*.spec.ts", "server/**/*.test.ts"],
+  "exec": "ts-node --project tsconfig.server.json server/index.ts",
+  "env": {
+    "NODE_OPTIONS": "--max-http-header-size=80000",
+    "TS_NODE_PROJECT": "tsconfig.server.json"
+  }
+}
