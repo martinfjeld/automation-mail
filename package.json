@@ -6,6 +6,7 @@
   "dependencies": {
     "@notionhq/client": "^5.6.0",
     "@sanity/client": "^7.13.2",
+    "@sparticuz/chromium": "^143.0.0",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.1.0",
@@ -25,6 +26,7 @@
     "helmet": "^8.1.0",
     "openai": "^6.15.0",
     "puppeteer": "^24.34.0",
+    "puppeteer-core": "^24.34.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "react-router-dom": "^7.11.0",

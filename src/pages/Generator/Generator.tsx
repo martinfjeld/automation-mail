@@ -247,9 +247,9 @@ const Generator: React.FC = () => {
   return (
     <div className={styles.generator}>
       <div className={styles.container}>
-        <h1 className={styles.title}>Automator</h1>
+        <h1 className={styles.title}>No Offence</h1>
 
-        <p className={styles.subtitle}>Meow meow meow</p>
+        <p className={styles.subtitle}>Salgsverktøy</p>
 
         <div className={styles.form}>
           <div className={styles.field}>

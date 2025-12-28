@@ -1,4 +1,5 @@
-import puppeteer from "puppeteer";
+import puppeteer from "puppeteer-core";
+import chromium from "@sparticuz/chromium";
 import { execSync } from "child_process";
 import fs from "fs";
 import path from "path";
@@ -7,31 +8,33 @@ export class ScreenshotService {
   /**
    * Find the Chrome executable path on the system
    */
-  private findChromeExecutable(): string | undefined {
-    // Common Chrome paths to check
+  private async findChromeExecutable(): Promise<string> {
+    // In production (Render), use @sparticuz/chromium
+    if (process.env.NODE_ENV === 'production') {
+      console.log('🚀 Using @sparticuz/chromium for production');
+      return await chromium.executablePath();
+    }
+
+    // Common Chrome paths for local development
     const chromePaths = [
-      // Linux paths (Render uses Ubuntu)
+      process.env.PUPPETEER_EXECUTABLE_PATH,
       '/usr/bin/google-chrome-stable',
       '/usr/bin/google-chrome',
       '/usr/bin/chromium-browser',
       '/usr/bin/chromium',
-      // Puppeteer cache paths
-      process.env.PUPPETEER_EXECUTABLE_PATH,
-      // MacOS paths (for local development)
       '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
-    ].filter(Boolean);
+    ].filter(Boolean) as string[];
 
-    console.log('🔍 Searching for Chrome executable...');
+    console.log('🔍 Searching for Chrome executable locally...');
     
     for (const chromePath of chromePaths) {
-      if (chromePath && fs.existsSync(chromePath)) {
+      if (fs.existsSync(chromePath)) {
         console.log(`✅ Found Chrome at: ${chromePath}`);
         return chromePath;
       }
     }
 
-    console.log('⚠️ No Chrome executable found, using Puppeteer default');
-    return undefined;
+    throw new Error('Chrome executable not found');
   }
 
   /**
@@ -107,21 +110,26 @@ export class ScreenshotService {
   ): Promise<{ desktop: string; mobile: string }> {
     let browser;
     try {
-      const executablePath = this.findChromeExecutable();
+      const executablePath = await this.findChromeExecutable();
       console.log(
-        `🚀 Launching browser with executable: ${executablePath || "default"}`
+        `🚀 Launching browser with executable: ${executablePath}`
       );
+
+      // Get recommended args for serverless environments in production
+      const args = process.env.NODE_ENV === 'production'
+        ? chromium.args
+        : [
+            "--no-sandbox",
+            "--disable-setuid-sandbox",
+            "--disable-dev-shm-usage",
+            "--disable-accelerated-2d-canvas",
+            "--disable-gpu",
+          ];
 
       browser = await puppeteer.launch({
         headless: true,
         executablePath,
-        args: [
-          "--no-sandbox",
-          "--disable-setuid-sandbox",
-          "--disable-dev-shm-usage",
-          "--disable-accelerated-2d-canvas",
-          "--disable-gpu",
-        ],
+        args,
       });
 
       const page = await browser.newPage();

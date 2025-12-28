@@ -1,13 +1,10 @@
 services:
   - type: web
     name: automation-mail-backend
-    env: docker
-    dockerfilePath: ./Dockerfile
+    env: node
+    buildCommand: npm install --legacy-peer-deps && npm run build:server
+    startCommand: npm run start:server
     envVars:
-      - key: PUPPETEER_SKIP_CHROMIUM_DOWNLOAD
-        value: true
-      - key: PUPPETEER_EXECUTABLE_PATH
-        value: /usr/bin/google-chrome-stable
       - key: NODE_ENV
         value: production
       - key: PORT
