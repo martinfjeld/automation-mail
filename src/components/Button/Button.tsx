@@ -9,6 +9,8 @@ interface ButtonProps {
   href?: string;
   target?: string;
   rel?: string;
+  loading?: boolean;
+  loadingText?: string;
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -19,6 +21,8 @@ const Button: React.FC<ButtonProps> = ({
   href,
   target,
   rel,
+  loading = false,
+  loadingText = "",
 }) => {
   if (href) {
     return (
@@ -40,11 +44,12 @@ const Button: React.FC<ButtonProps> = ({
 
   return (
     <button
-      className={`${styles.button} ${styles[variant]}`}
+      className={`${styles.button} ${styles[variant]} ${loading ? styles.loading : ''}`}
       onClick={onClick}
       disabled={disabled}
     >
-      {children}
+      {loading && <span className={styles.loadingOverlay}></span>}
+      <span className={styles.buttonText}>{loading && loadingText ? loadingText : children}</span>
     </button>
   );
 };

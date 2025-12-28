@@ -6,6 +6,9 @@ interface EnvConfig {
   NOTION_TOKEN?: string;
   NOTION_DATABASE_ID?: string;
   SCRAPING_API_KEY?: string;
+  SANITY_PROJECT_ID?: string;
+  SANITY_DATASET?: string;
+  SANITY_TOKEN?: string;
 }
 
 class ConfigManager {
@@ -21,6 +24,9 @@ class ConfigManager {
       NOTION_TOKEN: process.env.NOTION_TOKEN,
       NOTION_DATABASE_ID: process.env.NOTION_DATABASE_ID,
       SCRAPING_API_KEY: process.env.SCRAPING_API_KEY,
+      SANITY_PROJECT_ID: process.env.SANITY_PROJECT_ID,
+      SANITY_DATASET: process.env.SANITY_DATASET,
+      SANITY_TOKEN: process.env.SANITY_TOKEN,
     };
   }
 

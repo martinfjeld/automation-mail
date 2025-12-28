@@ -1,6 +1,5 @@
 import React from "react";
 import { Routes, Route, Outlet } from "react-router-dom";
-import Nav from "./components/Nav/Nav";
 import Footer from "./components/Footer/Footer";
 import Generator from "./pages/Generator/Generator";
 import About from "./pages/About/About";
@@ -11,7 +10,6 @@ function Layout() {
     <div
       style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}
     >
-      <Nav />
       <Outlet />
       <Footer />
     </div>

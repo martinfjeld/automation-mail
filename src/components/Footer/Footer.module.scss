@@ -2,7 +2,7 @@
 @import "../../styles/mixins";
 
 .footer {
-  background: #f5f5f5;
+  background: transparent;
   padding: $spacing-lg 0;
   margin-top: auto;
 }
@@ -15,6 +15,9 @@
 }
 
 .text {
-  color: $text-dark;
+  background: $primary-gradient-text;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
   font-size: 0.875rem;
 }

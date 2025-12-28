@@ -33,8 +33,7 @@ export class OpenAIService {
     companyName: string,
     contactPerson: string,
     service: string,
-    websiteUrl: string,
-    observations: string[]
+    websiteUrl: string
   ): Promise<string> {
     if (!this.client) {
       throw new Error("OpenAI client not initialized");
@@ -46,11 +45,6 @@ export class OpenAIService {
       Web: "new or improved website with modern design",
       Branding: "visual identity, brand book and design system",
     };
-
-    const observationsText =
-      observations.length > 0
-        ? `\n\nObservasjoner om bedriften:\n${observations.join("\n")}`
-        : "";
 
     const prompt = `Skriv en kort, personlig utreach-e-post på norsk til ${
       contactPerson || "kontaktpersonen"
@@ -64,7 +58,7 @@ Hilsen: "${
       contactPerson ? `Hei ${contactPerson.split(" ")[0]},` : "Hei,"
     }"
 
-Maks 150 ord. Nevn observasjoner hvis gitt. Inkluder call-to-action for et kort møte.${observationsText}
+Maks 150 ord. Start med en setning om hvorfor jeg tar kontakt. Inkluder call-to-action for et kort møte.
 
 Nettside: ${websiteUrl}
 
@@ -581,7 +575,6 @@ Website: ${companyWebsite}`;
     kundeEpost: string;
     telefon: string;
     bransje: string;
-    observasjon: string;
   }> {
     if (!this.client) {
       throw new Error("OpenAI client not initialized");
@@ -592,14 +585,6 @@ Website: ${companyWebsite}`;
 - Daglig leder (hent kun fra 'Offisiell foretaksinformasjon')
 - Generell e-post og telefon (besøk ${website || 'bedriftens nettside'} hvis tilgjengelig)
 - Gjør et nytt søk på: "${contactPerson || 'daglig leder'} ${website || companyName}" og finn eventuelt e-post eller nummer direkte til personen.
-- Til slutt: Søk etter den NYESTE artikkelen, nyheten eller observasjonen om ${companyName}. 
-
-VIKTIG FOR NYHETSØK:
-→ Søk kun etter nyheter fra 2024 eller 2025
-→ IKKE bruk gamle artikler fra 2020, 2021, 2022 eller 2023
-→ Filtrer søket med "after:2024" eller lignende for å kun få nyeste innhold
-→ Hvis du ikke finner noe nytt fra 2024-2025, bruk tom streng i "observasjon"
-→ Nevn årstallet i observasjonen hvis du finner noe (f.eks. "I 2025...")
 
 KRITISK: IKKE finn eller generer nettside-URL. Det håndteres eksternt.
 
@@ -609,8 +594,7 @@ Svar kun i JSON:
   "navn": "",
   "kundeEpost": "",
   "telefon": "",
-  "bransje": "",
-  "observasjon": ""
+  "bransje": ""
 }}`;
 
     try {
@@ -640,7 +624,6 @@ Svar kun i JSON:
           kundeEpost: json.kundeEpost || "",
           telefon: json.telefon || "",
           bransje: json.bransje || "",
-          observasjon: json.observasjon || "",
         };
       }
 
@@ -650,7 +633,6 @@ Svar kun i JSON:
         kundeEpost: "",
         telefon: "",
         bransje: "",
-        observasjon: "",
       };
     } catch (error: any) {
       console.error("AI web search enrichment failed:", error.message);
@@ -660,7 +642,6 @@ Svar kun i JSON:
         kundeEpost: "",
         telefon: "",
         bransje: "",
-        observasjon: "",
       };
     }
   }

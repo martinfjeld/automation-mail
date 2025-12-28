@@ -5,6 +5,8 @@ import dotenv from "dotenv";
 import path from "path";
 import setupRoutes from "./routes/setup";
 import generateRoutes from "./routes/generate";
+import updateRoutes from "./routes/update";
+import screenshotsRoutes from "./routes/screenshots";
 import { errorHandler } from "./middleware/errorHandler";
 
 // Load .env file from project root
@@ -33,6 +35,8 @@ app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 // API Routes
 app.use("/api/setup", setupRoutes);
 app.use("/api/generate", generateRoutes);
+app.use("/api/update", updateRoutes);
+app.use("/api/screenshots", screenshotsRoutes);
 
 // Health check
 app.get("/api/health", (req: Request, res: Response) => {

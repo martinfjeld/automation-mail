@@ -6,7 +6,7 @@ const Footer: React.FC = () => {
     <footer className={styles.footer}>
       <div className={styles.container}>
         <p className={styles.text}>
-          © {new Date().getFullYear()} Figma Automator. All rights reserved.
+          © {new Date().getFullYear()} No Offence. All rights reserved.
         </p>
       </div>
     </footer>

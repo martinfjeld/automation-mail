@@ -3,18 +3,104 @@ import { configManager } from "../utils/configManager";
 import { ScraperService } from "../services/scraperService";
 import { OpenAIService } from "../services/openaiService";
 import { NotionService } from "../services/notionService";
+import { ScreenshotService } from "../services/screenshotService";
+import { SanityService } from "../services/sanityService";
+
+// Normalize company name: proper capitalization and remove AS suffix, prefixes, and countries
+function normalizeCompanyName(name: string): string {
+  if (!name) return name;
+
+  let normalized = name.trim();
+
+  // Remove generic industry descriptors from ANYWHERE in the string
+  // Legal
+  normalized = normalized.replace(/\s*Advokatfirmaet\s*/gi, " ").trim();
+  normalized = normalized.replace(/\s*Advokatfirma\s*/gi, " ").trim();
+  normalized = normalized.replace(/\s*Advokat\s*/gi, " ").trim();
+
+  // Construction (only generic terms, not specific like "Tak")
+  normalized = normalized.replace(/\s*Entreprenør\s*/gi, " ").trim();
+  normalized = normalized.replace(/\s*Bygg\s*/gi, " ").trim();
+  normalized = normalized.replace(/\s*Byggmester\s*/gi, " ").trim();
+  normalized = normalized.replace(/\s*Anlegg\s*/gi, " ").trim();
+
+  // Health/Fitness (generic descriptors)
+  normalized = normalized.replace(/\s*Aktivitet\s*/gi, " ").trim();
+  normalized = normalized.replace(/\s*Helse\s*/gi, " ").trim();
+  normalized = normalized.replace(/\s*Health\s*/gi, " ").trim();
+  normalized = normalized.replace(/\s*Fitness\s*/gi, " ").trim();
+  normalized = normalized.replace(/\s*Trening\s*/gi, " ").trim();
+
+  // Generic business words
+  normalized = normalized.replace(/\s*Service\s*/gi, " ").trim();
+  normalized = normalized.replace(/\s*Tjenester\s*/gi, " ").trim();
+
+  // Remove common business prefixes (case insensitive)
+  normalized = normalized.replace(/^(The)\s+/i, "").trim();
+
+  // Remove AS/ASA/DA/ANS and other business form suffixes (case insensitive)
+  normalized = normalized
+    .replace(/\s+(AS|ASA|DA|ANS|BA|SA|NUF|KF|AL)$/i, "")
+    .trim();
+
+  // Remove country names (case insensitive)
+  normalized = normalized
+    .replace(/\s+(Norge|Norway|Sweden|Sverige|Denmark|Danmark)$/i, "")
+    .trim();
+
+  // Remove "og" (and) if it appears
+  normalized = normalized.replace(/\s+og\s+/gi, " ").trim();
+
+  // Clean up any double spaces left from removals
+  normalized = normalized.replace(/\s+/g, " ").trim();
+
+  // Convert to proper case (capitalize first letter of each word)
+  normalized = normalized
+    .toLowerCase()
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+
+  console.log(`📝 Normalized company name: "${name}" → "${normalized}"`);
+  return normalized;
+}
 
 class GenerateController {
   async generate(req: Request, res: Response): Promise<void> {
+    // Check if client wants SSE
+    const useSSE = req.headers.accept?.includes("text/event-stream");
+
+    if (useSSE) {
+      // Set up SSE headers
+      res.setHeader("Content-Type", "text/event-stream");
+      res.setHeader("Cache-Control", "no-cache");
+      res.setHeader("Connection", "keep-alive");
+    }
+
+    const sendProgress = (step: string) => {
+      if (useSSE) {
+        res.write(`data: ${JSON.stringify({ step })}\n\n`);
+      }
+    };
+
     try {
       const { proffUrl, service } = req.body;
 
       // Validate input
       if (!proffUrl || !service) {
-        res.status(400).json({
-          success: false,
-          error: "Missing required fields: proffUrl and service",
-        });
+        if (useSSE) {
+          res.write(
+            `data: ${JSON.stringify({
+              error: "Missing required fields: proffUrl and service",
+            })}\n\n`
+          );
+          res.end();
+        } else {
+          res.status(400).json({
+            success: false,
+            error: "Missing required fields: proffUrl and service",
+          });
+        }
         return;
       }
 
@@ -53,8 +139,29 @@ class GenerateController {
         config.NOTION_DATABASE_ID
       );
 
+      // Initialize Sanity service if credentials are available
+      let sanityService: SanityService | null = null;
+      if (
+        config.SANITY_PROJECT_ID &&
+        config.SANITY_DATASET &&
+        config.SANITY_TOKEN
+      ) {
+        sanityService = new SanityService(
+          config.SANITY_PROJECT_ID,
+          config.SANITY_DATASET,
+          config.SANITY_TOKEN
+        );
+        console.log("✅ Sanity service initialized");
+      } else {
+        console.log(
+          "⚠️ Sanity credentials not found - skipping Sanity integration"
+        );
+      }
+      const screenshotService = new ScreenshotService();
+
       // PHASE 1: Traditional HTML Scraping from Proff.no
       console.log("=== PHASE 1: Traditional Scraping ===");
+      sendProgress("Fetching company data...");
       const companyInfo = await scraperService.getCompanyInfo(proffUrl);
 
       console.log("Scraped from Proff.no HTML:");
@@ -88,7 +195,9 @@ class GenerateController {
             companyInfo.styretsleder
           );
 
-          console.log(`Website candidates from web search: ${candidates.length}`);
+          console.log(
+            `Website candidates from web search: ${candidates.length}`
+          );
 
           for (const candidate of candidates) {
             const verified = await scraperService.validateCompanyWebsite(
@@ -115,14 +224,15 @@ class GenerateController {
 
       // PHASE 2: AI-Powered Web Search Enrichment using gpt-4o-search-preview
       console.log("\n=== PHASE 2: AI Web Search Enrichment ===");
+      sendProgress("Analyzing information...");
       let finalContactPerson = companyInfo.styretsleder;
       let finalWebsite = companyInfo.website;
       let finalEmail = companyInfo.contactEmail;
       let finalPhone = companyInfo.contactPhone;
-      let observations: string[] = [];
       let enrichedCompanyName = companyInfo.companyName;
       let enrichedContactPerson = companyInfo.styretsleder;
       let contactPersonPageUrl = "";
+      let industry = "";
 
       try {
         const aiEnriched = await openaiService.enrichCompanyInfoWithWebSearch(
@@ -137,21 +247,20 @@ class GenerateController {
         console.log("- Name:", aiEnriched.navn);
         console.log("- Email:", aiEnriched.kundeEpost);
         console.log("- Phone:", aiEnriched.telefon);
-        console.log("- Observation:", aiEnriched.observasjon);
 
         // CRITICAL: Website comes ONLY from Proff.no HTML scraping (never from AI)
         finalWebsite = companyInfo.website;
-        
+
         // For other fields, AI data takes priority, scraped data as fallback
-        enrichedCompanyName = aiEnriched.selskap || companyInfo.companyName;
+        // Normalize company names to remove prefixes/suffixes
+        enrichedCompanyName = normalizeCompanyName(
+          aiEnriched.selskap || companyInfo.companyName
+        );
         enrichedContactPerson = aiEnriched.navn || companyInfo.styretsleder;
         finalContactPerson = aiEnriched.navn || companyInfo.styretsleder;
         finalEmail = aiEnriched.kundeEpost || companyInfo.contactEmail;
         finalPhone = aiEnriched.telefon || companyInfo.contactPhone;
-        
-        if (aiEnriched.observasjon) {
-          observations.push(aiEnriched.observasjon);
-        }
+        industry = aiEnriched.bransje || "";
 
         console.log("\n=== FINAL DATA ===");
         console.log("- Contact Person:", finalContactPerson);
@@ -159,10 +268,12 @@ class GenerateController {
         console.log("- Email:", finalEmail);
         console.log("- Phone:", finalPhone);
         console.log("==================================");
-        
+
         // Warn if no website found from scraping
         if (!finalWebsite) {
-          console.warn("⚠️ WARNING: No website found in Proff.no HTML scraping");
+          console.warn(
+            "⚠️ WARNING: No website found in Proff.no HTML scraping"
+          );
           console.warn("⚠️ Cannot scrape company website without valid URL");
         }
 
@@ -175,10 +286,11 @@ class GenerateController {
           });
 
           try {
-            const candidates = await openaiService.searchCompanyWebsiteCandidates(
-              enrichedCompanyName,
-              enrichedContactPerson
-            );
+            const candidates =
+              await openaiService.searchCompanyWebsiteCandidates(
+                enrichedCompanyName,
+                enrichedContactPerson
+              );
 
             console.log(
               `Website candidates from web search: ${candidates.length}`
@@ -207,7 +319,6 @@ class GenerateController {
             console.warn("⚠️ Website fallback search failed:", e);
           }
         }
-
       } catch (error) {
         console.error("AI enrichment failed, using only scraped data:", error);
         // Ensure we still use scraped website
@@ -216,14 +327,15 @@ class GenerateController {
 
       // Step 3: If we still need more data and have website, scrape it
       if (finalWebsite && (!finalEmail || !finalPhone)) {
-        console.log("\nScraping company website for additional contact info...");
+        console.log(
+          "\nScraping company website for additional contact info..."
+        );
         try {
-          const websiteInfo = await scraperService.scrapeWebsiteForContact(finalWebsite);
+          const websiteInfo = await scraperService.scrapeWebsiteForContact(
+            finalWebsite
+          );
           if (websiteInfo.email && !finalEmail) finalEmail = websiteInfo.email;
           if (websiteInfo.phone && !finalPhone) finalPhone = websiteInfo.phone;
-          if (websiteInfo.observations.length > 0) {
-            observations = [...observations, ...websiteInfo.observations];
-          }
         } catch (error) {
           console.error("Failed to scrape website:", error);
         }
@@ -231,17 +343,23 @@ class GenerateController {
 
       // Step 4: Use AI to analyze scraped website content if needed
       const websiteContent = scraperService.getLastWebsiteContent();
-      
-      if (websiteContent && finalContactPerson && (!finalEmail || !finalPhone)) {
-        console.log(`\nAnalyzing website content with AI for ${finalContactPerson}...`);
-        
+
+      if (
+        websiteContent &&
+        finalContactPerson &&
+        (!finalEmail || !finalPhone)
+      ) {
+        console.log(
+          `\nAnalyzing website content with AI for ${finalContactPerson}...`
+        );
+
         try {
           const extractedDetails = await openaiService.extractContactDetails(
             finalContactPerson,
             websiteContent,
             companyInfo.companyName
           );
-          
+
           console.log("AI extraction results:", extractedDetails);
 
           if (extractedDetails.email && !finalEmail) {
@@ -283,7 +401,9 @@ class GenerateController {
         const digits = (phone || "").replace(/\D/g, "");
         if (!digits) return false;
         const last8 = digits.length >= 8 ? digits.slice(-8) : digits;
-        return last8.length === 8 && (last8.startsWith("4") || last8.startsWith("9"));
+        return (
+          last8.length === 8 && (last8.startsWith("4") || last8.startsWith("9"))
+        );
       };
 
       if (
@@ -310,7 +430,9 @@ class GenerateController {
           let combined = websiteContent || "";
 
           for (const candidate of personCandidates) {
-            if (!scraperService.isUrlOnCompanyDomain(candidate.url, finalWebsite)) {
+            if (
+              !scraperService.isUrlOnCompanyDomain(candidate.url, finalWebsite)
+            ) {
               console.log("❌ Rejected (wrong domain):", candidate.url);
               continue;
             }
@@ -321,8 +443,15 @@ class GenerateController {
               continue;
             }
 
-            if (!page.text.toLowerCase().includes(finalContactPerson.toLowerCase())) {
-              console.log("❌ Rejected (name not found on page):", candidate.url);
+            if (
+              !page.text
+                .toLowerCase()
+                .includes(finalContactPerson.toLowerCase())
+            ) {
+              console.log(
+                "❌ Rejected (name not found on page):",
+                candidate.url
+              );
               continue;
             }
 
@@ -353,8 +482,9 @@ class GenerateController {
         }
       }
 
-      // Get company name
-      const companyName = companyInfo.companyName;
+      // Get normalized company name (use the enriched version if available)
+      const companyName =
+        enrichedCompanyName || normalizeCompanyName(companyInfo.companyName);
 
       // Fallback to generic contact if still nothing found
       if (!finalContactPerson) {
@@ -362,15 +492,57 @@ class GenerateController {
       }
 
       // Step 4: Generate email using OpenAI
+      sendProgress("Generating email...");
       const emailContent = await openaiService.generateEmail(
         companyName,
         finalContactPerson,
         service,
-        finalWebsite,
-        observations
+        finalWebsite
       );
 
-      // Step 5: Create Notion entry
+      // Step 5: Take screenshots and upload to Sanity
+      let sanityPresentationId: string | undefined;
+      let screenshots: { desktop: string; mobile: string } | undefined;
+
+      if (finalWebsite && sanityService) {
+        try {
+          sendProgress("Capturing screenshots...");
+          console.log(`\n=== Taking screenshots for: ${finalWebsite} ===`);
+          screenshots = await screenshotService.takeScreenshots(finalWebsite);
+
+          if (screenshots.desktop && screenshots.mobile) {
+            console.log("✅ Screenshots captured successfully");
+
+            sendProgress("Uploading to Sanity...");
+            sanityPresentationId = await sanityService.createPresentation({
+              customerName: companyName,
+              description: `${service} presentation for ${companyName}`,
+              beforeDesktopBase64: screenshots.desktop,
+              beforeMobileBase64: screenshots.mobile,
+              industry: industry || undefined,
+              website: finalWebsite,
+            });
+          } else {
+            console.warn("⚠️ Screenshot capture returned empty data");
+          }
+        } catch (error: any) {
+          console.error(
+            "Failed to capture screenshots or upload to Sanity:",
+            error.message
+          );
+          // Continue even if screenshots/sanity fail
+        }
+      } else {
+        if (!finalWebsite) {
+          console.log("⚠️ No website available - skipping screenshots");
+        }
+        if (!sanityService) {
+          console.log("⚠️ Sanity not configured - skipping Sanity upload");
+        }
+      }
+
+      // Step 6: Create Notion entry
+      sendProgress("Creating Notion entry...");
       const notionPageId = await notionService.createEntry({
         companyName: companyName,
         contactPerson: finalContactPerson,
@@ -384,7 +556,7 @@ class GenerateController {
       });
 
       // Return success response
-      res.json({
+      const responseData = {
         success: true,
         data: {
           companyName: companyName,
@@ -395,13 +567,65 @@ class GenerateController {
           website: finalWebsite,
           emailContent,
           notionPageId,
+          industry: industry || "",
+          sanityPresentationId: sanityPresentationId || null,
+          hasScreenshots: !!screenshots,
+        },
+      };
+
+      if (useSSE) {
+        res.write(`data: ${JSON.stringify(responseData)}\n\n`);
+        res.end();
+      } else {
+        res.json(responseData);
+      }
+    } catch (error: any) {
+      console.error("Generation failed:", error);
+      const errorResponse = {
+        success: false,
+        error: error.message || "Failed to generate content",
+      };
+
+      if (req.headers.accept?.includes("text/event-stream")) {
+        res.write(`data: ${JSON.stringify(errorResponse)}\n\n`);
+        res.end();
+      } else {
+        res.status(500).json(errorResponse);
+      }
+    }
+  }
+
+  async getScreenshots(req: Request, res: Response): Promise<void> {
+    try {
+      const { website } = req.body;
+
+      if (!website) {
+        res.status(400).json({
+          success: false,
+          error: "Website URL is required",
+        });
+        return;
+      }
+
+      const screenshotService = new ScreenshotService();
+      console.log(`\nTaking screenshots for: ${website}`);
+
+      const screenshots = await screenshotService.takeScreenshots(website);
+
+      console.log("✅ Screenshots captured successfully");
+
+      res.json({
+        success: true,
+        data: {
+          desktopScreenshot: screenshots.desktop,
+          mobileScreenshot: screenshots.mobile,
         },
       });
     } catch (error: any) {
-      console.error("Generation failed:", error);
+      console.error("Screenshot capture failed:", error);
       res.status(500).json({
         success: false,
-        error: error.message || "Failed to generate content",
+        error: error.message || "Failed to capture screenshots",
       });
     }
   }

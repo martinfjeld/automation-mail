@@ -1,8 +1,18 @@
 {
   "watch": ["server"],
   "ext": "ts,js",
-  "ignore": ["server/**/*.spec.ts", "server/**/*.test.ts"],
+  "ignore": [
+    "server/**/*.spec.ts",
+    "server/**/*.test.ts",
+    "**/.local-chromium/**",
+    "**/node_modules/.cache/**",
+    "**/.cache/**",
+    "**/screenshots/**",
+    "**/temp/**",
+    "**/tmp/**"
+  ],
   "exec": "ts-node --project tsconfig.server.json server/index.ts",
+  "delay": "2000",
   "env": {
     "NODE_OPTIONS": "--max-http-header-size=80000",
     "TS_NODE_PROJECT": "tsconfig.server.json"

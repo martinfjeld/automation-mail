@@ -147,4 +147,37 @@ export class NotionService {
       throw new Error("Failed to create Notion entry");
     }
   }
+
+  async updateEntry(
+    pageId: string,
+    updates: { email?: string; phone?: string }
+  ): Promise<void> {
+    if (!this.client || !this.databaseId) {
+      throw new Error("Notion client not initialized");
+    }
+
+    try {
+      const properties: any = {};
+
+      if (updates.email !== undefined) {
+        properties["E-post"] = {
+          email: updates.email || null,
+        };
+      }
+
+      if (updates.phone !== undefined) {
+        properties["Telefon"] = {
+          phone_number: updates.phone || null,
+        };
+      }
+
+      await this.client.pages.update({
+        page_id: pageId,
+        properties,
+      });
+    } catch (error: any) {
+      console.error("Notion entry update failed:", error.message);
+      throw new Error("Failed to update Notion entry");
+    }
+  }
 }
