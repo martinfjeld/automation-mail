@@ -137,7 +137,6 @@ export class NotionService {
         };
       }
 
-      // Try to add LinkedIn if provided (will be ignored if property doesn't exist in Notion)
       if (entry.linkedInProfile) {
         properties["LinkedIn"] = {
           url: entry.linkedInProfile,
@@ -151,28 +150,8 @@ export class NotionService {
 
       return response.id;
     } catch (error: any) {
-      // If LinkedIn property doesn't exist, retry without it
-      if (error.code === 'validation_error' && error.message?.includes('LinkedIn')) {
-        console.warn("⚠️ LinkedIn property doesn't exist in Notion database, creating entry without it...");
-        
-        // Remove LinkedIn property and retry
-        const { LinkedIn, ...propertiesWithoutLinkedIn } = properties;
-        
-        try {
-          const response = await this.client.pages.create({
-            parent: { database_id: this.databaseId },
-            properties: propertiesWithoutLinkedIn,
-          });
-          
-          console.log("✅ Entry created without LinkedIn field");
-          return response.id;
-        } catch (retryError: any) {
-          console.error("Notion entry creation failed on retry:", retryError.message);
-          throw new Error("Failed to create Notion entry");
-        }
-      }
-      
       console.error("Notion entry creation failed:", error.message);
+      console.error("Error details:", error);
       throw new Error("Failed to create Notion entry");
     }
   }
