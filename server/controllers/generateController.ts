@@ -141,17 +141,22 @@ class GenerateController {
 
       // Initialize Sanity service if credentials are available
       let sanityService: SanityService | null = null;
+      console.log("\n🔍 Checking Sanity credentials...");
+      console.log("  - SANITY_PROJECT_ID:", config.SANITY_PROJECT_ID || "MISSING");
+      console.log("  - SANITY_DATASET:", config.SANITY_DATASET || "MISSING");
+      console.log("  - SANITY_TOKEN:", config.SANITY_TOKEN ? `${config.SANITY_TOKEN.substring(0, 10)}...` : "MISSING");
+      
       if (
         config.SANITY_PROJECT_ID &&
         config.SANITY_DATASET &&
         config.SANITY_TOKEN
       ) {
+        console.log("✅ All Sanity credentials present, initializing service...");
         sanityService = new SanityService(
           config.SANITY_PROJECT_ID,
           config.SANITY_DATASET,
           config.SANITY_TOKEN
         );
-        console.log("✅ Sanity service initialized");
       } else {
         console.log(
           "⚠️ Sanity credentials not found - skipping Sanity integration"
@@ -512,24 +517,44 @@ class GenerateController {
 
           if (screenshots.desktop && screenshots.mobile) {
             console.log("✅ Screenshots captured successfully with data");
+            console.log(`  - Desktop screenshot: ${screenshots.desktop.length} chars`);
+            console.log(`  - Mobile screenshot: ${screenshots.mobile.length} chars`);
 
             sendProgress("Uploading to Sanity...");
-            sanityPresentationId = await sanityService.createPresentation({
-              customerName: companyName,
-              description: `${service} presentation for ${companyName}`,
-              beforeDesktopBase64: screenshots.desktop,
-              beforeMobileBase64: screenshots.mobile,
-              industry: industry || undefined,
-              website: finalWebsite,
-            });
+            console.log("\n🎨 Preparing to create Sanity presentation...");
+            console.log("  - Customer name:", companyName);
+            console.log("  - Industry:", industry);
+            console.log("  - Website:", finalWebsite);
+            console.log("  - Service:", service);
+            try {
+              sanityPresentationId = await sanityService.createPresentation({
+                customerName: companyName,
+                description: `${service} presentation for ${companyName}`,
+                beforeDesktopBase64: screenshots.desktop,
+                beforeMobileBase64: screenshots.mobile,
+                industry: industry || undefined,
+                website: finalWebsite,
+              });
+              console.log("\n🎉 Sanity presentation created! ID:", sanityPresentationId);
+            } catch (sanityError: any) {
+              console.error("\n❌ SANITY CREATION ERROR:");
+              console.error("  - Message:", sanityError.message);
+              console.error("  - Stack:", sanityError.stack);
+              throw sanityError;
+            }
           } else {
             console.warn("⚠️ Screenshot capture returned empty data");
+            console.warn(`  - Desktop length: ${screenshots?.desktop?.length || 0}`);
+            console.warn(`  - Mobile length: ${screenshots?.mobile?.length || 0}`);
           }
         } catch (error: any) {
-          console.error(
-            "Failed to capture screenshots or upload to Sanity:",
-            error.message
-          );
+          console.error("\n❌ ===============================================");
+          console.error("❌ SCREENSHOT/SANITY ERROR");
+          console.error("❌ ===============================================");
+          console.error("Error message:", error.message);
+          console.error("Error type:", error.constructor.name);
+          console.error("Error stack:", error.stack);
+          console.error("❌ ===============================================\n");
           // Continue even if screenshots/sanity fail
         }
       } else {

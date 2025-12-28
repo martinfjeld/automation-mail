@@ -13,6 +13,11 @@ export class SanityService {
   private client: SanityClient;
 
   constructor(projectId: string, dataset: string, token: string) {
+    console.log("🔧 Initializing Sanity client with:");
+    console.log("  - Project ID:", projectId);
+    console.log("  - Dataset:", dataset);
+    console.log("  - Token:", token ? `${token.substring(0, 10)}...` : "MISSING");
+    
     this.client = createClient({
       projectId,
       dataset,
@@ -20,6 +25,8 @@ export class SanityService {
       apiVersion: "2024-01-01",
       useCdn: false,
     });
+    
+    console.log("✅ Sanity client initialized successfully");
   }
 
   /**
@@ -110,10 +117,15 @@ export class SanityService {
    */
   private async uploadImage(base64Data: string, filename: string) {
     try {
+      console.log(`📤 Uploading ${filename}...`);
+      console.log(`  - Base64 data length: ${base64Data.length} chars`);
+      
       // Convert base64 to buffer
       const buffer = Buffer.from(base64Data, "base64");
+      console.log(`  - Buffer size: ${buffer.length} bytes (${(buffer.length / 1024 / 1024).toFixed(2)} MB)`);
 
       // Upload to Sanity
+      console.log(`  - Starting upload to Sanity...`);
       const asset = await this.client.assets.upload("image", buffer, {
         filename,
         contentType: "image/png",
@@ -122,7 +134,10 @@ export class SanityService {
       console.log(`✅ Uploaded ${filename} to Sanity:`, asset._id);
       return asset;
     } catch (error: any) {
-      console.error(`Failed to upload ${filename} to Sanity:`, error.message);
+      console.error(`❌ Failed to upload ${filename} to Sanity:`);
+      console.error(`  - Error message: ${error.message}`);
+      console.error(`  - Error stack:`, error.stack);
+      console.error(`  - Full error:`, JSON.stringify(error, null, 2));
       throw error;
     }
   }
@@ -134,9 +149,14 @@ export class SanityService {
     try {
       console.log("\n=== Creating Sanity Presentation ===");
       console.log("Customer:", input.customerName);
+      console.log("Description:", input.description);
+      console.log("Industry:", input.industry);
+      console.log("Website:", input.website);
+      console.log("Has desktop base64:", !!input.beforeDesktopBase64);
+      console.log("Has mobile base64:", !!input.beforeMobileBase64);
 
       // Upload the before images
-      console.log("Uploading before images...");
+      console.log("\n📤 Step 1: Uploading before images...");
       const beforeDesktopAsset = await this.uploadImage(
         input.beforeDesktopBase64,
         `before-desktop-${Date.now()}.png`
@@ -147,7 +167,12 @@ export class SanityService {
         `before-mobile-${Date.now()}.png`
       );
 
+      console.log("\n✅ Both images uploaded successfully");
+      console.log("  - Desktop asset ID:", beforeDesktopAsset._id);
+      console.log("  - Mobile asset ID:", beforeMobileAsset._id);
+
       // Generate slug from company name
+      console.log("\n📝 Step 2: Generating slug and preparing document...");
       const companySlug = this.createSlug(input.customerName);
       // Generate a random unique ID
       const uniqueId = `${Date.now()}-${Math.random()
@@ -156,13 +181,12 @@ export class SanityService {
 
       // Create the presentation document
       const industryType = this.mapIndustryType(input.industry);
-      console.log("Creating presentation document...");
-      console.log(
-        "Industry:",
-        input.industry,
-        "→ Industry Type:",
-        industryType
-      );
+      console.log("\n📄 Step 3: Creating presentation document...");
+      console.log("  - Company slug:", companySlug);
+      console.log("  - Unique ID:", uniqueId);
+      console.log("  - Industry:", input.industry, "→", industryType);
+      
+      console.log("\n🚀 Sending create request to Sanity...");
       const newPresentation = await this.client.create({
         _type: "presentation",
         customerName: input.customerName,
@@ -500,12 +524,23 @@ export class SanityService {
         ],
       });
 
-      console.log("✅ Sanity presentation created:", newPresentation._id);
-      console.log("📍 Unique ID:", uniqueId);
+      console.log("\n🎉 ✅ Sanity presentation created successfully!");
+      console.log("  - Document ID:", newPresentation._id);
+      console.log("  - Unique ID:", uniqueId);
+      console.log("  - Customer name:", newPresentation.customerName);
 
       return newPresentation._id;
     } catch (error: any) {
-      console.error("Failed to create Sanity presentation:", error.message);
+      console.error("\n❌ ===============================================");
+      console.error("❌ FAILED TO CREATE SANITY PRESENTATION");
+      console.error("❌ ===============================================");
+      console.error("Error message:", error.message);
+      console.error("Error name:", error.name);
+      console.error("Error code:", error.code);
+      console.error("Error response:", error.response?.body || error.response);
+      console.error("Full error:", error);
+      console.error("Stack trace:", error.stack);
+      console.error("❌ ===============================================\n");
       throw error;
     }
   }
