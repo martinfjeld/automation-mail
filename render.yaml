@@ -5,8 +5,6 @@ services:
     buildCommand: npm install --legacy-peer-deps && npx puppeteer browsers install chrome && npm run build:server
     startCommand: npm run start:server
     envVars:
-      - key: PUPPETEER_SKIP_DOWNLOAD
-        value: true
       - key: PUPPETEER_CACHE_DIR
         value: /opt/render/.cache/puppeteer
       - key: NODE_ENV

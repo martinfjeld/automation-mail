@@ -1,6 +1,42 @@
 import puppeteer from "puppeteer";
+import { execSync } from "child_process";
+import fs from "fs";
+import path from "path";
 
 export class ScreenshotService {
+  /**
+   * Find the Chrome executable path on the system
+   */
+  private findChromeExecutable(): string | undefined {
+    try {
+      // On Render, check if Chrome was installed by puppeteer
+      const cacheDir = process.env.PUPPETEER_CACHE_DIR || "";
+      if (cacheDir && fs.existsSync(cacheDir)) {
+        // Look for chrome executable in cache directory
+        const chromeDir = path.join(cacheDir, "chrome");
+        if (fs.existsSync(chromeDir)) {
+          const versions = fs.readdirSync(chromeDir);
+          if (versions.length > 0) {
+            // Use the first (or latest) version found
+            const chromePath = path.join(
+              chromeDir,
+              versions[0],
+              "chrome-linux64",
+              "chrome"
+            );
+            if (fs.existsSync(chromePath)) {
+              console.log(`✅ Found Chrome at: ${chromePath}`);
+              return chromePath;
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.log("⚠️ Could not auto-detect Chrome, using default");
+    }
+    return undefined;
+  }
+
   /**
    * Try to dismiss cookie banners and consent dialogs
    */
@@ -74,8 +110,14 @@ export class ScreenshotService {
   ): Promise<{ desktop: string; mobile: string }> {
     let browser;
     try {
+      const executablePath = this.findChromeExecutable();
+      console.log(
+        `🚀 Launching browser with executable: ${executablePath || "default"}`
+      );
+
       browser = await puppeteer.launch({
         headless: true,
+        executablePath,
         args: [
           "--no-sandbox",
           "--disable-setuid-sandbox",
