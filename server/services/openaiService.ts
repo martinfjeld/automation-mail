@@ -657,25 +657,18 @@ Svar kun i JSON:
       throw new Error("OpenAI client not initialized");
     }
 
-    const prompt = `Finn LinkedIn-profilen til personen basert på navnet og selskapet.
-
-Person: "${personName}"
-Selskap: "${companyName}"
+    const prompt = `Søk etter LinkedIn-profilen til ${personName}. Dette er veldig enkelt - bare søk "${personName} linkedin" og finn den første LinkedIn-profilen i søkeresultatene.
 
 VIKTIG:
-- Bruk websøk for å finne personens LinkedIn-profil
-- Returner BARE den fullstendige LinkedIn URL-en (https://www.linkedin.com/in/...)
-- Hvis du finner flere profiler, velg den som best matcher både navn og selskap
-- Hvis du ikke finner en LinkedIn-profil, returner en tom streng
+- Returner BARE den fullstendige LinkedIn URL-en (format: https://www.linkedin.com/in/...)
+- Hvis URL-en er på formatet https://no.linkedin.com/in/... bytt til https://www.linkedin.com/in/...
+- Returner ingenting annet - bare URL-en
+- Hvis du ikke finner en profil, returner en tom streng
 
-Søk etter:
-- "${personName}" "${companyName}" LinkedIn
-- site:linkedin.com/in "${personName}" "${companyName}"
-
-Svar kun med LinkedIn URL-en (ingen forklaring, ingen JSON, bare URL-en):`;
+Søk: "${personName} linkedin"`;
 
     try {
-      console.log(`\n🔍 Searching for LinkedIn profile: ${personName} at ${companyName}...`);
+      console.log(`\n🔍 Searching LinkedIn: "${personName} linkedin"`);
       
       const completion = await this.client.chat.completions.create({
         model: "gpt-4o-search-preview",
@@ -689,13 +682,15 @@ Svar kun med LinkedIn URL-en (ingen forklaring, ingen JSON, bare URL-en):`;
       } as any);
 
       const raw = completion.choices[0]?.message?.content?.trim() || "";
-      console.log("LinkedIn search raw response:", raw);
+      console.log("LinkedIn search response:", raw);
 
-      // Extract LinkedIn URL from response
-      const linkedInMatch = raw.match(/https:\/\/(www\.)?linkedin\.com\/in\/[^\s\])}]+/i);
+      // Extract LinkedIn URL from response - handle both www.linkedin.com and no.linkedin.com
+      const linkedInMatch = raw.match(/https:\/\/(www\.|no\.)?linkedin\.com\/in\/[^\s\])},"'<>]+/i);
       if (linkedInMatch) {
-        const linkedInUrl = linkedInMatch[0];
-        console.log(`✅ Found LinkedIn profile: ${linkedInUrl}`);
+        let linkedInUrl = linkedInMatch[0];
+        // Normalize to www.linkedin.com
+        linkedInUrl = linkedInUrl.replace('https://no.linkedin.com/', 'https://www.linkedin.com/');
+        console.log(`✅ Found LinkedIn: ${linkedInUrl}`);
         return linkedInUrl;
       }
 
