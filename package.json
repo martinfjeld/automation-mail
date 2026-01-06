@@ -45,7 +45,7 @@
     "server": "nodemon server/index.ts",
     "dev": "npm start",
     "build": "react-scripts build",
-    "build:server": "tsc --project tsconfig.server.json",
+    "build:server": "tsc --project tsconfig.server.json && cp -r server/templates dist/server/",
     "start:server": "node dist/server/index.js",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
