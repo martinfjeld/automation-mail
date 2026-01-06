@@ -23,6 +23,12 @@
 # history storage
 history.json
 
+# utility scripts with OAuth credentials
+get-refresh-token.js
+
+# short URL storage
+short-urls.json
+
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
