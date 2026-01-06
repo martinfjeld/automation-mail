@@ -12,6 +12,7 @@ export class UrlShortenerService {
   private storePath: string;
 
   constructor() {
+    // Store in project root so it can be committed and shared
     this.storePath = path.join(process.cwd(), "short-urls.json");
     this.ensureStoreExists();
   }
@@ -19,6 +20,7 @@ export class UrlShortenerService {
   private ensureStoreExists() {
     if (!fs.existsSync(this.storePath)) {
       fs.writeFileSync(this.storePath, JSON.stringify([]));
+      console.log("✅ Created short-urls.json file");
     }
   }
 
