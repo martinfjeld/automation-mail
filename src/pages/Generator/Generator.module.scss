@@ -154,7 +154,7 @@ h3 {
 .info {
   display: flex;
   flex-direction: column;
-  gap: $spacing-xs;
+  gap: $spacing-md;
   padding: $spacing-md;
   background: $bg-dark-tertiary;
   border-radius: 20px;
@@ -179,6 +179,257 @@ h3 {
     &:hover {
       text-decoration: underline;
     }
+  }
+}
+
+.companyRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: $spacing-md;
+  width: 100%;
+}
+
+.companyInfo {
+  flex: 1;
+
+  .infoItem {
+    margin-bottom: $spacing-sm;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.logoColumn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.logoSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-sm;
+}
+
+.logoPreviews {
+  display: flex;
+  gap: $spacing-sm;
+  align-items: center;
+}
+
+.logoPreviewBox {
+  padding: $spacing-sm;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 140px;
+  min-height: 80px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+
+  &:hover {
+    transform: scale(1.02);
+  }
+
+  &.selected {
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.5);
+  }
+}
+
+.logoContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 200px;
+  height: 200px;
+
+  &:hover .logoActions {
+    opacity: 1;
+  }
+}
+
+.logoActions {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  display: flex;
+  gap: 8px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.logo {
+  max-width: 120px;
+  max-height: 60px;
+  object-fit: contain;
+}
+
+.logoButtons {
+  display: flex;
+  gap: $spacing-xs;
+  align-items: center;
+}
+
+.logoActionBtn {
+  padding: 6px 16px;
+  background: rgba(255, 0, 0, 0.1);
+  border: 2px solid rgba(255, 0, 0, 0.3);
+  border-radius: 999px;
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  &:hover:not(:disabled) {
+    background: rgba(255, 0, 0, 0.2);
+    border-color: rgba(255, 0, 0, 0.5);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.trashIcon {
+  width: 14px;
+  height: 14px;
+  object-fit: contain;
+  filter: invert(1);
+}
+
+.logoModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  cursor: pointer;
+  animation: fadeIn 0.2s ease;
+
+  &.closing {
+    animation: fadeOut 0.2s ease;
+  }
+
+  &.lightMode::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: $linearBackground;
+    opacity: 0.6;
+    z-index: -1;
+  }
+
+  &.darkMode::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #0f0f0f;
+    opacity: 0.9;
+    z-index: -1;
+  }
+}
+
+.logoModalContent {
+  max-width: 90vw;
+  max-height: 90vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logoModalImage {
+  max-width: 100%;
+  max-height: 90vh;
+  object-fit: contain;
+  animation: zoomIn 0.2s ease;
+
+  &.closingImage {
+    animation: zoomOut 0.2s ease;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes zoomIn {
+  from {
+    transform: scale(0.8);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+@keyframes zoomOut {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(0.8);
+  }
+}
+
+.uploadLogoBtn {
+  padding: 6px 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 999px;
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+
+  &:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.5);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 }
 
@@ -223,6 +474,74 @@ h3 {
   }
 }
 
+.emailSentCheckbox {
+  margin-top: $spacing-sm;
+  margin-bottom: $spacing-md;
+
+  label {
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+    cursor: pointer;
+    font-size: 0.9375rem;
+    color: $text-dark;
+    font-family: "Helvetica Neue", sans-serif;
+
+    input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+
+    span {
+      user-select: none;
+    }
+  }
+}
+
+.saveButtonContainer {
+  display: flex;
+  justify-content: center;
+  margin-top: $spacing-sm;
+  margin-bottom: $spacing-md;
+}
+
+.dropZone {
+  padding: $spacing-md;
+  border-radius: 20px;
+  background: $bg-dark-tertiary;
+  border: 2px dashed $border-color;
+  cursor: pointer;
+  user-select: none;
+
+  &:focus {
+    outline: none;
+    border: 2px solid transparent;
+    border-image: $primary-gradient-bg 1;
+  }
+}
+
+.dropZoneActive {
+  border: 2px solid transparent;
+  border-image: $primary-gradient-bg 1;
+}
+
+.dropZoneInput {
+  display: none;
+}
+
+.dropZoneText {
+  color: $text-dark;
+  font-weight: 600;
+  margin-bottom: $spacing-xs;
+}
+
+.dropZoneHint {
+  color: $text-dark;
+  opacity: 0.7;
+  font-size: 0.875rem;
+}
+
 .actions {
   display: flex;
   gap: $spacing-md;
@@ -240,4 +559,150 @@ h3 {
   color: #81c784;
   text-align: center;
   font-size: 0.875rem;
+}
+
+.sectionTitle {
+  font-size: 1.25rem;
+  font-family: "Europa Grotesk SH", sans-serif;
+  font-weight: normal;
+  text-transform: uppercase;
+  background: $primary-gradient-text;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: $spacing-lg 0 $spacing-xs 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.generatedIndicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.greenDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #00ff00;
+  animation: blink 1.5s ease-in-out infinite;
+}
+
+.redDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #ff0000;
+  animation: blink 1.5s ease-in-out infinite;
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+.indicatorText {
+  font-size: 0.75rem;
+  color: white;
+  text-transform: none;
+  font-weight: normal;
+  white-space: nowrap;
+}
+
+.instructions {
+  color: $text-dark;
+  opacity: 0.8;
+  font-size: 0.875rem;
+  margin-bottom: $spacing-sm;
+}
+
+.uploadingMessage {
+  color: #64b5f6;
+  text-align: center;
+  font-size: 0.875rem;
+  padding: $spacing-sm;
+  background: rgba(100, 181, 246, 0.1);
+  border-radius: 12px;
+}
+
+.automationSection {
+  margin: $spacing-md 0;
+  padding: $spacing-md;
+  background: $bg-dark-tertiary;
+  border-radius: 20px;
+  border: 2px solid $border-color;
+}
+
+.automationForm {
+  margin-top: $spacing-md;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.progressMessage {
+  margin-top: $spacing-md;
+  padding: $spacing-md;
+  background: rgba(100, 181, 246, 0.15);
+  border-radius: 12px;
+  color: $text-light;
+  text-align: center;
+  font-size: 1rem;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.deletingOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+
+  p {
+    color: white;
+    font-size: 1.2rem;
+    margin-top: $spacing-lg;
+  }
+}
+
+.spinner {
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-top: 4px solid white;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }

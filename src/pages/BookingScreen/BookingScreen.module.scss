@@ -1,0 +1,170 @@
+@import "../../styles/variables";
+@import "../../styles/mixins";
+
+.page {
+  background: #0f0f0f;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.container {
+  position: relative;
+  border-radius: 16px;
+  padding: 2px;
+  max-width: 500px;
+  width: 100%;
+  background: $linearBackground;
+}
+
+.containerInner {
+  border-radius: 14px;
+  padding: 48px;
+  text-align: center;
+}
+
+.checkmark {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  width: auto;
+  height: 40px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  @media (min-width: 768px) {
+    bottom: 60px;
+    left: 60px;
+    height: 60px;
+  }
+
+  img {
+    width: 100%;
+    height: auto;
+  }
+
+  svg {
+    height: 100%;
+    width: auto;
+  }
+}
+
+h1 {
+  font-size: 32px;
+  color: #0f0f0f;
+  font-family: "Europa Grotesk SH";
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.subtitle {
+  color: #0f0f0f;
+  font-size: 16px;
+  font-family: "Helvetica Neue";
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  background: #0f0f0f;
+  border-radius: 12px;
+  padding: 24px;
+  margin: 24px 0;
+  text-align: left;
+  gap: 16px;
+}
+
+.detailRow {
+  display: flex;
+  align-items: flex-start;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+
+  &:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+}
+
+.detailIcon {
+  width: 24px;
+  height: 24px;
+  margin-right: 12px;
+  flex-shrink: 0;
+  stroke: url(#iconGradient);
+  color: url(#iconGradient);
+}
+
+.detailContent {
+  flex: 1;
+
+  margin-top: 0;
+}
+
+.detailLabel {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+  color: #fff;
+}
+
+.detailValue {
+  font-size: 16px;
+  color: #fff;
+  font-weight: 500;
+
+  a {
+    color: #fff;
+    text-decoration: none;
+  }
+}
+
+.button {
+  display: inline-block;
+
+  padding: 14px 32px;
+  border-radius: 9999px;
+  text-decoration: none;
+  font-weight: 600;
+  margin-top: 8px;
+  transition: opacity 0.2s;
+  background-color: #0f0f0f;
+  font-family: "Europa Grotesk SH";
+  text-transform: uppercase;
+  &:hover {
+    opacity: 0.9;
+  }
+}
+
+.buttonText {
+  color: #fff;
+}
+
+.secondaryButton {
+  display: inline-block;
+  background: transparent;
+  border: 2px solid #0f0f0f;
+  padding: 14px 32px;
+  border-radius: 9999px;
+  text-decoration: none;
+  font-weight: 600;
+  margin-top: 8px;
+  margin-left: 8px;
+  transition: opacity 0.2s;
+  font-family: "Europa Grotesk SH";
+  text-transform: uppercase;
+
+  &:hover {
+    opacity: 0.9;
+  }
+
+  .buttonText {
+    color: #0f0f0f !important;
+  }
+}

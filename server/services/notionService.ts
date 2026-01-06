@@ -4,13 +4,18 @@ export interface NotionEntry {
   companyName: string;
   contactPerson: string;
   contactPersonUrl?: string;
-  linkedInProfile?: string;
   email: string;
   phone?: string;
   website: string;
   proffLink: string;
   service: string;
   message: string;
+  address?: string;
+  city?: string;
+  linkedIn?: string;
+  sanityUrl?: string;
+  presentationUrl?: string;
+  leadStatus?: string;
 }
 
 export class NotionService {
@@ -92,7 +97,7 @@ export class NotionService {
             name: entry.service,
           },
         },
-        Status: {
+        "Lead status": {
           select: {
             name: "Ongoing",
           },
@@ -137,9 +142,53 @@ export class NotionService {
         };
       }
 
-      if (entry.linkedInProfile) {
+      if (entry.address) {
+        properties["Adresse"] = {
+          rich_text: [
+            {
+              text: {
+                content: entry.address,
+              },
+            },
+          ],
+        };
+      }
+
+      if (entry.city) {
+        properties["By"] = {
+          rich_text: [
+            {
+              text: {
+                content: entry.city,
+              },
+            },
+          ],
+        };
+      }
+
+      if (entry.linkedIn) {
         properties["LinkedIn"] = {
-          url: entry.linkedInProfile,
+          url: entry.linkedIn,
+        };
+      }
+
+      if (entry.sanityUrl) {
+        properties["Sanity"] = {
+          url: entry.sanityUrl,
+        };
+      }
+
+      if (entry.presentationUrl) {
+        properties["Presentasjon"] = {
+          url: entry.presentationUrl,
+        };
+      }
+
+      if (entry.leadStatus) {
+        properties["Lead status"] = {
+          select: {
+            name: entry.leadStatus,
+          },
         };
       }
 
@@ -158,7 +207,22 @@ export class NotionService {
 
   async updateEntry(
     pageId: string,
-    updates: { email?: string; phone?: string }
+    updates: {
+      companyName?: string;
+      email?: string;
+      phone?: string;
+      emailContent?: string;
+      contactPerson?: string;
+      contactPersonUrl?: string;
+      website?: string;
+      service?: string;
+      address?: string;
+      city?: string;
+      linkedIn?: string;
+      sanityUrl?: string;
+      presentationUrl?: string;
+      leadStatus?: string;
+    }
   ): Promise<void> {
     if (!this.client || !this.databaseId) {
       throw new Error("Notion client not initialized");
@@ -166,6 +230,18 @@ export class NotionService {
 
     try {
       const properties: any = {};
+
+      if (updates.companyName !== undefined) {
+        properties["Selskap"] = {
+          title: [
+            {
+              text: {
+                content: updates.companyName,
+              },
+            },
+          ],
+        };
+      }
 
       if (updates.email !== undefined) {
         properties["E-post"] = {
@@ -179,6 +255,103 @@ export class NotionService {
         };
       }
 
+      if (updates.emailContent !== undefined) {
+        // Truncate email content if needed to fit Notion's limits
+        const truncatedContent =
+          updates.emailContent.length > 2000
+            ? updates.emailContent.substring(0, 1997) + "..."
+            : updates.emailContent;
+
+        properties["Melding jeg sendte"] = {
+          rich_text: [
+            {
+              text: {
+                content: truncatedContent,
+              },
+            },
+          ],
+        };
+      }
+
+      if (updates.contactPerson !== undefined) {
+        properties["Kontaktperson"] = {
+          rich_text: [
+            {
+              text: {
+                content: updates.contactPerson || "Ikke funnet",
+                link: updates.contactPersonUrl
+                  ? { url: updates.contactPersonUrl }
+                  : null,
+              },
+            },
+          ],
+        };
+      }
+
+      if (updates.website !== undefined) {
+        properties["Hjemmeside"] = {
+          url: updates.website || null,
+        };
+      }
+
+      if (updates.service !== undefined) {
+        properties["Tjeneste"] = {
+          select: {
+            name: updates.service,
+          },
+        };
+      }
+
+      if (updates.address !== undefined) {
+        properties["Adresse"] = {
+          rich_text: [
+            {
+              text: {
+                content: updates.address || "",
+              },
+            },
+          ],
+        };
+      }
+
+      if (updates.city !== undefined) {
+        properties["By"] = {
+          rich_text: [
+            {
+              text: {
+                content: updates.city || "",
+              },
+            },
+          ],
+        };
+      }
+
+      if (updates.linkedIn !== undefined) {
+        properties["LinkedIn"] = {
+          url: updates.linkedIn || null,
+        };
+      }
+
+      if (updates.sanityUrl !== undefined) {
+        properties["Sanity"] = {
+          url: updates.sanityUrl || null,
+        };
+      }
+
+      if (updates.presentationUrl !== undefined) {
+        properties["Presentasjon"] = {
+          url: updates.presentationUrl || null,
+        };
+      }
+
+      if (updates.leadStatus !== undefined) {
+        properties["Lead status"] = {
+          select: {
+            name: updates.leadStatus,
+          },
+        };
+      }
+
       await this.client.pages.update({
         page_id: pageId,
         properties,
@@ -186,6 +359,57 @@ export class NotionService {
     } catch (error: any) {
       console.error("Notion entry update failed:", error.message);
       throw new Error("Failed to update Notion entry");
+    }
+  }
+
+  async deleteEntry(pageId: string): Promise<void> {
+    if (!this.client || !this.databaseId) {
+      throw new Error("Notion client not initialized");
+    }
+
+    try {
+      // Archive the page (Notion doesn't allow permanent deletion via API)
+      await this.client.pages.update({
+        page_id: pageId,
+        archived: true,
+      });
+
+      console.log(`✅ Notion page archived: ${pageId}`);
+    } catch (error: any) {
+      console.error("Notion entry deletion failed:", error.message);
+      throw new Error("Failed to delete Notion entry");
+    }
+  }
+
+  async getPageProperties(
+    pageId: string
+  ): Promise<{ emailContent?: string; industry?: string }> {
+    if (!this.client) {
+      throw new Error("Notion client not initialized");
+    }
+
+    try {
+      const page = await this.client.pages.retrieve({ page_id: pageId });
+      const properties = (page as any).properties;
+
+      let emailContent: string | undefined;
+      let industry: string | undefined;
+
+      // Extract "Melding jeg sendte" (email content)
+      if (properties["Melding jeg sendte"]?.rich_text?.[0]?.text?.content) {
+        emailContent =
+          properties["Melding jeg sendte"].rich_text[0].text.content;
+      }
+
+      // Extract "Bransje" (industry)
+      if (properties["Bransje"]?.rich_text?.[0]?.text?.content) {
+        industry = properties["Bransje"].rich_text[0].text.content;
+      }
+
+      return { emailContent, industry };
+    } catch (error: any) {
+      console.error("Failed to fetch page properties:", error.message);
+      throw new Error("Failed to fetch page properties from Notion");
     }
   }
 }

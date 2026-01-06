@@ -1,0 +1,105 @@
+@import "../../styles/variables";
+@import "../../styles/mixins";
+
+.container {
+  width: 100%;
+  margin: 2rem 0;
+}
+
+.dropZone {
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  padding: 2rem;
+  text-align: center;
+  transition: all 0.3s ease;
+  background-color: #f9f9f9;
+
+  &:hover {
+    border-color: #666;
+    background-color: #f0f0f0;
+  }
+
+  &.dragging {
+    border-color: #0066cc;
+    background-color: #e6f2ff;
+  }
+}
+
+.fileInput {
+  display: none;
+}
+
+.label {
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+
+  p {
+    margin: 0;
+    color: #666;
+    font-size: 1rem;
+  }
+}
+
+.icon {
+  width: 48px;
+  height: 48px;
+  color: #999;
+}
+
+.imageList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.imagePreview {
+  position: relative;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: white;
+
+  img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    display: block;
+  }
+
+  .removeButton {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: rgba(255, 0, 0, 0.8);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background-color: rgba(255, 0, 0, 1);
+    }
+  }
+
+  .imageName {
+    padding: 0.5rem;
+    font-size: 0.85rem;
+    color: #666;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}

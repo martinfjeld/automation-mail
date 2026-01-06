@@ -5,6 +5,8 @@ import { OpenAIService } from "../services/openaiService";
 import { NotionService } from "../services/notionService";
 import { ScreenshotService } from "../services/screenshotService";
 import { SanityService } from "../services/sanityService";
+import { LighthouseService } from "../services/lighthouseService";
+import { HistoryService } from "../services/historyService";
 
 // Normalize company name: proper capitalization and remove AS suffix, prefixes, and countries
 function normalizeCompanyName(name: string): string {
@@ -13,10 +15,10 @@ function normalizeCompanyName(name: string): string {
   let normalized = name.trim();
 
   // Remove generic industry descriptors from ANYWHERE in the string
-  // Legal
-  normalized = normalized.replace(/\s*Advokatfirmaet\s*/gi, " ").trim();
-  normalized = normalized.replace(/\s*Advokatfirma\s*/gi, " ").trim();
-  normalized = normalized.replace(/\s*Advokat\s*/gi, " ").trim();
+  // Legal - use word boundaries to avoid matching parts of words like "Advokatene"
+  normalized = normalized.replace(/\bAdvokatfirmaet\b/gi, "").trim();
+  normalized = normalized.replace(/\bAdvokatfirma\b/gi, "").trim();
+  normalized = normalized.replace(/\bAdvokat\b/gi, "").trim();
 
   // Construction (only generic terms, not specific like "Tak")
   normalized = normalized.replace(/\s*Entreprenør\s*/gi, " ").trim();
@@ -134,6 +136,10 @@ class GenerateController {
 
       const scraperService = new ScraperService();
       const openaiService = new OpenAIService(config.OPENAI_API_KEY);
+
+      // Inject OpenAI service into scraper for AI-powered logo finding
+      (scraperService as any).openaiService = openaiService;
+
       const notionService = new NotionService(
         config.NOTION_TOKEN,
         config.NOTION_DATABASE_ID
@@ -142,16 +148,26 @@ class GenerateController {
       // Initialize Sanity service if credentials are available
       let sanityService: SanityService | null = null;
       console.log("\n🔍 Checking Sanity credentials...");
-      console.log("  - SANITY_PROJECT_ID:", config.SANITY_PROJECT_ID || "MISSING");
+      console.log(
+        "  - SANITY_PROJECT_ID:",
+        config.SANITY_PROJECT_ID || "MISSING"
+      );
       console.log("  - SANITY_DATASET:", config.SANITY_DATASET || "MISSING");
-      console.log("  - SANITY_TOKEN:", config.SANITY_TOKEN ? `${config.SANITY_TOKEN.substring(0, 10)}...` : "MISSING");
-      
+      console.log(
+        "  - SANITY_TOKEN:",
+        config.SANITY_TOKEN
+          ? `${config.SANITY_TOKEN.substring(0, 10)}...`
+          : "MISSING"
+      );
+
       if (
         config.SANITY_PROJECT_ID &&
         config.SANITY_DATASET &&
         config.SANITY_TOKEN
       ) {
-        console.log("✅ All Sanity credentials present, initializing service...");
+        console.log(
+          "✅ All Sanity credentials present, initializing service..."
+        );
         sanityService = new SanityService(
           config.SANITY_PROJECT_ID,
           config.SANITY_DATASET,
@@ -164,14 +180,19 @@ class GenerateController {
       }
       const screenshotService = new ScreenshotService();
 
+      // Initialize variables that will be populated later
+      let industry = ""; // Initialize early so it can be used in logo finding
+
       // PHASE 1: Traditional HTML Scraping from Proff.no
       console.log("=== PHASE 1: Traditional Scraping ===");
-      sendProgress("Fetching company data...");
+      sendProgress("Henter firmadata...");
       const companyInfo = await scraperService.getCompanyInfo(proffUrl);
 
       console.log("Scraped from Proff.no HTML:");
       console.log("- Company Name:", companyInfo.companyName);
       console.log("- Contact Person:", companyInfo.styretsleder);
+      console.log("- Address:", (companyInfo as any).address || "NOT FOUND");
+      console.log("- City:", (companyInfo as any).city || "NOT FOUND");
       console.log("- Website:", companyInfo.website || "NOT FOUND");
 
       // Validate Proff website (Proff pages sometimes contain unrelated external links).
@@ -213,6 +234,25 @@ class GenerateController {
             if (verified) {
               companyInfo.website = verified;
               console.log("✅ Verified company website:", verified);
+
+              // Find logo for the verified website
+              try {
+                const foundLogoUrl = await scraperService.findCompanyLogo(
+                  companyInfo.companyName,
+                  verified,
+                  industry
+                );
+                if (foundLogoUrl) {
+                  companyInfo.logoUrl = foundLogoUrl;
+                  console.log(
+                    "✅ Logo found from fallback website:",
+                    foundLogoUrl
+                  );
+                }
+              } catch (e) {
+                console.error("Failed to find logo:", e);
+              }
+
               break;
             } else {
               console.log("❌ Rejected candidate URL:", candidate.url);
@@ -229,7 +269,7 @@ class GenerateController {
 
       // PHASE 2: AI-Powered Web Search Enrichment using gpt-4o-search-preview
       console.log("\n=== PHASE 2: AI Web Search Enrichment ===");
-      sendProgress("Analyzing information...");
+      sendProgress("Analyserer informasjon...");
       let finalContactPerson = companyInfo.styretsleder;
       let finalWebsite = companyInfo.website;
       let finalEmail = companyInfo.contactEmail;
@@ -237,8 +277,7 @@ class GenerateController {
       let enrichedCompanyName = companyInfo.companyName;
       let enrichedContactPerson = companyInfo.styretsleder;
       let contactPersonPageUrl = "";
-      let linkedInProfile = "";
-      let industry = "";
+      let logoUrl = companyInfo.logoUrl || "";
 
       try {
         const aiEnriched = await openaiService.enrichCompanyInfoWithWebSearch(
@@ -274,22 +313,6 @@ class GenerateController {
         console.log("- Email:", finalEmail);
         console.log("- Phone:", finalPhone);
         console.log("==================================\n");
-
-        // Search for LinkedIn profile
-        if (finalContactPerson && enrichedCompanyName) {
-          try {
-            sendProgress("Searching for LinkedIn profile...");
-            linkedInProfile = await openaiService.searchLinkedInProfile(
-              finalContactPerson,
-              enrichedCompanyName
-            );
-            if (linkedInProfile) {
-              console.log("✅ LinkedIn profile found:", linkedInProfile);
-            }
-          } catch (error) {
-            console.log("⚠️ LinkedIn search failed, continuing without it");
-          }
-        }
 
         // Warn if no website found from scraping
         if (!finalWebsite) {
@@ -336,6 +359,23 @@ class GenerateController {
 
             if (!finalWebsite) {
               console.warn("⚠️ No verified website found from web search");
+            } else if (!logoUrl) {
+              // Find logo if we found a website through fallback
+              try {
+                logoUrl = await scraperService.findCompanyLogo(
+                  companyInfo.companyName,
+                  finalWebsite,
+                  industry
+                );
+                if (logoUrl) {
+                  console.log(
+                    "✅ Logo URL found from fallback website:",
+                    logoUrl
+                  );
+                }
+              } catch (e) {
+                console.error("Failed to find logo:", e);
+              }
             }
           } catch (e) {
             console.warn("⚠️ Website fallback search failed:", e);
@@ -514,7 +554,7 @@ class GenerateController {
       }
 
       // Step 4: Generate email using OpenAI
-      sendProgress("Generating email...");
+      sendProgress("Genererer e-post...");
       const emailContent = await openaiService.generateEmail(
         companyName,
         finalContactPerson,
@@ -522,47 +562,136 @@ class GenerateController {
         finalWebsite
       );
 
-      // Step 5: Take screenshots and upload to Sanity
+      // Step 4b: Generate meeting proposals
+      let meetingProposals: any[] = [];
+      const myEmail = process.env.MY_EMAIL;
+      const googleClientId = process.env.GOOGLE_CLIENT_ID;
+      const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
+      const googleRefreshToken = process.env.GOOGLE_REFRESH_TOKEN;
+
+      if (
+        myEmail &&
+        googleClientId &&
+        googleClientSecret &&
+        googleRefreshToken
+      ) {
+        try {
+          sendProgress("Foreslår møtetidspunkter...");
+          const { CalendarService } = await import(
+            "../services/calendarService"
+          );
+          const calendarService = new CalendarService(
+            googleClientId,
+            googleClientSecret,
+            googleRefreshToken
+          );
+
+          // Generate proposals for next 14 days
+          const now = new Date();
+          const earliestStart = new Date(now.getTime() + 24 * 60 * 60 * 1000); // Tomorrow
+          const latestEnd = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000); // +14 days
+
+          meetingProposals = await calendarService.generateProposals(
+            earliestStart.toISOString(),
+            latestEnd.toISOString(),
+            myEmail
+          );
+
+          console.log(
+            `✅ Generated ${meetingProposals.length} meeting proposals`
+          );
+        } catch (error: any) {
+          console.error("Failed to generate meeting proposals:", error.message);
+          // Continue without proposals if calendar fails
+        }
+      }
+
+      // Step 5: Run Lighthouse audit if website exists (before Sanity)
+      let lighthouseScores = null;
+      let lighthouseSummary = null;
+      if (finalWebsite && service === "Web") {
+        sendProgress("Kjører Lighthouse-analyse...");
+        const lighthouseService = new LighthouseService();
+        lighthouseScores = await lighthouseService.auditWebsite(finalWebsite);
+
+        if (lighthouseScores) {
+          sendProgress("Genererer Lighthouse-sammendrag...");
+          lighthouseSummary = await openaiService.generateLighthouseSummary(
+            lighthouseScores
+          );
+        }
+      }
+
+      // Step 6: Take screenshots and upload to Sanity
       let sanityPresentationId: string | undefined;
+      let sanityUniqueId: string | undefined;
       let screenshots: { desktop: string; mobile: string } | undefined;
 
-      if (finalWebsite && sanityService) {
+      if (sanityService) {
         try {
-          sendProgress("Capturing screenshots...");
-          console.log(`\n=== Taking screenshots for: ${finalWebsite} ===`);
-          screenshots = await screenshotService.takeScreenshots(finalWebsite);
+          // Take screenshots if website exists
+          if (finalWebsite) {
+            sendProgress("Tar skjermbilder...");
+            console.log(`\n=== Taking screenshots for: ${finalWebsite} ===`);
+            screenshots = await screenshotService.takeScreenshots(finalWebsite);
 
-          if (screenshots.desktop && screenshots.mobile) {
-            console.log("✅ Screenshots captured successfully with data");
-            console.log(`  - Desktop screenshot: ${screenshots.desktop.length} chars`);
-            console.log(`  - Mobile screenshot: ${screenshots.mobile.length} chars`);
-
-            sendProgress("Uploading to Sanity...");
-            console.log("\n🎨 Preparing to create Sanity presentation...");
-            console.log("  - Customer name:", companyName);
-            console.log("  - Industry:", industry);
-            console.log("  - Website:", finalWebsite);
-            console.log("  - Service:", service);
-            try {
-              sanityPresentationId = await sanityService.createPresentation({
-                customerName: companyName,
-                description: `${service} presentation for ${companyName}`,
-                beforeDesktopBase64: screenshots.desktop,
-                beforeMobileBase64: screenshots.mobile,
-                industry: industry || undefined,
-                website: finalWebsite,
-              });
-              console.log("\n🎉 Sanity presentation created! ID:", sanityPresentationId);
-            } catch (sanityError: any) {
-              console.error("\n❌ SANITY CREATION ERROR:");
-              console.error("  - Message:", sanityError.message);
-              console.error("  - Stack:", sanityError.stack);
-              throw sanityError;
+            if (screenshots.desktop && screenshots.mobile) {
+              console.log("✅ Screenshots captured successfully with data");
+              console.log(
+                `  - Desktop screenshot: ${screenshots.desktop.length} chars`
+              );
+              console.log(
+                `  - Mobile screenshot: ${screenshots.mobile.length} chars`
+              );
+            } else {
+              console.warn("⚠️ Screenshot capture returned empty data");
+              console.warn(
+                `  - Desktop length: ${screenshots?.desktop?.length || 0}`
+              );
+              console.warn(
+                `  - Mobile length: ${screenshots?.mobile?.length || 0}`
+              );
+              screenshots = undefined;
             }
           } else {
-            console.warn("⚠️ Screenshot capture returned empty data");
-            console.warn(`  - Desktop length: ${screenshots?.desktop?.length || 0}`);
-            console.warn(`  - Mobile length: ${screenshots?.mobile?.length || 0}`);
+            console.log(
+              "⚠️ No website available - creating Sanity without screenshots"
+            );
+          }
+
+          // Always create Sanity presentation (with or without screenshots)
+          sendProgress("Laster opp til Sanity...");
+          console.log("\n🎨 Preparing to create Sanity presentation...");
+          console.log("  - Customer name:", companyName);
+          console.log("  - Industry:", industry);
+          console.log("  - Website:", finalWebsite || "None");
+          console.log("  - Service:", service);
+          console.log("  - Has screenshots:", !!screenshots);
+
+          try {
+            const sanityResult = await sanityService.createPresentation({
+              customerName: companyName,
+              description: `${service} presentation for ${companyName}`,
+              beforeDesktopBase64: screenshots?.desktop,
+              beforeMobileBase64: screenshots?.mobile,
+              industry: industry || undefined,
+              website: finalWebsite || undefined,
+              companyLogoUrl: logoUrl || undefined,
+              lighthouseScores: lighthouseScores || undefined,
+              lighthouseSummary: lighthouseSummary || undefined,
+            });
+            sanityPresentationId = sanityResult.documentId;
+            sanityUniqueId = sanityResult.uniqueId;
+            console.log(
+              "\n🎉 Sanity presentation created! ID:",
+              sanityPresentationId
+            );
+            console.log("  - Unique ID:", sanityUniqueId);
+          } catch (sanityError: any) {
+            console.error("\n❌ SANITY CREATION ERROR:");
+            console.error("  - Message:", sanityError.message);
+            console.error("  - Stack:", sanityError.stack);
+            throw sanityError;
           }
         } catch (error: any) {
           console.error("\n❌ ===============================================");
@@ -575,47 +704,225 @@ class GenerateController {
           // Continue even if screenshots/sanity fail
         }
       } else {
-        if (!finalWebsite) {
-          console.log("⚠️ No website available - skipping screenshots");
-        }
-        if (!sanityService) {
-          console.log("⚠️ Sanity not configured - skipping Sanity upload");
+        console.log("⚠️ Sanity not configured - skipping Sanity upload");
+      }
+
+      // Return success response
+      // Build presentation URL if we have Sanity data
+      const presentationUrl = sanityUniqueId
+        ? `https://www.no-offence.io/presentation/${companyName
+            .toLowerCase()
+            .replace(/[^a-z0-9æøå]+/g, "-")
+            .replace(/^-+|-+$/g, "")}/${sanityUniqueId}`
+        : null;
+
+      // Build Sanity studio URL if we have presentation ID
+      const sanityStudioUrl =
+        sanityPresentationId &&
+        config.SANITY_PROJECT_ID &&
+        config.SANITY_DATASET
+          ? `https://www.sanity.io/studio/${config.SANITY_PROJECT_ID}/${config.SANITY_DATASET}/presentation;${sanityPresentationId}`
+          : null;
+
+      // Add pitch deck section to email if presentation URL exists (for Web service only)
+      let finalEmailContent = emailContent;
+      if (service === "Web" && presentationUrl) {
+        const pitchDeckBlock = `Jeg har satt sammen en pitch deck til dere som viser et forslag til hvordan nye nettsider for dere kan se ut + et lite bilde av hvem vi er.\n${presentationUrl}`;
+
+        // Insert before "Med vennlig hilsen," if present
+        if (emailContent.includes("Med vennlig hilsen,")) {
+          finalEmailContent = emailContent.replace(
+            "Med vennlig hilsen,",
+            `${pitchDeckBlock}\n\nMed vennlig hilsen,`
+          );
+        } else {
+          // Otherwise append to the end
+          finalEmailContent = emailContent + pitchDeckBlock;
         }
       }
 
-      // Step 6: Create Notion entry
-      sendProgress("Creating Notion entry...");
-      const notionPageId = await notionService.createEntry({
-        companyName: companyName,
-        contactPerson: finalContactPerson,
-        contactPersonUrl: contactPersonPageUrl,
-        linkedInProfile: linkedInProfile,
-        email: finalEmail,
-        phone: finalPhone,
-        website: finalWebsite,
-        proffLink: proffUrl,
-        service,
-        message: emailContent,
-      });
+      // Add meeting proposals to email
+      if (meetingProposals.length === 3) {
+        const baseUrl = process.env.BASE_URL || "http://localhost:3001";
+        
+        // Import URL shortener service
+        const { UrlShortenerService } = await import(
+          "../services/urlShortenerService"
+        );
+        const shortener = new UrlShortenerService();
+        
+        const meetingBlock =
+          `\n\nHvis du ønsker et kort møte for å diskutere mulighetene, kan du velge et tidspunkt som passer deg:\n\n` +
+          meetingProposals
+            .map((proposal, index) => {
+              const bookingUrl = `${baseUrl}/book/${
+                proposal.bookingToken
+              }?e=${encodeURIComponent(finalEmail)}&n=${encodeURIComponent(
+                finalContactPerson
+              )}`;
+              
+              // Create short URL
+              const shortCode = shortener.createShortUrl(bookingUrl);
+              const shortUrl = `${baseUrl}/s/${shortCode}`;
+              
+              return `${index + 1}. ${proposal.display} - ${shortUrl}`;
+            })
+            .join("\n\n");
 
-      // Return success response
+        // Insert before "Med vennlig hilsen," if present
+        if (finalEmailContent.includes("Med vennlig hilsen,")) {
+          finalEmailContent = finalEmailContent.replace(
+            "Med vennlig hilsen,",
+            `${meetingBlock}\n\nMed vennlig hilsen,`
+          );
+        } else {
+          // Otherwise append before the end
+          finalEmailContent = finalEmailContent + meetingBlock;
+        }
+      }
+
+      // Step 6: Create Notion entry (with finalEmailContent including presentation link)
+      sendProgress("Oppretter Notion-oppføring...");
+      let notionPageId: string;
+      try {
+        notionPageId = await notionService.createEntry({
+          companyName: companyName,
+          contactPerson: finalContactPerson,
+          contactPersonUrl: contactPersonPageUrl,
+          email: finalEmail,
+          phone: finalPhone,
+          website: finalWebsite,
+          proffLink: proffUrl,
+          service,
+          message: finalEmailContent,
+          address: (companyInfo as any).address || undefined,
+          city: (companyInfo as any).city || undefined,
+          sanityUrl: sanityStudioUrl || undefined,
+          presentationUrl: presentationUrl || undefined,
+          leadStatus: "Ikke startet",
+        });
+      } catch (notionError: any) {
+        console.error(
+          "❌ Notion creation failed, cleaning up Sanity resources..."
+        );
+
+        // Cleanup: Delete the Sanity presentation and all associated images
+        if (
+          sanityPresentationId &&
+          config.SANITY_PROJECT_ID &&
+          config.SANITY_DATASET &&
+          config.SANITY_TOKEN
+        ) {
+          try {
+            // Create sanity service if not already initialized
+            const cleanupSanityService =
+              sanityService ||
+              new SanityService(
+                config.SANITY_PROJECT_ID,
+                config.SANITY_DATASET,
+                config.SANITY_TOKEN
+              );
+            await cleanupSanityService.deletePresentation(sanityPresentationId);
+            console.log(
+              "✅ Sanity presentation and images cleaned up successfully"
+            );
+          } catch (cleanupError: any) {
+            console.error(
+              "⚠️ Failed to cleanup Sanity resources:",
+              cleanupError.message
+            );
+          }
+        }
+
+        // Re-throw the original error
+        throw notionError;
+      }
+
       const responseData = {
         success: true,
         data: {
           companyName: companyName,
           contactPerson: finalContactPerson,
           contactPersonUrl: contactPersonPageUrl,
-          linkedInProfile: linkedInProfile,
           email: finalEmail,
           phone: finalPhone,
           website: finalWebsite,
-          emailContent,
+          lighthouseScores: lighthouseScores || null,
+          address: (companyInfo as any).address || "",
+          city: (companyInfo as any).city || "",
+          emailContent: finalEmailContent,
           notionPageId,
           industry: industry || "",
           sanityPresentationId: sanityPresentationId || null,
+          sanityUniqueId: sanityUniqueId || null,
+          presentationUrl: presentationUrl,
           hasScreenshots: !!screenshots,
+          logoUrl: logoUrl || null,
         },
       };
+
+      // Save to history
+      try {
+        const historyService = new HistoryService();
+
+        // Determine automation fields based on industry
+        let automationIndustry = "Advokat";
+        let automationText1 = "Advokatfirmaet";
+
+        if (industry) {
+          const industryLower = industry.toLowerCase();
+          if (
+            industryLower.includes("helse") ||
+            industryLower.includes("aktivitet")
+          ) {
+            automationIndustry = "Helse";
+            automationText1 = "Helsefirmaet";
+          } else if (industryLower.includes("bygg")) {
+            automationIndustry = "Bygg";
+            automationText1 = "Entreprenør";
+          } else if (
+            industryLower.includes("advokat") ||
+            industryLower.includes("jus")
+          ) {
+            automationIndustry = "Advokat";
+            automationText1 = "Advokatfirmaet";
+          }
+        }
+
+        // Text 2 is capitalized company name
+        const automationText2 = companyName
+          .split(" ")
+          .map(
+            (word: string) =>
+              word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+          )
+          .join(" ");
+
+        historyService.addEntry({
+          id: notionPageId, // Use Notion page ID as unique identifier
+          companyName: companyName,
+          contactPerson: finalContactPerson,
+          email: finalEmail,
+          phone: finalPhone,
+          website: finalWebsite,
+          address: (companyInfo as any).address || "",
+          city: (companyInfo as any).city || "",
+          service: service,
+          notionPageId: notionPageId,
+          sanityPresentationId: sanityPresentationId || undefined,
+          presentationUrl: presentationUrl || undefined,
+          emailContent: finalEmailContent || undefined,
+          industry: industry || undefined,
+          automationIndustry: automationIndustry,
+          automationText1: automationText1,
+          automationText2: automationText2,
+          logoUrl: logoUrl || undefined,
+          leadStatus: "Ikke startet",
+        });
+      } catch (historyError: any) {
+        console.error("Failed to save to history:", historyError.message);
+        // Don't fail the entire request if history save fails
+      }
 
       if (useSSE) {
         res.write(`data: ${JSON.stringify(responseData)}\n\n`);

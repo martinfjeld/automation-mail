@@ -20,6 +20,9 @@
 .env.test.local
 .env.production.local
 
+# history storage
+history.json
+
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*

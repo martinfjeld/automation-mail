@@ -10,23 +10,23 @@ export class ScreenshotService {
    */
   private async findChromeExecutable(): Promise<string> {
     // In production (Render), use @sparticuz/chromium
-    if (process.env.NODE_ENV === 'production') {
-      console.log('🚀 Using @sparticuz/chromium for production');
+    if (process.env.NODE_ENV === "production") {
+      console.log("🚀 Using @sparticuz/chromium for production");
       return await chromium.executablePath();
     }
 
     // Common Chrome paths for local development
     const chromePaths = [
       process.env.PUPPETEER_EXECUTABLE_PATH,
-      '/usr/bin/google-chrome-stable',
-      '/usr/bin/google-chrome',
-      '/usr/bin/chromium-browser',
-      '/usr/bin/chromium',
-      '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+      "/usr/bin/google-chrome-stable",
+      "/usr/bin/google-chrome",
+      "/usr/bin/chromium-browser",
+      "/usr/bin/chromium",
+      "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
     ].filter(Boolean) as string[];
 
-    console.log('🔍 Searching for Chrome executable locally...');
-    
+    console.log("🔍 Searching for Chrome executable locally...");
+
     for (const chromePath of chromePaths) {
       if (fs.existsSync(chromePath)) {
         console.log(`✅ Found Chrome at: ${chromePath}`);
@@ -34,7 +34,7 @@ export class ScreenshotService {
       }
     }
 
-    throw new Error('Chrome executable not found');
+    throw new Error("Chrome executable not found");
   }
 
   /**
@@ -42,42 +42,88 @@ export class ScreenshotService {
    */
   private async handleCookieBanners(page: any): Promise<void> {
     try {
-      // Common cookie banner button selectors (Norwegian and English)
-      const cookieSelectors = [
-        // Text-based selectors (most reliable)
+      console.log("🍪 Attempting to handle cookie banners...");
+
+      // Strategy 1: Wait for common cookie banner containers to appear
+      try {
+        await page.waitForSelector(
+          '[id*="cookie"], [class*="cookie"], [id*="consent"], [class*="consent"], [role="dialog"], [aria-label*="cookie" i], [aria-label*="samtykke" i]',
+          { timeout: 3000, visible: true }
+        );
+        console.log("✅ Cookie banner detected");
+      } catch (e) {
+        console.log("ℹ️ No cookie banner container detected");
+      }
+
+      // Strategy 2: Click accept buttons - comprehensive list
+      const acceptSelectors = [
+        // Norwegian
         'button:has-text("Godta alle")',
         'button:has-text("Godta")',
-        'button:has-text("Accept")',
-        'button:has-text("Accepter")',
-        'button:has-text("OK")',
+        'button:has-text("Aksepter alle")',
+        'button:has-text("Aksepter")',
         'button:has-text("Jeg godtar")',
-        'button:has-text("I accept")',
+        'button:has-text("OK")',
+        'button:has-text("Samtykke")',
         'a:has-text("Godta")',
+        'a:has-text("Aksepter")',
+
+        // English
+        'button:has-text("Accept all")',
+        'button:has-text("Accept All")',
+        'button:has-text("Accept")',
+        'button:has-text("Agree")',
+        'button:has-text("I agree")',
+        'button:has-text("I accept")',
+        'button:has-text("Allow all")',
+        'button:has-text("OK")',
         'a:has-text("Accept")',
-        // Common class/id patterns
-        '[id*="cookie-accept"]',
-        '[id*="accept-cookie"]',
-        '[class*="cookie-accept"]',
-        '[class*="accept-cookie"]',
-        '[id*="consent-accept"]',
-        '[class*="consent-accept"]',
-        '.cookie-consent button',
-        '#cookie-banner button',
-        '[aria-label*="Accept"]',
-        '[aria-label*="Godta"]',
+
+        // ID patterns
+        '[id*="cookie-accept" i]',
+        '[id*="accept-cookie" i]',
+        '[id*="acceptCookie" i]',
+        '[id*="consent-accept" i]',
+        '[id*="accept-consent" i]',
+        '[id*="cookie-agree" i]',
+        '[id*="acceptAll" i]',
+        '[id="onetrust-accept-btn-handler"]',
+        '[id="CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll"]',
+
+        // Class patterns
+        '[class*="cookie-accept" i]',
+        '[class*="accept-cookie" i]',
+        '[class*="acceptCookie" i]',
+        '[class*="consent-accept" i]',
+        '[class*="accept-consent" i]',
+        '[class*="cookie-agree" i]',
+        '[class*="acceptAll" i]',
+        '[class*="accept-all" i]',
+
+        // ARIA labels
+        '[aria-label*="Accept" i]',
+        '[aria-label*="Godta" i]',
+        '[aria-label*="Aksepter" i]',
+        '[aria-label*="Agree" i]',
+
+        // Common frameworks
+        '.cookie-consent button[type="submit"]',
+        '.cookie-banner button[type="submit"]',
+        "#cookie-banner button",
+        ".cookie-notice button",
+        ".gdpr-button",
+        ".cookie-policy-button",
       ];
 
-      for (const selector of cookieSelectors) {
+      for (const selector of acceptSelectors) {
         try {
-          // Check if element exists and is visible
           const element = await page.$(selector);
           if (element) {
             const isVisible = await element.isIntersectingViewport();
             if (isVisible) {
               await element.click();
-              console.log(`✅ Clicked cookie banner: ${selector}`);
-              // Wait for banner to disappear
-              await new Promise((resolve) => setTimeout(resolve, 1000));
+              console.log(`✅ Clicked cookie accept button: ${selector}`);
+              await new Promise((resolve) => setTimeout(resolve, 1500));
               return;
             }
           }
@@ -86,22 +132,88 @@ export class ScreenshotService {
         }
       }
 
-      // Try XPath for text matching (fallback)
-      try {
-        const buttons = await page.$x(
-          "//button[contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZÆØÅ', 'abcdefghijklmnopqrstuvwxyzæøå'), 'godta') or contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'accept')]"
-        );
-        if (buttons.length > 0) {
-          await buttons[0].click();
-          console.log("✅ Clicked cookie banner via XPath");
-          await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Strategy 3: XPath for flexible text matching
+      const xpathQueries = [
+        "//button[contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZÆØÅ', 'abcdefghijklmnopqrstuvwxyzæøå'), 'godta')]",
+        "//button[contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'accept')]",
+        "//button[contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZÆØÅ', 'abcdefghijklmnopqrstuvwxyzæøå'), 'aksepter')]",
+        "//button[contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'agree')]",
+        "//a[contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZÆØÅ', 'abcdefghijklmnopqrstuvwxyzæøå'), 'godta')]",
+        "//a[contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'accept')]",
+      ];
+
+      for (const xpath of xpathQueries) {
+        try {
+          const buttons = await page.$x(xpath);
+          if (buttons.length > 0) {
+            // Click the first visible button
+            for (const button of buttons) {
+              const isVisible = await button.isIntersectingViewport();
+              if (isVisible) {
+                await button.click();
+                console.log(`✅ Clicked cookie button via XPath`);
+                await new Promise((resolve) => setTimeout(resolve, 1500));
+                return;
+              }
+            }
+          }
+        } catch (e) {
+          // Continue
         }
-      } catch (e) {
-        // No cookie banner found, continue
       }
+
+      // Strategy 4: Try to close modal dialogs with X button
+      const closeSelectors = [
+        '[aria-label*="Close" i]',
+        '[aria-label*="Lukk" i]',
+        "button.close",
+        'button[title*="Close" i]',
+        '[class*="close" i][class*="button" i]',
+      ];
+
+      for (const selector of closeSelectors) {
+        try {
+          const elements = await page.$$(selector);
+          for (const element of elements) {
+            const isVisible = await element.isIntersectingViewport();
+            if (isVisible) {
+              // Check if this close button is within a cookie banner
+              const isInCookieBanner = await element.evaluate((el: any) => {
+                let current = el.parentElement;
+                let depth = 0;
+                while (current && depth < 10) {
+                  const classes = (current.className || "").toLowerCase();
+                  const id = (current.id || "").toLowerCase();
+                  if (
+                    classes.includes("cookie") ||
+                    classes.includes("consent") ||
+                    id.includes("cookie") ||
+                    id.includes("consent")
+                  ) {
+                    return true;
+                  }
+                  current = current.parentElement;
+                  depth++;
+                }
+                return false;
+              });
+
+              if (isInCookieBanner) {
+                await element.click();
+                console.log(`✅ Closed cookie dialog via close button`);
+                await new Promise((resolve) => setTimeout(resolve, 1500));
+                return;
+              }
+            }
+          }
+        } catch (e) {
+          // Continue
+        }
+      }
+
+      console.log("ℹ️ No cookie banner found or could not be dismissed");
     } catch (error: any) {
-      // Ignore errors - cookie banners are optional
-      console.log("ℹ️ No cookie banner found or already dismissed");
+      console.log("ℹ️ Cookie banner handling completed (no action needed)");
     }
   }
 
@@ -111,20 +223,19 @@ export class ScreenshotService {
     let browser;
     try {
       const executablePath = await this.findChromeExecutable();
-      console.log(
-        `🚀 Launching browser with executable: ${executablePath}`
-      );
+      console.log(`🚀 Launching browser with executable: ${executablePath}`);
 
       // Get recommended args for serverless environments in production
-      const args = process.env.NODE_ENV === 'production'
-        ? chromium.args
-        : [
-            "--no-sandbox",
-            "--disable-setuid-sandbox",
-            "--disable-dev-shm-usage",
-            "--disable-accelerated-2d-canvas",
-            "--disable-gpu",
-          ];
+      const args =
+        process.env.NODE_ENV === "production"
+          ? chromium.args
+          : [
+              "--no-sandbox",
+              "--disable-setuid-sandbox",
+              "--disable-dev-shm-usage",
+              "--disable-accelerated-2d-canvas",
+              "--disable-gpu",
+            ];
 
       browser = await puppeteer.launch({
         headless: true,

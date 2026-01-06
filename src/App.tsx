@@ -3,6 +3,7 @@ import { Routes, Route, Outlet } from "react-router-dom";
 import Footer from "./components/Footer/Footer";
 import Generator from "./pages/Generator/Generator";
 import About from "./pages/About/About";
+import BookingScreen from "./pages/BookingScreen/BookingScreen";
 import NotFound from "./pages/NotFound/NotFound";
 
 function Layout() {
@@ -23,6 +24,7 @@ function App() {
         <Route path="/" element={<Generator />} />
         <Route path="/about" element={<About />} />
       </Route>
+      <Route path="/booking-screen" element={<BookingScreen />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

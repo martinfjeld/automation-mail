@@ -19,11 +19,15 @@
     "@types/react-dom": "^19.0.0",
     "axios": "^1.13.2",
     "cheerio": "^1.1.2",
+    "chrome-launcher": "^1.2.1",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
     "express-rate-limit": "^8.2.1",
+    "google-auth-library": "^10.5.0",
+    "googleapis": "^169.0.0",
     "helmet": "^8.1.0",
+    "lighthouse": "^12.8.2",
     "openai": "^6.15.0",
     "puppeteer": "^24.34.0",
     "puppeteer-core": "^24.34.0",
@@ -37,7 +41,7 @@
   },
   "scripts": {
     "start": "concurrently \"npm run server\" \"npm run client\"",
-    "client": "react-scripts start",
+    "client": "NODE_OPTIONS=--max_old_space_size=4096 react-scripts start",
     "server": "nodemon server/index.ts",
     "dev": "npm start",
     "build": "react-scripts build",
@@ -71,6 +75,6 @@
     "concurrently": "^9.2.1",
     "gh-pages": "^6.3.0",
     "nodemon": "^3.1.11",
-    "typescript": "^5.9.3"
+    "typescript": "^4.9.5"
   }
 }

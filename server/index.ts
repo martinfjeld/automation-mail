@@ -7,16 +7,33 @@ import setupRoutes from "./routes/setup";
 import generateRoutes from "./routes/generate";
 import updateRoutes from "./routes/update";
 import screenshotsRoutes from "./routes/screenshots";
+import uploadRoutes from "./routes/upload";
+import automationRoutes from "./routes/automation";
+import filesRoutes from "./routes/files";
+import progressRoutes from "./routes/progress";
+import historyRoutes from "./routes/history";
+import calendarRoutes from "./routes/calendar";
+import shortRoutes from "./routes/short";
 import { errorHandler } from "./middleware/errorHandler";
 
-// Load .env file from project root
-dotenv.config({ path: path.resolve(__dirname, "../.env") });
+// Load .env file from project root - try multiple paths for robustness
+const envPath = path.resolve(__dirname, "../.env");
+const envDevPath = path.resolve(__dirname, "../.env.development");
+const envProdPath = path.resolve(__dirname, "../.env.production");
+
+// Load in order: .env, .env.development, .env.production
+dotenv.config({ path: envPath });
+if (process.env.NODE_ENV === "development") {
+  dotenv.config({ path: envDevPath, override: true });
+} else if (process.env.NODE_ENV === "production") {
+  dotenv.config({ path: envProdPath, override: true });
+}
 
 const app: Application = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.SERVER_PORT || process.env.PORT || 3001;
 
 // Trust proxy - required when running behind Render's reverse proxy
-app.set('trust proxy', 1);
+app.set("trust proxy", 1);
 
 // Middleware - relaxed for development
 if (process.env.NODE_ENV === "production") {
@@ -26,7 +43,13 @@ app.use(
   cors({
     origin:
       process.env.NODE_ENV === "production"
-        ? "https://martinfjeld.github.io"
+        ? [
+            "https://martinfjeld.github.io",
+            "https://martinfjeld.io",
+            "https://www.martinfjeld.io",
+            "https://no-offence.io",
+            "https://www.no-offence.io"
+          ]
         : "http://localhost:3000",
     credentials: true,
     maxAge: 86400,
@@ -40,6 +63,14 @@ app.use("/api/setup", setupRoutes);
 app.use("/api/generate", generateRoutes);
 app.use("/api/update", updateRoutes);
 app.use("/api/screenshots", screenshotsRoutes);
+app.use("/api/upload", uploadRoutes);
+app.use("/api/automation", automationRoutes);
+app.use("/api/files", filesRoutes);
+app.use("/api/progress", progressRoutes);
+app.use("/api/history", historyRoutes);
+app.use("/api/calendar", calendarRoutes);
+app.use("/book", calendarRoutes); // Shorter alias: /book/:token instead of /api/calendar/:token
+app.use("/s", shortRoutes); // Short URL redirects: /s/:code
 
 // Health check
 app.get("/api/health", (req: Request, res: Response) => {

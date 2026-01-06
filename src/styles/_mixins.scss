@@ -21,3 +21,17 @@
   align-items: center;
   justify-content: center;
 }
+
+@mixin gradient-text {
+  background: var(
+    --Linear-gradient-logo,
+    linear-gradient(
+      0deg,
+      var(--Red-Oyster-Darken, #ebb4b4) -1.98%,
+      var(--Cool-fog-Darken, #d9c5f4) 108.94%
+    )
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
