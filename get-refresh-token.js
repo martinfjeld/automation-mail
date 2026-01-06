@@ -12,13 +12,18 @@
 
 const { google } = require("googleapis");
 const readline = require("readline");
+require("dotenv").config();
 
-// === REPLACE THESE WITH YOUR CREDENTIALS ===
-const CLIENT_ID =
-  "122636953493-aqd4msl9re5i0ure54k0lgjcf38gqtvp.apps.googleusercontent.com";
-const CLIENT_SECRET = "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";
+// === GET FROM ENVIRONMENT VARIABLES ===
+const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 const REDIRECT_URI = "urn:ietf:wg:oauth:2.0:oob"; // For desktop app
 // ============================================
+
+if (!CLIENT_ID || !CLIENT_SECRET) {
+  console.error("Error: GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET must be set in .env file");
+  process.exit(1);
+}
 
 const oauth2Client = new google.auth.OAuth2(
   CLIENT_ID,
