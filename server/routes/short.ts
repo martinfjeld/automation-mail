@@ -18,12 +18,13 @@ router.get("/:code", (req: Request, res: Response) => {
     return res.status(404).send("Link not found or expired");
   }
 
-  // Check if request wants JSON response instead of redirect
-  if (req.accepts('json') && !req.accepts('html')) {
+  // If request has Accept: application/json header, return JSON
+  const acceptHeader = req.get('Accept') || '';
+  if (acceptHeader.includes('application/json')) {
     return res.json({ redirectUrl: fullUrl });
   }
 
-  // Default: redirect to the full booking URL
+  // Default: redirect to the full booking URL (for direct browser access)
   res.redirect(fullUrl);
 });
 
