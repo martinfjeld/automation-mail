@@ -11,10 +11,19 @@ router.get("/:code", (req: Request, res: Response) => {
   const fullUrl = shortener.getFullUrl(code);
   
   if (!fullUrl) {
+    // Check if request wants JSON
+    if (req.accepts('json')) {
+      return res.status(404).json({ error: "Link not found or expired" });
+    }
     return res.status(404).send("Link not found or expired");
   }
 
-  // Redirect to the full booking URL
+  // Check if request wants JSON response instead of redirect
+  if (req.accepts('json') && !req.accepts('html')) {
+    return res.json({ redirectUrl: fullUrl });
+  }
+
+  // Default: redirect to the full booking URL
   res.redirect(fullUrl);
 });
 
