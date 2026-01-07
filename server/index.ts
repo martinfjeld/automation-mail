@@ -49,9 +49,14 @@ app.use(
             "https://martinfjeld.io",
             "https://www.martinfjeld.io",
             "https://no-offence.io",
-            "https://www.no-offence.io"
+            "https://www.no-offence.io",
+            "http://localhost:3000",
+            "http://localhost:3001"
           ]
-        : "http://localhost:3000",
+        : [
+            "http://localhost:3000",
+            "http://localhost:3001"
+          ],
     credentials: true,
     maxAge: 86400,
   })
