@@ -219,8 +219,13 @@ router.delete("/:id", async (req: Request, res: Response) => {
     if (entry.bookingLinks && entry.bookingLinks.length > 0) {
       try {
         const urlShortener = new UrlShortenerService();
-        urlShortener.deleteCodes(entry.bookingLinks);
-        console.log("✅ Deleted associated short URLs");
+        // Extract codes from full URLs (e.g., "www.no-offence.io/s/abc123" -> "abc123")
+        const codes = entry.bookingLinks.map((link: string) => {
+          const match = link.match(/\/s\/([a-f0-9]+)$/);
+          return match ? match[1] : link;
+        });
+        urlShortener.deleteCodes(codes);
+        console.log("✅ Deleted associated short URLs:", codes);
       } catch (error: any) {
         console.error("Failed to delete short URLs:", error.message);
         errors.push(`Short URLs: ${error.message}`);
