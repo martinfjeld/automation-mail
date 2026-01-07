@@ -12,15 +12,29 @@ export class UrlShortenerService {
   private storePath: string;
 
   constructor() {
-    // Store in project root so it can be committed and shared
-    this.storePath = path.join(process.cwd(), "short-urls.json");
+    // Use persistent disk path if available, otherwise project root
+    const persistentPath = process.env.PERSISTENT_STORAGE_PATH;
+    if (persistentPath) {
+      this.storePath = path.join(persistentPath, "short-urls.json");
+      console.log(`📁 Using persistent storage: ${this.storePath}`);
+    } else {
+      this.storePath = path.join(process.cwd(), "short-urls.json");
+      console.log(`📁 Using project root storage: ${this.storePath}`);
+    }
     this.ensureStoreExists();
   }
 
   private ensureStoreExists() {
+    // Ensure directory exists
+    const dir = path.dirname(this.storePath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+      console.log(`✅ Created storage directory: ${dir}`);
+    }
+    
     if (!fs.existsSync(this.storePath)) {
       fs.writeFileSync(this.storePath, JSON.stringify([]));
-      console.log("✅ Created short-urls.json file");
+      console.log(`✅ Created short-urls.json file at ${this.storePath}`);
     }
   }
 
