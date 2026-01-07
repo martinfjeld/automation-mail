@@ -25,13 +25,8 @@ export class UrlShortenerService {
   }
 
   private ensureStoreExists() {
-    // Ensure directory exists
-    const dir = path.dirname(this.storePath);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-      console.log(`✅ Created storage directory: ${dir}`);
-    }
-    
+    // Don't try to create the mount point itself (/data), Render handles that
+    // Only ensure the file exists
     if (!fs.existsSync(this.storePath)) {
       fs.writeFileSync(this.storePath, JSON.stringify([]));
       console.log(`✅ Created short-urls.json file at ${this.storePath}`);
