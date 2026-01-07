@@ -742,11 +742,32 @@ class GenerateController {
       }
 
       // Add meeting proposals to email
+      let meetingDates: string[] = [];
+      let bookingLinks: string[] = [];
+      
       if (meetingProposals.length === 3) {
         const baseUrl = process.env.BASE_URL || "http://localhost:3001";
         
         // Determine backend API URL
         const backendUrl = process.env.BACKEND_URL || "http://localhost:3001";
+        
+        console.log("🔍 Meeting proposals:", JSON.stringify(meetingProposals, null, 2));
+        
+        // Extract meeting dates (startISO from each proposal) with validation
+        meetingDates = meetingProposals
+          .map(proposal => {
+            console.log("🔍 Processing proposal:", proposal);
+            if (!proposal.startISO) {
+              console.log("⚠️ No startISO found");
+              return null;
+            }
+            const date = new Date(proposal.startISO);
+            console.log("🔍 Created date:", date, "Is valid:", !isNaN(date.getTime()));
+            return isNaN(date.getTime()) ? null : date.toISOString();
+          })
+          .filter((date): date is string => date !== null);
+        
+        console.log("📅 Extracted meeting dates:", meetingDates);
         
         const meetingBlock =
           `\n\nHvis du ønsker et kort møte for å diskutere mulighetene, kan du velge et tidspunkt som passer deg:\n\n` +
@@ -773,10 +794,14 @@ class GenerateController {
                 const data = (await response.json()) as { shortUrl: string };
                 const shortUrl = data.shortUrl;
                 
+                // Store the short URL
+                bookingLinks.push(shortUrl);
+                
                 return `${index + 1}. ${proposal.display} - ${shortUrl}`;
               } catch (error) {
                 console.error("Failed to create short URL:", error);
                 // Fallback to full URL if API fails
+                bookingLinks.push(bookingUrl);
                 return `${index + 1}. ${proposal.display} - ${bookingUrl}`;
               }
             })
@@ -871,8 +896,13 @@ class GenerateController {
           presentationUrl: presentationUrl,
           hasScreenshots: !!screenshots,
           logoUrl: logoUrl || null,
+          meetingDates: meetingDates.length > 0 ? meetingDates : undefined,
+          bookingLinks: bookingLinks.length > 0 ? bookingLinks : undefined,
         },
       };
+      
+      console.log("📤 Response data meetingDates:", responseData.data.meetingDates);
+      console.log("📤 Response data bookingLinks:", responseData.data.bookingLinks);
 
       // Save to history
       try {
@@ -931,6 +961,8 @@ class GenerateController {
           automationText2: automationText2,
           logoUrl: logoUrl || undefined,
           leadStatus: "Ikke startet",
+          meetingDates: meetingDates.length > 0 ? meetingDates : undefined,
+          bookingLinks: bookingLinks.length > 0 ? bookingLinks : undefined,
         });
       } catch (historyError: any) {
         console.error("Failed to save to history:", historyError.message);

@@ -15,6 +15,7 @@ import historyRoutes from "./routes/history";
 import calendarRoutes from "./routes/calendar";
 import shortRoutes from "./routes/short";
 import shortUrlsRoutes from "./routes/short-urls";
+import bookingRoutes from "./routes/booking";
 import { errorHandler } from "./middleware/errorHandler";
 
 // Load .env file from project root - try multiple paths for robustness
@@ -72,6 +73,7 @@ app.use("/api/files", filesRoutes);
 app.use("/api/progress", progressRoutes);
 app.use("/api/history", historyRoutes);
 app.use("/api/calendar", calendarRoutes);
+app.use("/api/booking", bookingRoutes); // Booking confirmations
 app.use("/book", calendarRoutes); // Shorter alias: /book/:token instead of /api/calendar/:token
 app.use("/s", shortRoutes); // Short URL redirects: /s/:code
 app.use("/api/short-urls", shortUrlsRoutes); // API to create short URLs

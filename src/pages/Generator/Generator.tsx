@@ -50,6 +50,10 @@ const Generator: React.FC = () => {
   const [editableCity, setEditableCity] = useState("");
   const [editableLinkedIn, setEditableLinkedIn] = useState("");
   const [editableEmailContent, setEditableEmailContent] = useState("");
+  const [meetingDate1, setMeetingDate1] = useState("");
+  const [meetingDate2, setMeetingDate2] = useState("");
+  const [meetingDate3, setMeetingDate3] = useState("");
+  const [bookingLinks, setBookingLinks] = useState<string[]>([]);
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
   const [isEmailModified, setIsEmailModified] = useState(false);
   const [savingEmail, setSavingEmail] = useState(false);
@@ -318,10 +322,24 @@ const Generator: React.FC = () => {
             if (data.step) {
               setLoadingStep(data.step);
             } else if (data.success) {
+              console.log("✅ Generation response data:", data.data);
+              console.log("✅ Meeting dates:", data.data.meetingDates);
+              console.log("✅ Booking links:", data.data.bookingLinks);
               setResult(data.data);
               // Automatically set pitch deck URL if available
               if (data.data.presentationUrl) {
                 setPitchDeckUrl(data.data.presentationUrl);
+              }
+              // Load meeting dates and booking links
+              if (data.data.meetingDates) {
+                setMeetingDate1(data.data.meetingDates[0] || "");
+                setMeetingDate2(data.data.meetingDates[1] || "");
+                setMeetingDate3(data.data.meetingDates[2] || "");
+                console.log("✅ Set meeting dates:", data.data.meetingDates[0], data.data.meetingDates[1], data.data.meetingDates[2]);
+              }
+              if (data.data.bookingLinks) {
+                setBookingLinks(data.data.bookingLinks);
+                console.log("✅ Set booking links:", data.data.bookingLinks);
               }
             } else if (data.error) {
               setError(data.error);
@@ -841,6 +859,24 @@ const Generator: React.FC = () => {
     setEditableEmailContent(loadedResult.emailContent);
     setIsEmailModified(false);
 
+    // Load meeting dates if available
+    if (entry.meetingDates && entry.meetingDates.length >= 3) {
+      setMeetingDate1(entry.meetingDates[0] || "");
+      setMeetingDate2(entry.meetingDates[1] || "");
+      setMeetingDate3(entry.meetingDates[2] || "");
+    } else {
+      setMeetingDate1("");
+      setMeetingDate2("");
+      setMeetingDate3("");
+    }
+
+    // Load booking links if available
+    if (entry.bookingLinks) {
+      setBookingLinks(entry.bookingLinks);
+    } else {
+      setBookingLinks([]);
+    }
+
     setResult(loadedResult);
 
     // Clear loading flag after a brief delay to allow state to settle
@@ -1130,6 +1166,60 @@ const Generator: React.FC = () => {
                       disabled={loading}
                     />
                   </div>
+                  
+                  {/* Meeting Date Pickers */}
+                  {(meetingDate1 || meetingDate2 || meetingDate3) && (
+                    <div className={styles.meetingDatesSection}>
+                      <strong>Meeting Proposals:</strong>
+                      <div className={styles.meetingDates}>
+                        <div className={styles.datePickerItem}>
+                          <label>Slot 1:</label>
+                          <input
+                            type="datetime-local"
+                            className={styles.inlineEditable}
+                            value={meetingDate1 ? (() => { const d = new Date(meetingDate1); return isNaN(d.getTime()) ? "" : d.toISOString().slice(0, 16); })() : ""}
+                            onChange={(e) => setMeetingDate1(e.target.value ? new Date(e.target.value).toISOString() : "")}
+                            disabled={loading}
+                          />
+                          {bookingLinks[0] && (
+                            <a href={bookingLinks[0]} target="_blank" rel="noopener noreferrer" className={styles.bookingLink}>
+                              🔗
+                            </a>
+                          )}
+                        </div>
+                        <div className={styles.datePickerItem}>
+                          <label>Slot 2:</label>
+                          <input
+                            type="datetime-local"
+                            className={styles.inlineEditable}
+                            value={meetingDate2 ? (() => { const d = new Date(meetingDate2); return isNaN(d.getTime()) ? "" : d.toISOString().slice(0, 16); })() : ""}
+                            onChange={(e) => setMeetingDate2(e.target.value ? new Date(e.target.value).toISOString() : "")}
+                            disabled={loading}
+                          />
+                          {bookingLinks[1] && (
+                            <a href={bookingLinks[1]} target="_blank" rel="noopener noreferrer" className={styles.bookingLink}>
+                              🔗
+                            </a>
+                          )}
+                        </div>
+                        <div className={styles.datePickerItem}>
+                          <label>Slot 3:</label>
+                          <input
+                            type="datetime-local"
+                            className={styles.inlineEditable}
+                            value={meetingDate3 ? (() => { const d = new Date(meetingDate3); return isNaN(d.getTime()) ? "" : d.toISOString().slice(0, 16); })() : ""}
+                            onChange={(e) => setMeetingDate3(e.target.value ? new Date(e.target.value).toISOString() : "")}
+                            disabled={loading}
+                          />
+                          {bookingLinks[2] && (
+                            <a href={bookingLinks[2]} target="_blank" rel="noopener noreferrer" className={styles.bookingLink}>
+                              🔗
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
                   <div className={styles.infoItem}>
                     <strong>Website:</strong>{" "}
                     <a

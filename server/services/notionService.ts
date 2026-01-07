@@ -16,6 +16,7 @@ export interface NotionEntry {
   sanityUrl?: string;
   presentationUrl?: string;
   leadStatus?: string;
+  møtedato?: string; // ISO date string for booked meeting
 }
 
 export class NotionService {
@@ -192,6 +193,14 @@ export class NotionService {
         };
       }
 
+      if (entry.møtedato) {
+        properties["Møtedato"] = {
+          date: {
+            start: entry.møtedato,
+          },
+        };
+      }
+
       const response = await this.client.pages.create({
         parent: { database_id: this.databaseId },
         properties,
@@ -222,6 +231,7 @@ export class NotionService {
       sanityUrl?: string;
       presentationUrl?: string;
       leadStatus?: string;
+      møtedato?: string;
     }
   ): Promise<void> {
     if (!this.client || !this.databaseId) {
@@ -352,6 +362,14 @@ export class NotionService {
         };
       }
 
+      if (updates.møtedato !== undefined) {
+        properties["Møtedato"] = {
+          date: {
+            start: updates.møtedato,
+          },
+        };
+      }
+
       await this.client.pages.update({
         page_id: pageId,
         properties,
@@ -359,6 +377,49 @@ export class NotionService {
     } catch (error: any) {
       console.error("Notion entry update failed:", error.message);
       throw new Error("Failed to update Notion entry");
+    }
+  }
+
+  /**
+   * Update the meeting date and optionally the lead status for a Notion entry
+   * This is typically called when a booking is confirmed
+   */
+  async updateMeetingDate(
+    pageId: string,
+    meetingDate: string,
+    updateLeadStatus: boolean = true
+  ): Promise<void> {
+    if (!this.client || !this.databaseId) {
+      throw new Error("Notion client not initialized");
+    }
+
+    try {
+      const properties: any = {
+        "Møtedato": {
+          date: {
+            start: meetingDate,
+          },
+        },
+      };
+
+      // Optionally update lead status to "Avventer svar"
+      if (updateLeadStatus) {
+        properties["Lead status"] = {
+          select: {
+            name: "Avventer svar",
+          },
+        };
+      }
+
+      await this.client.pages.update({
+        page_id: pageId,
+        properties,
+      });
+
+      console.log(`✅ Notion meeting date updated: ${pageId} -> ${meetingDate}`);
+    } catch (error: any) {
+      console.error("Notion meeting date update failed:", error.message);
+      throw new Error("Failed to update meeting date in Notion");
     }
   }
 

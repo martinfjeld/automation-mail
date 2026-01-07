@@ -23,6 +23,10 @@ export interface HistoryEntry {
   imagesGenerated?: boolean;
   emailSent?: boolean;
   leadStatus?: string;
+  meetingDates?: string[]; // Array of 3 ISO date strings from meeting proposals
+  bookingLinks?: string[]; // Array of 3 short URLs for booking
+  møtedato?: string; // The actual booked meeting date (when customer confirms)
+  bookedSlotIndex?: number; // Which slot was booked (0, 1, or 2)
   createdAt: string;
   updatedAt: string;
 }

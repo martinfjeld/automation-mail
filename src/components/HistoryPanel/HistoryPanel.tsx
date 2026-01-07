@@ -32,6 +32,8 @@ interface HistoryEntry {
   imagesGenerated?: boolean;
   emailSent?: boolean;
   leadStatus?: string;
+  meetingDates?: string[];
+  bookingLinks?: string[];
 }
 
 interface HistoryPanelProps {
