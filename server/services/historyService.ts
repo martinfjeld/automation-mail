@@ -35,8 +35,15 @@ export class HistoryService {
   private historyFilePath: string;
 
   constructor() {
-    // Store history.json in the project root
-    this.historyFilePath = path.join(process.cwd(), "history.json");
+    // Use persistent storage if available (Render disk), otherwise project root
+    const persistentPath = process.env.PERSISTENT_STORAGE_PATH;
+    if (persistentPath) {
+      this.historyFilePath = path.join(persistentPath, "history.json");
+      console.log(`📁 Using persistent storage: ${this.historyFilePath}`);
+    } else {
+      this.historyFilePath = path.join(process.cwd(), "history.json");
+      console.log(`📁 Using project root storage: ${this.historyFilePath}`);
+    }
     this.ensureHistoryFile();
   }
 
