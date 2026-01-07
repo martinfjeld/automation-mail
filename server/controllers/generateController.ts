@@ -964,6 +964,31 @@ class GenerateController {
           meetingDates: meetingDates.length > 0 ? meetingDates : undefined,
           bookingLinks: bookingLinks.length > 0 ? bookingLinks : undefined,
         });
+
+        // Auto-sync to production if running in development
+        if (process.env.NODE_ENV === "development") {
+          try {
+            const productionUrl = process.env.PRODUCTION_BACKEND_URL || "https://automation-mail-zk8t.onrender.com";
+            const allEntries = historyService.getAllEntries();
+            
+            console.log(`🔄 Auto-syncing ${allEntries.length} entries to production...`);
+            
+            const response = await fetch(`${productionUrl}/api/history/upload`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ entries: allEntries }),
+            });
+            
+            if (response.ok) {
+              console.log("✅ Auto-sync to production successful");
+            } else {
+              console.warn(`⚠️ Auto-sync failed with status ${response.status}`);
+            }
+          } catch (syncError: any) {
+            console.warn("⚠️ Auto-sync to production failed:", syncError.message);
+            // Don't fail the request if sync fails
+          }
+        }
       } catch (historyError: any) {
         console.error("Failed to save to history:", historyError.message);
         // Don't fail the entire request if history save fails
