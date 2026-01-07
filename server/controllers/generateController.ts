@@ -745,29 +745,42 @@ class GenerateController {
       if (meetingProposals.length === 3) {
         const baseUrl = process.env.BASE_URL || "http://localhost:3001";
         
-        // Import URL shortener service
-        const { UrlShortenerService } = await import(
-          "../services/urlShortenerService"
-        );
-        const shortener = new UrlShortenerService();
+        // Determine backend API URL
+        const backendUrl = process.env.BACKEND_URL || "http://localhost:3001";
         
         const meetingBlock =
           `\n\nHvis du ønsker et kort møte for å diskutere mulighetene, kan du velge et tidspunkt som passer deg:\n\n` +
-          meetingProposals
-            .map((proposal, index) => {
+          (await Promise.all(
+            meetingProposals.map(async (proposal, index) => {
               const bookingUrl = `${baseUrl}/book/${
                 proposal.bookingToken
               }?e=${encodeURIComponent(finalEmail)}&n=${encodeURIComponent(
                 finalContactPerson
               )}`;
               
-              // Create short URL
-              const shortCode = shortener.createShortUrl(bookingUrl);
-              const shortUrl = `${baseUrl}/s/${shortCode}`;
-              
-              return `${index + 1}. ${proposal.display} - ${shortUrl}`;
+              // Create short URL via API
+              try {
+                const response = await fetch(`${backendUrl}/api/short-urls`, {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ fullUrl: bookingUrl }),
+                });
+                
+                if (!response.ok) {
+                  throw new Error(`API returned ${response.status}`);
+                }
+                
+                const data = await response.json();
+                const shortUrl = data.shortUrl;
+                
+                return `${index + 1}. ${proposal.display} - ${shortUrl}`;
+              } catch (error) {
+                console.error("Failed to create short URL:", error);
+                // Fallback to full URL if API fails
+                return `${index + 1}. ${proposal.display} - ${bookingUrl}`;
+              }
             })
-            .join("\n\n");
+          )).join("\n\n");
 
         // Insert before "Med vennlig hilsen," if present
         if (finalEmailContent.includes("Med vennlig hilsen,")) {

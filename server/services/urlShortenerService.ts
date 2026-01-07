@@ -85,6 +85,13 @@ export class UrlShortenerService {
   }
 
   /**
+   * Get all URLs
+   */
+  getAllUrls(): ShortUrl[] {
+    return this.readStore();
+  }
+
+  /**
    * Clean up old URLs (older than 30 days)
    */
   cleanup() {

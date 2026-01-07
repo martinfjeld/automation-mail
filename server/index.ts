@@ -14,6 +14,7 @@ import progressRoutes from "./routes/progress";
 import historyRoutes from "./routes/history";
 import calendarRoutes from "./routes/calendar";
 import shortRoutes from "./routes/short";
+import shortUrlsRoutes from "./routes/short-urls";
 import { errorHandler } from "./middleware/errorHandler";
 
 // Load .env file from project root - try multiple paths for robustness
@@ -71,6 +72,7 @@ app.use("/api/history", historyRoutes);
 app.use("/api/calendar", calendarRoutes);
 app.use("/book", calendarRoutes); // Shorter alias: /book/:token instead of /api/calendar/:token
 app.use("/s", shortRoutes); // Short URL redirects: /s/:code
+app.use("/api/short-urls", shortUrlsRoutes); // API to create short URLs
 
 // Health check
 app.get("/api/health", (req: Request, res: Response) => {
