@@ -74,11 +74,12 @@ const HistoryPanel: React.FC<HistoryPanelProps> = ({
     const saved = localStorage.getItem("historyPanel_filterEmailSent");
     return saved || "notSent";
   });
-  const [filterImagesGenerated, setFilterImagesGenerated] =
-    useState<string>(() => {
+  const [filterImagesGenerated, setFilterImagesGenerated] = useState<string>(
+    () => {
       const saved = localStorage.getItem("historyPanel_filterImagesGenerated");
       return saved || "noMockups";
-    });
+    }
+  );
 
   // Save filters to localStorage whenever they change
   useEffect(() => {
@@ -98,7 +99,10 @@ const HistoryPanel: React.FC<HistoryPanelProps> = ({
   }, [filterEmailSent]);
 
   useEffect(() => {
-    localStorage.setItem("historyPanel_filterImagesGenerated", filterImagesGenerated);
+    localStorage.setItem(
+      "historyPanel_filterImagesGenerated",
+      filterImagesGenerated
+    );
   }, [filterImagesGenerated]);
 
   useEffect(() => {

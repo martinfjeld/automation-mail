@@ -54,6 +54,8 @@ const Generator: React.FC = () => {
   const [meetingDate2, setMeetingDate2] = useState("");
   const [meetingDate3, setMeetingDate3] = useState("");
   const [bookingLinks, setBookingLinks] = useState<string[]>([]);
+  const [bookedSlotIndex, setBookedSlotIndex] = useState<number | null>(null);
+  const [møtedato, setMøtedato] = useState<string | null>(null);
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
   const [isEmailModified, setIsEmailModified] = useState(false);
   const [savingEmail, setSavingEmail] = useState(false);
@@ -68,6 +70,8 @@ const Generator: React.FC = () => {
   const [imagesGenerated, setImagesGenerated] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
   const [leadStatus, setLeadStatus] = useState<string>("Ikke startet");
+  const [emailLocked, setEmailLocked] = useState(false);
+  const [currentEntryId, setCurrentEntryId] = useState<string | null>(null);
   const [uploadingLogo, setUploadingLogo] = useState(false);
   const [showLogoPreview, setShowLogoPreview] = useState(false);
   const [isClosingPreview, setIsClosingPreview] = useState(false);
@@ -92,73 +96,31 @@ const Generator: React.FC = () => {
     setCheckingSetup(false);
   }, []);
 
-  // Load saved state from localStorage on mount
+  // Restore current entry from backend on mount
   useEffect(() => {
-    const savedState = localStorage.getItem("generator_savedState");
-    if (savedState) {
-      try {
-        const parsedState = JSON.parse(savedState);
-        console.log("Restoring saved state:", parsedState);
-        
-        // Set loading flag to prevent useEffect from interfering
-        setIsLoadingHistory(true);
-
-        // Restore the result
-        if (parsedState.result) {
-          setResult(parsedState.result);
-          setEditableCompanyName(parsedState.result.companyName || "");
-          setEditableEmail(parsedState.result.email || "");
-          setEditablePhone(parsedState.result.phone || "");
-          setEditableAddress(parsedState.result.address || "");
-          setEditableCity(parsedState.result.city || "");
-          setEditableEmailContent(parsedState.result.emailContent || "");
-        }
-
-        // Restore other fields
-        if (parsedState.service) setService(parsedState.service);
-        if (parsedState.pitchDeckUrl) setPitchDeckUrl(parsedState.pitchDeckUrl);
-        if (parsedState.automationIndustry) setAutomationIndustry(parsedState.automationIndustry);
-        if (parsedState.automationText1) setAutomationText1(parsedState.automationText1);
-        if (parsedState.automationText2) setAutomationText2(parsedState.automationText2);
-        if (parsedState.imagesGenerated !== undefined) setImagesGenerated(parsedState.imagesGenerated);
-        if (parsedState.emailSent !== undefined) setEmailSent(parsedState.emailSent);
-        if (parsedState.leadStatus) setLeadStatus(parsedState.leadStatus);
-        
-        // Restore meeting dates and booking links
-        if (parsedState.meetingDate1) setMeetingDate1(parsedState.meetingDate1);
-        if (parsedState.meetingDate2) setMeetingDate2(parsedState.meetingDate2);
-        if (parsedState.meetingDate3) setMeetingDate3(parsedState.meetingDate3);
-        if (parsedState.bookingLinks) setBookingLinks(parsedState.bookingLinks);
-
-        // Clear loading flag after a brief delay
-        setTimeout(() => setIsLoadingHistory(false), 100);
-      } catch (error) {
-        console.error("Failed to restore saved state:", error);
-      }
+    const savedEntryId = localStorage.getItem("generator_currentEntryId");
+    if (savedEntryId) {
+      // Fetch the entry from backend and load it
+      fetch(`${API_URL}/api/history`)
+        .then((res) => res.json())
+        .then((data) => {
+          const entry = data.find((e: any) => e.id === savedEntryId);
+          if (entry) {
+            handleLoadHistoryEntry(entry);
+          }
+        })
+        .catch((error) => {
+          console.error("Failed to restore entry from backend:", error);
+        });
     }
   }, []);
 
-  // Save state to localStorage whenever result or related fields change
+  // Save current entry ID to localStorage
   useEffect(() => {
-    if (result && !isLoadingHistory) {
-      const stateToSave = {
-        result,
-        service,
-        pitchDeckUrl,
-        automationIndustry,
-        automationText1,
-        automationText2,
-        imagesGenerated,
-        emailSent,
-        leadStatus,
-        meetingDate1,
-        meetingDate2,
-        meetingDate3,
-        bookingLinks,
-      };
-      localStorage.setItem("generator_savedState", JSON.stringify(stateToSave));
+    if (currentEntryId) {
+      localStorage.setItem("generator_currentEntryId", currentEntryId);
     }
-  }, [result, service, pitchDeckUrl, automationIndustry, automationText1, automationText2, imagesGenerated, emailSent, leadStatus, meetingDate1, meetingDate2, meetingDate3, bookingLinks, isLoadingHistory]);
+  }, [currentEntryId]);
 
   // Keep editable fields in sync with the latest generation result
   useEffect(() => {
@@ -208,18 +170,21 @@ const Generator: React.FC = () => {
           if (currentEntry) {
             // Check if meeting date or lead status has changed
             const hasBookingUpdate =
-              currentEntry.møtedato && !result.hasOwnProperty('møtedato');
-            const hasStatusUpdate = currentEntry.leadStatus !== result.leadStatus;
+              currentEntry.møtedato && !result.hasOwnProperty("møtedato");
+            const hasStatusUpdate =
+              currentEntry.leadStatus !== result.leadStatus;
 
             if (hasBookingUpdate || hasStatusUpdate) {
-              console.log("📅 Detected booking or status update, refreshing data...");
-              
+              console.log(
+                "📅 Detected booking or status update, refreshing data..."
+              );
+
               // Update result with new data
               setResult((prev) => ({
                 ...prev!,
                 leadStatus: currentEntry.leadStatus,
               }));
-              
+
               setLeadStatus(currentEntry.leadStatus || "Ikke startet");
 
               // If there's a booking date, you might want to show a notification
@@ -342,8 +307,6 @@ const Generator: React.FC = () => {
     setEditableCity("");
     setEditableLinkedIn("");
     setLoadingStep("Starter...");
-    // Clear saved state when generating new content
-    localStorage.removeItem("generator_savedState");
 
     try {
       const response = await fetch(`${API_URL}/api/generate`, {
@@ -383,6 +346,10 @@ const Generator: React.FC = () => {
               console.log("✅ Meeting dates:", data.data.meetingDates);
               console.log("✅ Booking links:", data.data.bookingLinks);
               setResult(data.data);
+              // Track entry ID for localStorage
+              if (data.data.notionPageId) {
+                setCurrentEntryId(data.data.notionPageId);
+              }
               // Automatically set pitch deck URL if available
               if (data.data.presentationUrl) {
                 setPitchDeckUrl(data.data.presentationUrl);
@@ -392,7 +359,12 @@ const Generator: React.FC = () => {
                 setMeetingDate1(data.data.meetingDates[0] || "");
                 setMeetingDate2(data.data.meetingDates[1] || "");
                 setMeetingDate3(data.data.meetingDates[2] || "");
-                console.log("✅ Set meeting dates:", data.data.meetingDates[0], data.data.meetingDates[1], data.data.meetingDates[2]);
+                console.log(
+                  "✅ Set meeting dates:",
+                  data.data.meetingDates[0],
+                  data.data.meetingDates[1],
+                  data.data.meetingDates[2]
+                );
               }
               if (data.data.bookingLinks) {
                 setBookingLinks(data.data.bookingLinks);
@@ -573,7 +545,7 @@ const Generator: React.FC = () => {
       }
 
       // Update result state with new email content
-      setResult((prev) => 
+      setResult((prev) =>
         prev ? { ...prev, emailContent: editableEmailContent } : prev
       );
 
@@ -982,6 +954,19 @@ const Generator: React.FC = () => {
       setMeetingDate3("");
     }
 
+    // Set bookedSlotIndex if available
+    setBookedSlotIndex(entry.bookedSlotIndex ?? null);
+
+    // Set møtedato if available
+    console.log("📅 Loading entry møtedato:", entry.møtedato);
+    setMøtedato(entry.møtedato || null);
+    
+    // Set emailLocked if available
+    setEmailLocked(entry.emailLocked || false);
+
+    // Track current entry ID for localStorage
+    setCurrentEntryId(entry.id);
+
     // Load booking links if available
     if (entry.bookingLinks) {
       setBookingLinks(entry.bookingLinks);
@@ -1278,72 +1263,9 @@ const Generator: React.FC = () => {
                       disabled={loading}
                     />
                   </div>
-                  
+
                   {/* Meeting Date Pickers */}
-                  {(meetingDate1 || meetingDate2 || meetingDate3) && (
-                    <div className={styles.meetingDatesSection}>
-                      <strong>Meeting Proposals:</strong>
-                      <div className={styles.meetingDates}>
-                        <div className={styles.datePickerItem}>
-                          <label>Slot 1:</label>
-                          <input
-                            type="datetime-local"
-                            className={styles.inlineEditable}
-                            value={meetingDate1 ? (() => { const d = new Date(meetingDate1); return isNaN(d.getTime()) ? "" : d.toISOString().slice(0, 16); })() : ""}
-                            onChange={(e) => {
-                              const newDate = e.target.value ? new Date(e.target.value).toISOString() : "";
-                              setMeetingDate1(newDate);
-                              autoSaveMeetingDates([newDate, meetingDate2, meetingDate3]);
-                            }}
-                            disabled={loading}
-                          />
-                          {bookingLinks[0] && (
-                            <a href={bookingLinks[0]} target="_blank" rel="noopener noreferrer" className={styles.bookingLink}>
-                              🔗
-                            </a>
-                          )}
-                        </div>
-                        <div className={styles.datePickerItem}>
-                          <label>Slot 2:</label>
-                          <input
-                            type="datetime-local"
-                            className={styles.inlineEditable}
-                            value={meetingDate2 ? (() => { const d = new Date(meetingDate2); return isNaN(d.getTime()) ? "" : d.toISOString().slice(0, 16); })() : ""}
-                            onChange={(e) => {
-                              const newDate = e.target.value ? new Date(e.target.value).toISOString() : "";
-                              setMeetingDate2(newDate);
-                              autoSaveMeetingDates([meetingDate1, newDate, meetingDate3]);
-                            }}
-                            disabled={loading}
-                          />
-                          {bookingLinks[1] && (
-                            <a href={bookingLinks[1]} target="_blank" rel="noopener noreferrer" className={styles.bookingLink}>
-                              🔗
-                            </a>
-                          )}
-                        </div>
-                        <div className={styles.datePickerItem}>
-                          <label>Slot 3:</label>
-                          <input
-                            type="datetime-local"
-                            className={styles.inlineEditable}
-                            value={meetingDate3 ? (() => { const d = new Date(meetingDate3); return isNaN(d.getTime()) ? "" : d.toISOString().slice(0, 16); })() : ""}
-                            onChange={(e) => {
-                              const newDate = e.target.value ? new Date(e.target.value).toISOString() : "";
-                              setMeetingDate3(newDate);
-                              autoSaveMeetingDates([meetingDate1, meetingDate2, newDate]);
-                            }}
-                            disabled={loading}
-                          />
-                          {bookingLinks[2] && (
-                            <a href={bookingLinks[2]} target="_blank" rel="noopener noreferrer" className={styles.bookingLink}>
-                              🔗
-                            </a>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  )}
+
                   <div className={styles.infoItem}>
                     <strong>Website:</strong>{" "}
                     <a
@@ -1354,6 +1276,216 @@ const Generator: React.FC = () => {
                       {result.website}
                     </a>
                   </div>
+                  {(meetingDate1 || meetingDate2 || meetingDate3) && (
+                    <div className={styles.meetingDatesSection}>
+                      {møtedato ? (
+                        // Show single confirmed meeting date from Notion
+                        <>
+                          <strong
+                            style={{
+                              marginBottom: "12px",
+                              display: "block",
+                              fontSize: "14px",
+                            }}
+                          >
+                            Confirmed Meeting:
+                          </strong>
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "12px",
+                              padding: "16px 20px",
+                              backgroundColor: "#1a1a1a",
+                              borderRadius: "24px",
+                              border: "1px solid #333",
+                            }}
+                          >
+                            <span
+                              style={{
+                                fontSize: "16px",
+                                fontWeight: "600",
+                                color: "#ffffff",
+                                letterSpacing: "0.3px",
+                              }}
+                            >
+                              {(() => {
+                                const d = new Date(møtedato);
+                                if (isNaN(d.getTime())) return "";
+                                const offset = d.getTimezoneOffset() * 60000;
+                                const localDate = new Date(
+                                  d.getTime() - offset
+                                );
+                                const formatted = localDate
+                                  .toISOString()
+                                  .slice(0, 16)
+                                  .replace("T", ", ");
+                                return formatted;
+                              })()}
+                            </span>
+                            <span
+                              style={{
+                                marginLeft: "auto",
+                                padding: "4px 12px",
+                                backgroundColor: "#4CAF50",
+                                color: "#ffffff",
+                                borderRadius: "12px",
+                                fontSize: "13px",
+                                fontWeight: "600",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "4px",
+                              }}
+                            >
+                              ✓ Booked
+                            </span>
+                          </div>
+                        </>
+                      ) : (
+                        // Show 3 meeting proposals
+                        <>
+                          <strong>Meeting Proposals:</strong>
+                          <div className={styles.meetingDates}>
+                            <div className={styles.datePickerItem}>
+                              <label>Slot 1:</label>
+                              <input
+                                type="datetime-local"
+                                className={styles.inlineEditable}
+                                value={
+                                  meetingDate1
+                                    ? (() => {
+                                        const d = new Date(meetingDate1);
+                                        if (isNaN(d.getTime())) return "";
+                                        const offset =
+                                          d.getTimezoneOffset() * 60000;
+                                        const localDate = new Date(
+                                          d.getTime() - offset
+                                        );
+                                        return localDate
+                                          .toISOString()
+                                          .slice(0, 16);
+                                      })()
+                                    : ""
+                                }
+                                onChange={(e) => {
+                                  const newDate = e.target.value
+                                    ? new Date(e.target.value).toISOString()
+                                    : "";
+                                  setMeetingDate1(newDate);
+                                  autoSaveMeetingDates([
+                                    newDate,
+                                    meetingDate2,
+                                    meetingDate3,
+                                  ]);
+                                }}
+                                disabled={loading}
+                              />
+                              {bookingLinks[0] && (
+                                <a
+                                  href={bookingLinks[0]}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className={styles.bookingLink}
+                                >
+                                  🔗
+                                </a>
+                              )}
+                            </div>
+                            <div className={styles.datePickerItem}>
+                              <label>Slot 2:</label>
+                              <input
+                                type="datetime-local"
+                                className={styles.inlineEditable}
+                                value={
+                                  meetingDate2
+                                    ? (() => {
+                                        const d = new Date(meetingDate2);
+                                        if (isNaN(d.getTime())) return "";
+                                        const offset =
+                                          d.getTimezoneOffset() * 60000;
+                                        const localDate = new Date(
+                                          d.getTime() - offset
+                                        );
+                                        return localDate
+                                          .toISOString()
+                                          .slice(0, 16);
+                                      })()
+                                    : ""
+                                }
+                                onChange={(e) => {
+                                  const newDate = e.target.value
+                                    ? new Date(e.target.value).toISOString()
+                                    : "";
+                                  setMeetingDate2(newDate);
+                                  autoSaveMeetingDates([
+                                    meetingDate1,
+                                    newDate,
+                                    meetingDate3,
+                                  ]);
+                                }}
+                                disabled={loading}
+                              />
+                              {bookingLinks[1] && (
+                                <a
+                                  href={bookingLinks[1]}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className={styles.bookingLink}
+                                >
+                                  🔗
+                                </a>
+                              )}
+                            </div>
+                            <div className={styles.datePickerItem}>
+                              <label>Slot 3:</label>
+                              <input
+                                type="datetime-local"
+                                className={styles.inlineEditable}
+                                value={
+                                  meetingDate3
+                                    ? (() => {
+                                        const d = new Date(meetingDate3);
+                                        if (isNaN(d.getTime())) return "";
+                                        const offset =
+                                          d.getTimezoneOffset() * 60000;
+                                        const localDate = new Date(
+                                          d.getTime() - offset
+                                        );
+                                        return localDate
+                                          .toISOString()
+                                          .slice(0, 16);
+                                      })()
+                                    : ""
+                                }
+                                onChange={(e) => {
+                                  const newDate = e.target.value
+                                    ? new Date(e.target.value).toISOString()
+                                    : "";
+                                  setMeetingDate3(newDate);
+                                  autoSaveMeetingDates([
+                                    meetingDate1,
+                                    meetingDate2,
+                                    newDate,
+                                  ]);
+                                }}
+                                disabled={loading}
+                              />
+                              {bookingLinks[2] && (
+                                <a
+                                  href={bookingLinks[2]}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className={styles.bookingLink}
+                                >
+                                  🔗
+                                </a>
+                              )}
+                            </div>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 <div className={styles.logoColumn}>
@@ -1478,9 +1610,10 @@ const Generator: React.FC = () => {
                 setIsEmailModified(true);
               }}
               rows={15}
+              disabled={emailLocked || emailSent}
             />
 
-            <div className={styles.emailSentCheckbox}>
+            {!emailLocked && <div className={styles.emailSentCheckbox}>
               <label>
                 <input
                   type="checkbox"
@@ -1517,27 +1650,36 @@ const Generator: React.FC = () => {
                 />
                 <span>Mark email as sent</span>
               </label>
-            </div>
+            </div>}
 
             <div className={styles.field}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '5px' }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "10px",
+                  marginBottom: "5px",
+                }}
+              >
                 <label className={styles.label}>Lead Status</label>
                 <button
                   onClick={handleRefreshEntry}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    fontSize: '14px',
-                    padding: '4px 8px',
-                    opacity: 0.7,
-                    transition: 'opacity 0.2s',
-                  }}
-                  onMouseOver={(e) => (e.currentTarget.style.opacity = '1')}
-                  onMouseOut={(e) => (e.currentTarget.style.opacity = '0.7')}
+                  className={styles.refreshButton}
                   title="Refresh data from server (e.g., to check for booking updates)"
                 >
-                  🔄
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M14 8C14 11.3137 11.3137 14 8 14C4.68629 14 2 11.3137 2 8C2 4.68629 4.68629 2 8 2C10.3869 2 12.4584 3.29441 13.5 5.2M13.5 2V5.2M13.5 5.2H10.3" 
+                      stroke="url(#gradient)" 
+                      strokeWidth="1.5" 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round"/>
+                    <defs>
+                      <linearGradient id="gradient" x1="2" y1="2" x2="14" y2="14" gradientUnits="userSpaceOnUse">
+                        <stop offset="0%" stopColor="#e3deea"/>
+                        <stop offset="100%" stopColor="#edd1d1"/>
+                      </linearGradient>
+                    </defs>
+                  </svg>
                 </button>
               </div>
               <select
@@ -1546,6 +1688,11 @@ const Generator: React.FC = () => {
                 onChange={async (e) => {
                   const newStatus = e.target.value;
                   setLeadStatus(newStatus);
+                  
+                  // Lock email if status becomes "Avventer svar"
+                  if (newStatus === "Avventer svar" && !emailLocked) {
+                    setEmailLocked(true);
+                  }
 
                   // Save to backend
                   if (result?.notionPageId) {
@@ -1558,6 +1705,7 @@ const Generator: React.FC = () => {
                         body: JSON.stringify({
                           pageId: result.notionPageId,
                           leadStatus: newStatus,
+                          emailLocked: newStatus === "Avventer svar" ? true : undefined,
                         }),
                       });
                     } catch (error) {
@@ -1620,7 +1768,7 @@ const Generator: React.FC = () => {
                     window.open(pitchDeckUrl, "_blank");
                   }}
                 >
-                  Visit Presentation
+                  Presentation
                 </Button>
               )}
               <Button
@@ -1638,7 +1786,7 @@ const Generator: React.FC = () => {
                   window.open(linkedInSearchUrl, "_blank");
                 }}
               >
-                Search LinkedIn
+                LinkedIn
               </Button>
               {result.email && (
                 <Button
@@ -1647,7 +1795,7 @@ const Generator: React.FC = () => {
                   target={isMobile ? undefined : "_blank"}
                   rel={isMobile ? undefined : "noopener noreferrer"}
                 >
-                  Open in Gmail
+                  Open Gmail
                 </Button>
               )}
             </div>

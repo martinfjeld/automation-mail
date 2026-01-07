@@ -112,4 +112,12 @@ export class UrlShortenerService {
 
     this.writeStore(filtered);
   }
+
+  /**
+   * Clear all URLs
+   */
+  clearAll(): void {
+    this.writeStore([]);
+    console.log("🗑️  Cleared all short URLs");
+  }
 }

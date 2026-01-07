@@ -40,11 +40,15 @@ async function updateBookingConfirmation(
       return;
     }
 
-    console.log("✅ Found matching history entry:", matchingEntry.id, matchingEntry.companyName);
+    console.log(
+      "✅ Found matching history entry:",
+      matchingEntry.id,
+      matchingEntry.companyName
+    );
 
     // Determine which slot was booked (0, 1, or 2)
-    const bookedSlotIndex = matchingEntry.bookingLinks?.findIndex((link: string) =>
-      link.includes(token)
+    const bookedSlotIndex = matchingEntry.bookingLinks?.findIndex(
+      (link: string) => link.includes(token)
     );
 
     if (bookedSlotIndex === undefined || bookedSlotIndex === -1) {
@@ -165,7 +169,12 @@ router.get("/:token", async (req: Request, res: Response) => {
     );
 
     // Update history and Notion after successful booking
-    await updateBookingConfirmation(token, startISO, customerEmail, customerDisplayName);
+    await updateBookingConfirmation(
+      token,
+      startISO,
+      customerEmail,
+      customerDisplayName
+    );
 
     // Return success page with meeting details
     const html = successTemplate
@@ -182,7 +191,8 @@ router.get("/:token", async (req: Request, res: Response) => {
 
     // Add contact message for unavailable time slots
     if (errorMessage === "Tidspunktet er ikke lenger tilgjengelig") {
-      errorMessage += '<br><br>Send meg en mail på <a href="mailto:martin@no-offence.io" style="color: #0f0f0f; font-weight: bold;">martin@no-offence.io</a> så finner vi et nytt tidspunkt!';
+      errorMessage +=
+        '<br><br>Send meg en mail på <a href="mailto:martin@no-offence.io" style="color: #0f0f0f; font-weight: bold;">martin@no-offence.io</a> så finner vi et nytt tidspunkt!';
     }
 
     const html = errorTemplate.replace("{{ERROR_MESSAGE}}", errorMessage);
@@ -243,7 +253,12 @@ router.post("/book", async (req: Request, res: Response) => {
     );
 
     // Update history and Notion after successful booking
-    await updateBookingConfirmation(token, startISO, clientEmail, customerDisplayName);
+    await updateBookingConfirmation(
+      token,
+      startISO,
+      clientEmail,
+      customerDisplayName
+    );
 
     // Return JSON response
     res.json({

@@ -46,4 +46,15 @@ router.get("/", async (req, res) => {
   }
 });
 
+// DELETE /api/short-urls - Clear all short URLs
+router.delete("/", async (req, res) => {
+  try {
+    shortener.clearAll();
+    res.json({ success: true, message: "All short URLs cleared" });
+  } catch (error) {
+    console.error("Error clearing short URLs:", error);
+    res.status(500).json({ error: "Failed to clear short URLs" });
+  }
+});
+
 export default router;

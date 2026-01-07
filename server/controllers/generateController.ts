@@ -744,68 +744,78 @@ class GenerateController {
       // Add meeting proposals to email
       let meetingDates: string[] = [];
       let bookingLinks: string[] = [];
-      
+
       if (meetingProposals.length === 3) {
         const baseUrl = process.env.BASE_URL || "http://localhost:3001";
-        
+
         // Determine backend API URL
         const backendUrl = process.env.BACKEND_URL || "http://localhost:3001";
-        
-        console.log("🔍 Meeting proposals:", JSON.stringify(meetingProposals, null, 2));
-        
+
+        console.log(
+          "🔍 Meeting proposals:",
+          JSON.stringify(meetingProposals, null, 2)
+        );
+
         // Extract meeting dates (startISO from each proposal) with validation
         meetingDates = meetingProposals
-          .map(proposal => {
+          .map((proposal) => {
             console.log("🔍 Processing proposal:", proposal);
             if (!proposal.startISO) {
               console.log("⚠️ No startISO found");
               return null;
             }
             const date = new Date(proposal.startISO);
-            console.log("🔍 Created date:", date, "Is valid:", !isNaN(date.getTime()));
+            console.log(
+              "🔍 Created date:",
+              date,
+              "Is valid:",
+              !isNaN(date.getTime())
+            );
             return isNaN(date.getTime()) ? null : date.toISOString();
           })
           .filter((date): date is string => date !== null);
-        
+
         console.log("📅 Extracted meeting dates:", meetingDates);
-        
+
         const meetingBlock =
           `\n\nHvis du ønsker et kort møte for å diskutere mulighetene, kan du velge et tidspunkt som passer deg:\n\n` +
-          (await Promise.all(
-            meetingProposals.map(async (proposal, index) => {
-              const bookingUrl = `${baseUrl}/book/${
-                proposal.bookingToken
-              }?e=${encodeURIComponent(finalEmail)}&n=${encodeURIComponent(
-                finalContactPerson
-              )}`;
-              
-              // Create short URL via API
-              try {
-                const response = await fetch(`${backendUrl}/api/short-urls`, {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ fullUrl: bookingUrl }),
-                });
-                
-                if (!response.ok) {
-                  throw new Error(`API returned ${response.status}`);
+          (
+            await Promise.all(
+              meetingProposals.map(async (proposal, index) => {
+                const bookingUrl = `${baseUrl}/book/${
+                  proposal.bookingToken
+                }?e=${encodeURIComponent(finalEmail)}&n=${encodeURIComponent(
+                  finalContactPerson
+                )}`;
+
+                // Create short URL via API
+                try {
+                  const response = await fetch(`${backendUrl}/api/short-urls`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ fullUrl: bookingUrl }),
+                  });
+
+                  if (!response.ok) {
+                    throw new Error(`API returned ${response.status}`);
+                  }
+
+                  const data = (await response.json()) as { shortUrl: string };
+                  const shortUrl = data.shortUrl;
+
+                  // Store the short URL
+                  bookingLinks.push(shortUrl);
+
+                  return `${index + 1}. ${proposal.display} - ${shortUrl}`;
+                } catch (error) {
+                  console.error("Failed to create short URL:", error);
+                  // Fallback to full URL if API fails
+                  bookingLinks.push(bookingUrl);
+                  return `${index + 1}. ${proposal.display} - ${bookingUrl}`;
                 }
-                
-                const data = (await response.json()) as { shortUrl: string };
-                const shortUrl = data.shortUrl;
-                
-                // Store the short URL
-                bookingLinks.push(shortUrl);
-                
-                return `${index + 1}. ${proposal.display} - ${shortUrl}`;
-              } catch (error) {
-                console.error("Failed to create short URL:", error);
-                // Fallback to full URL if API fails
-                bookingLinks.push(bookingUrl);
-                return `${index + 1}. ${proposal.display} - ${bookingUrl}`;
-              }
-            })
-          )).join("\n\n");
+              })
+            )
+          ).join("\n\n");
 
         // Insert before "Med vennlig hilsen," if present
         if (finalEmailContent.includes("Med vennlig hilsen,")) {
@@ -900,9 +910,15 @@ class GenerateController {
           bookingLinks: bookingLinks.length > 0 ? bookingLinks : undefined,
         },
       };
-      
-      console.log("📤 Response data meetingDates:", responseData.data.meetingDates);
-      console.log("📤 Response data bookingLinks:", responseData.data.bookingLinks);
+
+      console.log(
+        "📤 Response data meetingDates:",
+        responseData.data.meetingDates
+      );
+      console.log(
+        "📤 Response data bookingLinks:",
+        responseData.data.bookingLinks
+      );
 
       // Save to history
       try {
@@ -968,24 +984,36 @@ class GenerateController {
         // Auto-sync to production if running in development
         if (process.env.NODE_ENV === "development") {
           try {
-            const productionUrl = process.env.PRODUCTION_BACKEND_URL || "https://automation-mail-zk8t.onrender.com";
+            const productionUrl =
+              process.env.PRODUCTION_BACKEND_URL ||
+              "https://automation-mail-zk8t.onrender.com";
             const allEntries = historyService.getAllEntries();
-            
-            console.log(`🔄 Auto-syncing ${allEntries.length} entries to production...`);
-            
-            const response = await fetch(`${productionUrl}/api/history/upload`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ entries: allEntries }),
-            });
-            
+
+            console.log(
+              `🔄 Auto-syncing ${allEntries.length} entries to production...`
+            );
+
+            const response = await fetch(
+              `${productionUrl}/api/history/upload`,
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ entries: allEntries }),
+              }
+            );
+
             if (response.ok) {
               console.log("✅ Auto-sync to production successful");
             } else {
-              console.warn(`⚠️ Auto-sync failed with status ${response.status}`);
+              console.warn(
+                `⚠️ Auto-sync failed with status ${response.status}`
+              );
             }
           } catch (syncError: any) {
-            console.warn("⚠️ Auto-sync to production failed:", syncError.message);
+            console.warn(
+              "⚠️ Auto-sync to production failed:",
+              syncError.message
+            );
             // Don't fail the request if sync fails
           }
         }

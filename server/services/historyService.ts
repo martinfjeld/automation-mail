@@ -40,11 +40,16 @@ export class HistoryService {
     if (persistentPath) {
       this.historyFilePath = path.join(persistentPath, "history.json");
       console.log(`📁 Using persistent storage: ${this.historyFilePath}`);
-      
+
       // Migration: Copy from project root to persistent disk if persistent is empty
       const projectRootPath = path.join(process.cwd(), "history.json");
-      if (fs.existsSync(projectRootPath) && !fs.existsSync(this.historyFilePath)) {
-        console.log(`🔄 Migrating history.json from project root to persistent disk...`);
+      if (
+        fs.existsSync(projectRootPath) &&
+        !fs.existsSync(this.historyFilePath)
+      ) {
+        console.log(
+          `🔄 Migrating history.json from project root to persistent disk...`
+        );
         try {
           const data = fs.readFileSync(projectRootPath, "utf-8");
           fs.writeFileSync(this.historyFilePath, data);

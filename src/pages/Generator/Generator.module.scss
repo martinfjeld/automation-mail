@@ -86,6 +86,26 @@ h3 {
   font-size: 0.875rem;
 }
 
+.refreshButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 8px;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    opacity: 1;
+  }
+
+  svg {
+    display: block;
+  }
+}
+
 .input,
 .select {
   padding: $spacing-sm;
@@ -466,11 +486,17 @@ h3 {
   line-height: 1.6;
   background: $bg-dark-tertiary;
   color: $text-dark;
+  transition: all 0.2s ease;
 
   &:focus {
     outline: none;
     border: 2px solid transparent;
     border-image: $primary-gradient-bg 1;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
   }
 }
 
@@ -488,9 +514,36 @@ h3 {
     font-family: "Helvetica Neue", sans-serif;
 
     input[type="checkbox"] {
-      width: 18px;
-      height: 18px;
+      appearance: none;
+      width: 22px;
+      height: 22px;
       cursor: pointer;
+      border-radius: 4px;
+      background: $linearBackground;
+      border: 2px solid rgba(0, 0, 0, 0.1);
+      position: relative;
+      transition: all 0.2s ease;
+
+      &:hover {
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+      }
+
+      &:checked {
+        background: $linearBackground;
+        border-color: rgba(0, 0, 0, 0.2);
+
+        &::after {
+          content: "";
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          width: 5px;
+          height: 10px;
+          border: solid #0f0f0f;
+          border-width: 0 2.5px 2.5px 0;
+          transform: translate(-50%, -60%) rotate(45deg);
+        }
+      }
     }
 
     span {

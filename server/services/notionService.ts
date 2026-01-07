@@ -395,7 +395,7 @@ export class NotionService {
 
     try {
       const properties: any = {
-        "Møtedato": {
+        Møtedato: {
           date: {
             start: meetingDate,
           },
@@ -416,7 +416,9 @@ export class NotionService {
         properties,
       });
 
-      console.log(`✅ Notion meeting date updated: ${pageId} -> ${meetingDate}`);
+      console.log(
+        `✅ Notion meeting date updated: ${pageId} -> ${meetingDate}`
+      );
     } catch (error: any) {
       console.error("Notion meeting date update failed:", error.message);
       throw new Error("Failed to update meeting date in Notion");
@@ -442,9 +444,13 @@ export class NotionService {
     }
   }
 
-  async getPageProperties(
-    pageId: string
-  ): Promise<{ emailContent?: string; industry?: string }> {
+  async getPageProperties(pageId: string): Promise<{
+    emailContent?: string;
+    industry?: string;
+    leadStatus?: string;
+    bookedSlotIndex?: number | null;
+    møtedato?: string | null;
+  }> {
     if (!this.client) {
       throw new Error("Notion client not initialized");
     }
@@ -455,6 +461,9 @@ export class NotionService {
 
       let emailContent: string | undefined;
       let industry: string | undefined;
+      let leadStatus: string | undefined;
+      let bookedSlotIndex: number | null | undefined;
+      let møtedato: string | null | undefined;
 
       // Extract "Melding jeg sendte" (email content)
       if (properties["Melding jeg sendte"]?.rich_text?.[0]?.text?.content) {
@@ -467,7 +476,17 @@ export class NotionService {
         industry = properties["Bransje"].rich_text[0].text.content;
       }
 
-      return { emailContent, industry };
+      // Extract "Lead status"
+      if (properties["Lead status"]?.select?.name) {
+        leadStatus = properties["Lead status"].select.name;
+      }
+
+      // Extract "Møtedato" - the confirmed meeting date
+      if (properties["Møtedato"]?.date?.start) {
+        møtedato = properties["Møtedato"].date.start;
+      }
+
+      return { emailContent, industry, leadStatus, bookedSlotIndex, møtedato };
     } catch (error: any) {
       console.error("Failed to fetch page properties:", error.message);
       throw new Error("Failed to fetch page properties from Notion");
