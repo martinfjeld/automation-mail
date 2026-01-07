@@ -120,4 +120,16 @@ export class UrlShortenerService {
     this.writeStore([]);
     console.log("🗑️  Cleared all short URLs");
   }
+
+  /**
+   * Delete specific short URL codes
+   */
+  deleteCodes(codes: string[]): void {
+    if (!codes || codes.length === 0) return;
+    
+    const urls = this.readStore();
+    const filtered = urls.filter((u) => !codes.includes(u.code));
+    this.writeStore(filtered);
+    console.log(`🗑️  Deleted ${urls.length - filtered.length} short URL(s)`);
+  }
 }

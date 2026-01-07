@@ -1,8 +1,7 @@
 import { Router, Request, Response } from "express";
 import { HistoryService } from "../services/historyService";
 import { NotionService } from "../services/notionService";
-import { SanityService } from "../services/sanityService";
-import * as fs from "fs";
+import { SanityService } from "../services/sanityService";import { UrlShortenerService } from "../services/urlShortenerService";import * as fs from "fs";
 import * as path from "path";
 
 const router = Router();
@@ -213,6 +212,18 @@ router.delete("/:id", async (req: Request, res: Response) => {
           console.error("Failed to delete from Sanity:", error.message);
           errors.push(`Sanity: ${error.message}`);
         }
+      }
+    }
+
+    // Delete associated short URL codes
+    if (entry.bookingLinks && entry.bookingLinks.length > 0) {
+      try {
+        const urlShortener = new UrlShortenerService();
+        urlShortener.deleteCodes(entry.bookingLinks);
+        console.log("✅ Deleted associated short URLs");
+      } catch (error: any) {
+        console.error("Failed to delete short URLs:", error.message);
+        errors.push(`Short URLs: ${error.message}`);
       }
     }
 
