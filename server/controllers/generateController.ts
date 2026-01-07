@@ -770,7 +770,7 @@ class GenerateController {
                   throw new Error(`API returned ${response.status}`);
                 }
                 
-                const data = await response.json();
+                const data = (await response.json()) as { shortUrl: string };
                 const shortUrl = data.shortUrl;
                 
                 return `${index + 1}. ${proposal.display} - ${shortUrl}`;
