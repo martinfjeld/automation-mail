@@ -12,8 +12,15 @@ export class UrlShortenerService {
   private storePath: string;
 
   constructor() {
-    // Store in project root for now
-    this.storePath = path.join(process.cwd(), "short-urls.json");
+    // Use persistent storage if available, otherwise project root
+    const persistentPath = process.env.PERSISTENT_STORAGE_PATH;
+    if (persistentPath) {
+      this.storePath = path.join(persistentPath, "short-urls.json");
+      console.log(`📁 Using persistent storage: ${this.storePath}`);
+    } else {
+      this.storePath = path.join(process.cwd(), "short-urls.json");
+      console.log(`📁 Using project root storage: ${this.storePath}`);
+    }
     this.ensureStoreExists();
   }
 
