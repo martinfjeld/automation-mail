@@ -12,24 +12,15 @@ export class UrlShortenerService {
   private storePath: string;
 
   constructor() {
-    // Use persistent disk path if available, otherwise project root
-    const persistentPath = process.env.PERSISTENT_STORAGE_PATH;
-    if (persistentPath) {
-      this.storePath = path.join(persistentPath, "short-urls.json");
-      console.log(`📁 Using persistent storage: ${this.storePath}`);
-    } else {
-      this.storePath = path.join(process.cwd(), "short-urls.json");
-      console.log(`📁 Using project root storage: ${this.storePath}`);
-    }
+    // Store in project root for now
+    this.storePath = path.join(process.cwd(), "short-urls.json");
     this.ensureStoreExists();
   }
 
   private ensureStoreExists() {
-    // Don't try to create the mount point itself (/data), Render handles that
-    // Only ensure the file exists
     if (!fs.existsSync(this.storePath)) {
       fs.writeFileSync(this.storePath, JSON.stringify([]));
-      console.log(`✅ Created short-urls.json file at ${this.storePath}`);
+      console.log("✅ Created short-urls.json file");
     }
   }
 
