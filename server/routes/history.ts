@@ -142,4 +142,45 @@ router.delete("/:id", async (req: Request, res: Response) => {
   }
 });
 
+// Upload/sync history entries from local to production
+router.post("/upload", async (req: Request, res: Response) => {
+  try {
+    const { entries } = req.body;
+
+    if (!entries || !Array.isArray(entries)) {
+      return res.status(400).json({
+        success: false,
+        error: "Invalid request: entries array required",
+      });
+    }
+
+    console.log(`📤 Received upload request for ${entries.length} entries`);
+
+    // Replace the entire history with the uploaded entries
+    const fs = require("fs");
+    const path = require("path");
+    
+    const persistentPath = process.env.PERSISTENT_STORAGE_PATH;
+    const historyPath = persistentPath 
+      ? path.join(persistentPath, "history.json")
+      : path.join(process.cwd(), "history.json");
+
+    fs.writeFileSync(historyPath, JSON.stringify(entries, null, 2));
+    
+    console.log(`✅ Uploaded ${entries.length} entries to ${historyPath}`);
+
+    res.json({
+      success: true,
+      count: entries.length,
+      message: `Successfully uploaded ${entries.length} entries to production`,
+    });
+  } catch (error: any) {
+    console.error("Upload entries error:", error);
+    res.status(500).json({
+      success: false,
+      error: error.message || "Failed to upload entries",
+    });
+  }
+});
+
 export default router;
