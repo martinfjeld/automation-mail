@@ -2,6 +2,8 @@ import { Router, Request, Response } from "express";
 import { HistoryService } from "../services/historyService";
 import { NotionService } from "../services/notionService";
 import { SanityService } from "../services/sanityService";
+import * as fs from "fs";
+import * as path from "path";
 
 const router = Router();
 const historyService = new HistoryService();
@@ -145,29 +147,32 @@ router.delete("/:id", async (req: Request, res: Response) => {
 // Upload/sync history entries from local to production
 router.post("/upload", async (req: Request, res: Response) => {
   try {
+    console.log("📥 Upload request received");
+    console.log("Body keys:", Object.keys(req.body));
+    console.log("Body:", JSON.stringify(req.body).substring(0, 200));
+    
     const { entries } = req.body;
 
     if (!entries || !Array.isArray(entries)) {
+      console.error("❌ Invalid entries:", typeof entries, Array.isArray(entries));
       return res.status(400).json({
         success: false,
-        error: "Invalid request: entries array required",
+        error: `Invalid request: entries array required. Got: ${typeof entries}`,
       });
     }
 
-    console.log(`📤 Received upload request for ${entries.length} entries`);
-
-    // Replace the entire history with the uploaded entries
-    const fs = require("fs");
-    const path = require("path");
+    console.log(`📤 Processing upload for ${entries.length} entries`);
     
     const persistentPath = process.env.PERSISTENT_STORAGE_PATH;
     const historyPath = persistentPath 
       ? path.join(persistentPath, "history.json")
       : path.join(process.cwd(), "history.json");
 
+    console.log(`📁 Writing to: ${historyPath}`);
+    
     fs.writeFileSync(historyPath, JSON.stringify(entries, null, 2));
     
-    console.log(`✅ Uploaded ${entries.length} entries to ${historyPath}`);
+    console.log(`✅ Successfully wrote ${entries.length} entries to ${historyPath}`);
 
     res.json({
       success: true,
@@ -175,10 +180,12 @@ router.post("/upload", async (req: Request, res: Response) => {
       message: `Successfully uploaded ${entries.length} entries to production`,
     });
   } catch (error: any) {
-    console.error("Upload entries error:", error);
+    console.error("❌ Upload entries error:", error);
+    console.error("Stack:", error.stack);
     res.status(500).json({
       success: false,
       error: error.message || "Failed to upload entries",
+      stack: error.stack,
     });
   }
 });
