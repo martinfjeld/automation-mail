@@ -1,6 +1,7 @@
 import { Router, Request, Response } from "express";
 import { CalendarService } from "../services/calendarService";
-import { HistoryService } from "../services/historyService";
+import { HistoryService, HistoryEntry } from "../services/historyService";
+import { NotionService } from "../services/notionService";
 import * as fs from "fs";
 import * as path from "path";
 
@@ -15,6 +16,80 @@ const errorTemplate = fs.readFileSync(
   path.join(__dirname, "../templates/booking-error.html"),
   "utf-8"
 );
+
+/**
+ * Helper function to update history and Notion after a successful booking
+ */
+async function updateBookingConfirmation(
+  token: string,
+  meetingStartISO: string,
+  customerEmail: string,
+  customerName?: string
+): Promise<void> {
+  try {
+    const historyService = new HistoryService();
+    const allEntries = historyService.getAllEntries();
+
+    // Find the history entry that contains this booking token
+    const matchingEntry = allEntries.find((entry: HistoryEntry) =>
+      entry.bookingLinks?.some((link: string) => link.includes(token))
+    );
+
+    if (!matchingEntry) {
+      console.warn("⚠️ No matching history entry found for token:", token);
+      return;
+    }
+
+    console.log("✅ Found matching history entry:", matchingEntry.id, matchingEntry.companyName);
+
+    // Determine which slot was booked (0, 1, or 2)
+    const bookedSlotIndex = matchingEntry.bookingLinks?.findIndex((link: string) =>
+      link.includes(token)
+    );
+
+    if (bookedSlotIndex === undefined || bookedSlotIndex === -1) {
+      console.warn("⚠️ Could not determine which slot was booked");
+      return;
+    }
+
+    console.log("📍 Booked slot index:", bookedSlotIndex);
+
+    // Update the history entry
+    historyService.updateEntry(matchingEntry.id, {
+      møtedato: meetingStartISO,
+      bookedSlotIndex,
+      leadStatus: "Avventer svar",
+    });
+
+    console.log("✅ History updated with meeting date");
+
+    // Update Notion if we have the page ID
+    if (matchingEntry.notionPageId) {
+      const notionToken = process.env.NOTION_TOKEN;
+      const notionDatabaseId = process.env.NOTION_DATABASE_ID;
+
+      if (notionToken && notionDatabaseId) {
+        const notionService = new NotionService(notionToken, notionDatabaseId);
+
+        try {
+          await notionService.updateMeetingDate(
+            matchingEntry.notionPageId,
+            meetingStartISO,
+            true // Update lead status to "Avventer svar"
+          );
+          console.log("✅ Notion updated with meeting date");
+        } catch (notionError: any) {
+          console.error("❌ Failed to update Notion:", notionError.message);
+        }
+      } else {
+        console.log("⚠️ Notion not configured, skipping Notion update");
+      }
+    }
+  } catch (error: any) {
+    console.error("❌ Booking confirmation update error:", error);
+    // Don't throw - this is a background update
+  }
+}
 
 /**
  * Preview booking screen for styling (dev only)
@@ -88,6 +163,9 @@ router.get("/:token", async (req: Request, res: Response) => {
         // { email: customerEmail }, // Uncomment this line for production
       ]
     );
+
+    // Update history and Notion after successful booking
+    await updateBookingConfirmation(token, startISO, customerEmail, customerDisplayName);
 
     // Return success page with meeting details
     const html = successTemplate
@@ -163,6 +241,9 @@ router.post("/book", async (req: Request, res: Response) => {
         // { email: clientEmail }, // Uncomment this line for production
       ]
     );
+
+    // Update history and Notion after successful booking
+    await updateBookingConfirmation(token, startISO, clientEmail, customerDisplayName);
 
     // Return JSON response
     res.json({

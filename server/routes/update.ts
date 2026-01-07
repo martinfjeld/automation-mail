@@ -32,6 +32,8 @@ router.patch("/", async (req: Request, res: Response) => {
       leadStatus,
       logoMode,
       presentationId,
+      meetingDates,
+      bookingLinks,
     } = req.body;
 
     if (!pageId) {
@@ -212,6 +214,8 @@ router.patch("/", async (req: Request, res: Response) => {
       if (automationText2 !== undefined)
         historyUpdates.automationText2 = automationText2;
       if (leadStatus !== undefined) historyUpdates.leadStatus = leadStatus;
+      if (meetingDates !== undefined) historyUpdates.meetingDates = meetingDates;
+      if (bookingLinks !== undefined) historyUpdates.bookingLinks = bookingLinks;
 
       historyService.updateEntry(pageId, historyUpdates);
     } catch (historyError: any) {

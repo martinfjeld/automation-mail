@@ -21,7 +21,7 @@
 .env.production.local
 
 # history storage
-history.json
+# history.json  # Temporarily commented out to deploy to production
 
 # utility scripts with OAuth credentials
 get-refresh-token.js

@@ -14,7 +14,6 @@ export const confirmBooking = async (req: Request, res: Response) => {
       email,
       name,
       meetingStartISO,
-      meetingEndISO,
       shortCode,
     } = req.body;
 
@@ -24,10 +23,17 @@ export const confirmBooking = async (req: Request, res: Response) => {
       name,
       meetingStartISO,
       shortCode,
+      fullBody: JSON.stringify(req.body, null, 2),
     });
 
     // Validate required fields
     if (!bookingToken || !email || !meetingStartISO || !shortCode) {
+      console.error("❌ Missing required fields:", {
+        hasBookingToken: !!bookingToken,
+        hasEmail: !!email,
+        hasMeetingStartISO: !!meetingStartISO,
+        hasShortCode: !!shortCode,
+      });
       return res.status(400).json({
         success: false,
         error: "Missing required fields: bookingToken, email, meetingStartISO, shortCode",
@@ -36,18 +42,66 @@ export const confirmBooking = async (req: Request, res: Response) => {
 
     // Create history service instance
     const historyService = new HistoryService();
+    
+    // Debug: Log history file location
+    console.log("📁 History service initialized");
+    console.log("   Storage path:", (historyService as any).historyFilePath || 'unknown');
 
     // Find the history entry that contains this booking link
     const allEntries = historyService.getAllEntries();
-    const matchingEntry = allEntries.find((entry: HistoryEntry) =>
-      entry.bookingLinks?.some((link: string) => link.includes(shortCode))
-    );
+    console.log(`🔍 Searching through ${allEntries.length} history entries for shortCode: "${shortCode}"`);
+    console.log(`📋 All entries:`, allEntries.map(e => ({
+      id: e.id,
+      company: e.companyName,
+      hasBookingLinks: !!e.bookingLinks,
+      bookingLinksCount: e.bookingLinks?.length || 0,
+      bookingLinks: e.bookingLinks,
+    })));
+    
+    const matchingEntry = allEntries.find((entry: HistoryEntry) => {
+      console.log(`🔎 Checking entry: ${entry.companyName}`);
+      console.log(`   bookingLinks:`, entry.bookingLinks);
+      
+      if (!entry.bookingLinks || !Array.isArray(entry.bookingLinks)) {
+        console.log(`   ❌ No bookingLinks array`);
+        return false;
+      }
+      
+      const hasMatch = entry.bookingLinks.some((link: string) => {
+        const matches = link.includes(shortCode);
+        console.log(`   Checking "${link}" includes "${shortCode}": ${matches}`);
+        return matches;
+      });
+      
+      if (hasMatch) {
+        console.log(`✅ Found match in entry ${entry.id}: ${entry.companyName}`);
+      }
+      return hasMatch;
+    });
 
     if (!matchingEntry) {
-      console.warn("⚠️ No matching history entry found for shortCode:", shortCode);
+      console.error("❌ No matching history entry found for shortCode:", shortCode);
+      console.error("📊 Debug info:");
+      console.error("  - Total entries:", allEntries.length);
+      console.error("  - Entries with bookingLinks:", allEntries.filter(e => e.bookingLinks).length);
+      console.error("  - All booking links:");
+      allEntries.forEach((entry, idx) => {
+        if (entry.bookingLinks) {
+          console.error(`    Entry ${idx} (${entry.companyName}):`, entry.bookingLinks);
+        }
+      });
+      
       return res.status(404).json({
         success: false,
         error: "No matching history entry found",
+        debug: {
+          shortCode,
+          totalEntries: allEntries.length,
+          entriesWithBookingLinks: allEntries.filter(e => e.bookingLinks).length,
+          allBookingLinks: allEntries
+            .filter(e => e.bookingLinks)
+            .map(e => ({ company: e.companyName, links: e.bookingLinks })),
+        },
       });
     }
 

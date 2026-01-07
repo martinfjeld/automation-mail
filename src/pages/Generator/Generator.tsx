@@ -123,6 +123,12 @@ const Generator: React.FC = () => {
         if (parsedState.imagesGenerated !== undefined) setImagesGenerated(parsedState.imagesGenerated);
         if (parsedState.emailSent !== undefined) setEmailSent(parsedState.emailSent);
         if (parsedState.leadStatus) setLeadStatus(parsedState.leadStatus);
+        
+        // Restore meeting dates and booking links
+        if (parsedState.meetingDate1) setMeetingDate1(parsedState.meetingDate1);
+        if (parsedState.meetingDate2) setMeetingDate2(parsedState.meetingDate2);
+        if (parsedState.meetingDate3) setMeetingDate3(parsedState.meetingDate3);
+        if (parsedState.bookingLinks) setBookingLinks(parsedState.bookingLinks);
 
         // Clear loading flag after a brief delay
         setTimeout(() => setIsLoadingHistory(false), 100);
@@ -145,10 +151,14 @@ const Generator: React.FC = () => {
         imagesGenerated,
         emailSent,
         leadStatus,
+        meetingDate1,
+        meetingDate2,
+        meetingDate3,
+        bookingLinks,
       };
       localStorage.setItem("generator_savedState", JSON.stringify(stateToSave));
     }
-  }, [result, service, pitchDeckUrl, automationIndustry, automationText1, automationText2, imagesGenerated, emailSent, leadStatus, isLoadingHistory]);
+  }, [result, service, pitchDeckUrl, automationIndustry, automationText1, automationText2, imagesGenerated, emailSent, leadStatus, meetingDate1, meetingDate2, meetingDate3, bookingLinks, isLoadingHistory]);
 
   // Keep editable fields in sync with the latest generation result
   useEffect(() => {
@@ -180,6 +190,53 @@ const Generator: React.FC = () => {
       });
     }
   }, [result]);
+
+  // Poll for updates to the current entry (e.g., booking confirmations)
+  useEffect(() => {
+    if (!result?.notionPageId) return;
+
+    const pollInterval = setInterval(async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/history`);
+        const data = await response.json();
+
+        if (data.success) {
+          const currentEntry = data.data.find(
+            (entry: any) => entry.notionPageId === result.notionPageId
+          );
+
+          if (currentEntry) {
+            // Check if meeting date or lead status has changed
+            const hasBookingUpdate =
+              currentEntry.møtedato && !result.hasOwnProperty('møtedato');
+            const hasStatusUpdate = currentEntry.leadStatus !== result.leadStatus;
+
+            if (hasBookingUpdate || hasStatusUpdate) {
+              console.log("📅 Detected booking or status update, refreshing data...");
+              
+              // Update result with new data
+              setResult((prev) => ({
+                ...prev!,
+                leadStatus: currentEntry.leadStatus,
+              }));
+              
+              setLeadStatus(currentEntry.leadStatus || "Ikke startet");
+
+              // If there's a booking date, you might want to show a notification
+              if (hasBookingUpdate) {
+                console.log("🎉 Meeting booked:", currentEntry.møtedato);
+                // Optionally show a toast/notification to the user
+              }
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Failed to poll for updates:", error);
+      }
+    }, 10000); // Poll every 10 seconds
+
+    return () => clearInterval(pollInterval);
+  }, [result?.notionPageId, result?.leadStatus]);
 
   const handleGetScreenshots = useCallback(async () => {
     if (!result?.website) return;
@@ -570,6 +627,38 @@ const Generator: React.FC = () => {
     [result?.notionPageId]
   );
 
+  // Auto-save meeting dates to history
+  const autoSaveMeetingDates = useCallback(
+    (dates: [string, string, string]) => {
+      if (!result?.notionPageId) return;
+
+      // Clear existing timeout
+      if (updateTimeoutRef.current) {
+        clearTimeout(updateTimeoutRef.current);
+      }
+
+      // Set new timeout to update after 500ms
+      updateTimeoutRef.current = setTimeout(async () => {
+        try {
+          await fetch(`${API_URL}/api/update`, {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              pageId: result.notionPageId,
+              meetingDates: dates,
+            }),
+          });
+          console.log("✅ Meeting dates saved to history:", dates);
+        } catch (err: any) {
+          console.error("Auto-save meeting dates error:", err);
+        }
+      }, 500);
+    },
+    [result?.notionPageId]
+  );
+
   const autoSaveCompanyName = useCallback(
     (value: string) => {
       if (!result?.notionPageId || !result?.sanityPresentationId) return;
@@ -810,6 +899,29 @@ const Generator: React.FC = () => {
     Web: "nye nettsider",
     Branding: "ny branding",
   };
+
+  // Refresh current entry from backend
+  const handleRefreshEntry = useCallback(async () => {
+    if (!result?.notionPageId) return;
+
+    try {
+      const response = await fetch(`${API_URL}/api/history`);
+      const data = await response.json();
+
+      if (data.success) {
+        const currentEntry = data.data.find(
+          (entry: any) => entry.notionPageId === result.notionPageId
+        );
+
+        if (currentEntry) {
+          console.log("🔄 Refreshing entry from backend...");
+          handleLoadHistoryEntry(currentEntry);
+        }
+      }
+    } catch (error) {
+      console.error("Failed to refresh entry:", error);
+    }
+  }, [result?.notionPageId]);
 
   const handleLoadHistoryEntry = useCallback((entry: any) => {
     console.log("Loading history entry:", entry.companyName);
@@ -1178,7 +1290,11 @@ const Generator: React.FC = () => {
                             type="datetime-local"
                             className={styles.inlineEditable}
                             value={meetingDate1 ? (() => { const d = new Date(meetingDate1); return isNaN(d.getTime()) ? "" : d.toISOString().slice(0, 16); })() : ""}
-                            onChange={(e) => setMeetingDate1(e.target.value ? new Date(e.target.value).toISOString() : "")}
+                            onChange={(e) => {
+                              const newDate = e.target.value ? new Date(e.target.value).toISOString() : "";
+                              setMeetingDate1(newDate);
+                              autoSaveMeetingDates([newDate, meetingDate2, meetingDate3]);
+                            }}
                             disabled={loading}
                           />
                           {bookingLinks[0] && (
@@ -1193,7 +1309,11 @@ const Generator: React.FC = () => {
                             type="datetime-local"
                             className={styles.inlineEditable}
                             value={meetingDate2 ? (() => { const d = new Date(meetingDate2); return isNaN(d.getTime()) ? "" : d.toISOString().slice(0, 16); })() : ""}
-                            onChange={(e) => setMeetingDate2(e.target.value ? new Date(e.target.value).toISOString() : "")}
+                            onChange={(e) => {
+                              const newDate = e.target.value ? new Date(e.target.value).toISOString() : "";
+                              setMeetingDate2(newDate);
+                              autoSaveMeetingDates([meetingDate1, newDate, meetingDate3]);
+                            }}
                             disabled={loading}
                           />
                           {bookingLinks[1] && (
@@ -1208,7 +1328,11 @@ const Generator: React.FC = () => {
                             type="datetime-local"
                             className={styles.inlineEditable}
                             value={meetingDate3 ? (() => { const d = new Date(meetingDate3); return isNaN(d.getTime()) ? "" : d.toISOString().slice(0, 16); })() : ""}
-                            onChange={(e) => setMeetingDate3(e.target.value ? new Date(e.target.value).toISOString() : "")}
+                            onChange={(e) => {
+                              const newDate = e.target.value ? new Date(e.target.value).toISOString() : "";
+                              setMeetingDate3(newDate);
+                              autoSaveMeetingDates([meetingDate1, meetingDate2, newDate]);
+                            }}
                             disabled={loading}
                           />
                           {bookingLinks[2] && (
@@ -1396,7 +1520,26 @@ const Generator: React.FC = () => {
             </div>
 
             <div className={styles.field}>
-              <label className={styles.label}>Lead Status</label>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '5px' }}>
+                <label className={styles.label}>Lead Status</label>
+                <button
+                  onClick={handleRefreshEntry}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontSize: '14px',
+                    padding: '4px 8px',
+                    opacity: 0.7,
+                    transition: 'opacity 0.2s',
+                  }}
+                  onMouseOver={(e) => (e.currentTarget.style.opacity = '1')}
+                  onMouseOut={(e) => (e.currentTarget.style.opacity = '0.7')}
+                  title="Refresh data from server (e.g., to check for booking updates)"
+                >
+                  🔄
+                </button>
+              </div>
               <select
                 className={styles.select}
                 value={leadStatus}
