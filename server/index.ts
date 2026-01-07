@@ -51,12 +51,9 @@ app.use(
             "https://no-offence.io",
             "https://www.no-offence.io",
             "http://localhost:3000",
-            "http://localhost:3001"
+            "https://localhost:3000"
           ]
-        : [
-            "http://localhost:3000",
-            "http://localhost:3001"
-          ],
+        : "http://localhost:3000",
     credentials: true,
     maxAge: 86400,
   })
