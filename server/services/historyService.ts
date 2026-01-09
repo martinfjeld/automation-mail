@@ -12,6 +12,7 @@ export interface HistoryEntry {
   city?: string;
   service: string;
   notionPageId: string;
+  proffUrl?: string; // Proff.no URL for queue filtering
   sanityPresentationId?: string;
   presentationUrl?: string;
   emailContent?: string;
@@ -116,11 +117,31 @@ export class HistoryService {
   }
 
   /**
+   * Add a complete entry to history (used for syncing from production)
+   */
+  addCompleteEntry(entry: HistoryEntry): HistoryEntry {
+    const history = this.readHistory();
+
+    // Check if entry already exists
+    const existingIndex = history.findIndex((e) => e.id === entry.id);
+    if (existingIndex !== -1) {
+      console.warn(`⚠️ Entry already exists: ${entry.id}, updating instead`);
+      return this.updateEntry(entry.id, entry)!;
+    }
+
+    history.unshift(entry); // Add to beginning
+    this.writeHistory(history);
+
+    console.log(`✅ Added complete entry to history: ${entry.companyName}`);
+    return entry;
+  }
+
+  /**
    * Update an existing entry in history
    */
   updateEntry(
     id: string,
-    updates: Partial<Omit<HistoryEntry, "id" | "createdAt" | "updatedAt">>
+    updates: Partial<Omit<HistoryEntry, "id">>
   ): HistoryEntry | null {
     const history = this.readHistory();
     const index = history.findIndex((entry) => entry.id === id);
@@ -133,7 +154,8 @@ export class HistoryService {
     const updatedEntry: HistoryEntry = {
       ...history[index],
       ...updates,
-      updatedAt: new Date().toISOString(),
+      // Only update updatedAt if it's not provided in updates
+      updatedAt: updates.updatedAt || new Date().toISOString(),
     };
 
     history[index] = updatedEntry;

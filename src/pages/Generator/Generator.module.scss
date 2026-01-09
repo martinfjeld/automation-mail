@@ -51,11 +51,140 @@ h3 {
   text-align: center;
   color: #a1a1aa;
   margin-bottom: $spacing-lg * 2;
-  font-size: 1.125rem;
+  font-size: 2.125rem !important;
 
   @include respond(mobile) {
     font-size: 1rem;
   }
+}
+
+.rollingClock {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  background: $linearBackground;
+  padding: 12px 14px;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.digitContainer {
+  display: inline-flex;
+  align-items: flex-start;
+  justify-content: center;
+  height: 32px;
+  overflow: hidden;
+  position: relative;
+  width: 25px;
+  background: #000000;
+  border-radius: 3px;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.6);
+
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 8px;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  &::before {
+    top: 0;
+    background: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.6) 0%,
+      transparent 100%
+    );
+  }
+
+  &::after {
+    bottom: 0;
+    background: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.6) 0%,
+      transparent 100%
+    );
+  }
+}
+
+.digitRoller {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  will-change: transform;
+  font-family: "Europa Grotesk SH";
+}
+
+.digit {
+  height: 32px;
+  line-height: 34px;
+  font-size: 1.3rem;
+  display: block;
+  text-align: center;
+  font-weight: 600;
+  color: #ffffff;
+  width: 100%;
+  flex-shrink: 0;
+}
+
+.digitSeparator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  font-weight: 600;
+  line-height: 32px;
+  height: 32px;
+  color: #000000;
+  padding: 0 2px;
+}
+
+.rollingText {
+  display: inline-flex;
+  align-items: center;
+  gap: 0px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.charContainer {
+  display: inline-flex;
+  align-items: flex-start;
+  justify-content: center;
+  height: 20px;
+  overflow: hidden;
+  position: relative;
+  width: 8px;
+}
+
+.charRoller {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  will-change: transform;
+  font-family: "Europa Grotesk SH";
+}
+
+.char {
+  height: 20px;
+  line-height: 20px;
+  font-size: 0.65rem;
+  display: block;
+  text-align: center;
+  font-weight: 100;
+  width: 100%;
+  flex-shrink: 0;
 }
 
 .form {
@@ -805,4 +934,308 @@ h3 {
   &:hover {
     transform: scale(1.2);
   }
+}
+
+// Proff Queue Styles
+.proffQueue {
+  margin-top: $spacing-lg;
+  padding: $spacing-md;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+}
+
+.queueHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-md;
+
+  h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    text-align: left;
+  }
+}
+
+.sourceUrlSection {
+  margin-bottom: $spacing-md;
+  padding: $spacing-sm;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 6px;
+}
+
+.sourceUrlLabel {
+  display: block;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.sourceUrlDisplay {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.sourceUrlText {
+  flex: 1;
+  font-size: 0.875rem;
+  color: $text-light;
+  word-break: break-all;
+  line-height: 1.4;
+}
+
+.sourceUrlEdit {
+  display: flex;
+  gap: $spacing-sm;
+  align-items: center;
+}
+
+.sourceUrlInput {
+  flex: 1;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  color: $text-light;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+
+  &:focus {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.08);
+  }
+}
+
+.editButton,
+.saveButton,
+.cancelButton {
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  color: $text-light;
+  cursor: pointer;
+  font-size: 0.8125rem;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+}
+
+.saveButton {
+  background: rgba(76, 175, 80, 0.2);
+  border-color: rgba(76, 175, 80, 0.4);
+
+  &:hover {
+    background: rgba(76, 175, 80, 0.3);
+    border-color: rgba(76, 175, 80, 0.5);
+  }
+}
+
+.cancelButton {
+  background: rgba(244, 67, 54, 0.2);
+  border-color: rgba(244, 67, 54, 0.4);
+
+  &:hover {
+    background: rgba(244, 67, 54, 0.3);
+    border-color: rgba(244, 67, 54, 0.5);
+  }
+}
+
+.refillButton {
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  color: $text-light;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.queueList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.queueButton {
+  width: 100%;
+  padding: $spacing-sm $spacing-md;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: $text-light;
+  text-align: left;
+  cursor: pointer;
+  font-size: 0.9375rem;
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateX(4px);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+// Proff Queue Styles
+.proffQueue {
+  margin-top: $spacing-lg;
+  padding: $spacing-md;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+}
+
+.queueHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-md;
+
+  h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: $text-light;
+  }
+}
+
+.queueActions {
+  display: flex;
+  gap: $spacing-sm;
+}
+
+.refillButton {
+  padding: $spacing-xs $spacing-sm;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  color: $text-light;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.queueList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+}
+
+.queueButton {
+  padding: $spacing-sm $spacing-md;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  color: $text-light;
+  text-align: left;
+  cursor: pointer;
+  font-size: 0.9375rem;
+  transition: all 0.2s ease;
+  font-family: inherit;
+
+  &:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.15);
+    transform: translateX(4px);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  @include respond(mobile) {
+    font-size: 0.875rem;
+    padding: $spacing-xs $spacing-sm;
+  }
+}
+
+.generateAllButton {
+  padding: $spacing-xs $spacing-sm;
+  background: rgba(76, 175, 80, 0.2);
+  border: 1px solid rgba(76, 175, 80, 0.4);
+  border-radius: 4px;
+  color: #4caf50;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+
+  &:hover:not(:disabled) {
+    background: rgba(76, 175, 80, 0.3);
+    border-color: rgba(76, 175, 80, 0.6);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.cancelBatchButton {
+  padding: $spacing-xs $spacing-sm;
+  background: rgba(244, 67, 54, 0.2);
+  border: 1px solid rgba(244, 67, 54, 0.4);
+  border-radius: 4px;
+  color: #f44336;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+
+  &:hover {
+    background: rgba(244, 67, 54, 0.3);
+    border-color: rgba(244, 67, 54, 0.6);
+  }
+}
+
+.batchProgress {
+  padding: $spacing-sm;
+  text-align: center;
+  color: $primary-color;
+  font-size: 0.875rem;
+  font-weight: 500;
+  background: rgba(74, 144, 226, 0.1);
+  border-radius: 4px;
+  margin-bottom: $spacing-sm;
+}
+
+.queueEmpty {
+  padding: $spacing-md;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.875rem;
 }

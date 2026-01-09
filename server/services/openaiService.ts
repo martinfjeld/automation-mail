@@ -101,7 +101,19 @@ Avsender-kontekst (kun for forståelse, IKKE skriv dette i e-posten):
 
 Hilsen: "${contactPerson ? `Hei ${contactPerson.split(" ")[0]},` : "Hei,"}"
 
-Maks 150 ord. Start med en setning om hvorfor jeg tar kontakt. Inkluder call-to-action for et kort møte.
+VIKTIG STRUKTUR - Skriv NØYAKTIG disse to setningene:
+
+Setning 1: Jeg heter Martin Fjeld og er gründer av et kreativt design- og digitalbyrå kalt No Offence. Jeg har satt sammen en presentasjon som viser hvordan deres nye nettsider kan se ut:
+
+Setning 2: Jeg foreslår at vi tar en uforpliktende prat over en kopp kaffe for å diskutere mulighetene.
+
+VIKTIG: La det være en blank linje mellom setning 1 og setning 2.
+
+KRITISK VIKTIG:
+- Setning 1 MÅ ende med KOLON (:) - ALDRI punktum
+- Det skal være en blank/tom linje mellom setning 1 og setning 2 - IKKE skriv "[TOM LINJE]" eller noe annet
+- Systemet setter automatisk inn presentasjonslenken og Lighthouse-analyse i den tomme linjen
+- IKKE skriv noe mellom de to setningene - la det bare være en blank linje
 
 Nettside: ${websiteUrl}
 
@@ -112,13 +124,12 @@ Med vennlig hilsen,
 - IKKE skriv "Martin Fjeld" eller "No Offence" i bunn eller som signatur.
 
 SPRÅKREGEL (VIKTIG):
-- Hvis du nevner avsender + selskap i brødteksten, bruk riktig formulering:
-  "Jeg heter Martin Fjeld og jobber i et kreativt design- og digitalbyrå kalt No Offence."
-- IKKE skriv "jobber med No Offence".
+- Bruk "Jeg heter Martin Fjeld og er gründer i" (IKKE "jobber i")
+- Bruk "et kreativt design- og digitalbyrå kalt No Offence"
 
 KRITISKE SKRIVEREGLER:
 → Bruk enkelt språk - korte, klare setninger
-→ UNNGÅ AI-klisjéer som "dykke ned i," "låse opp," "game-changing," "banebrytende", "Jeg håper dette meldingen finner deg vel"
+→ UNNGÅ AI-klisjéer som "dykke ned i," "låse opp," "game-changing," "banebrytende", "Jeg håper denne meldingen finner deg vel"
 → Vær direkt og konsis - kutt ekstra ord
 → Naturlig tone - skriv som folk faktisk snakker. Det er greit å starte med "og" eller "men"
 → IKKE markedsføringsspråk - ingen hype, ingen overdrivelser
@@ -169,21 +180,26 @@ Skriv kun e-posten på norsk, ingen forklaring:`;
     const prompt = `Skriv et kort sammendrag på NORSK om denne nettsiden basert på Lighthouse-resultater. MAKS 100 tegn.
 
 Resultater:
-- SEO: ${scores.seo}%
-- Tilgjengelighet: ${scores.accessibility}%
-- Ytelse: ${scores.performance}%
+- SEO (synlighet i søkemotorer): ${scores.seo}%
+- Tilgjengelighet (hvor lett siden er å bruke for alle, inkludert folk med nedsatt syn eller hørsel): ${scores.accessibility}%
+- Ytelse (hvor raskt siden laster): ${scores.performance}%
 
-VIKTIG: Skriv for folk som ikke kan noe om nettsider. Bruk enkelt språk og forklar hva det betyr i praksis.
+VIKTIG: Skriv for folk som ikke kan noe om nettsider. Bruk enkelt språk og forklar hva det betyr i praksis. IKKE bruk tekniske ord som "tilgjengelighet" eller "ytelse" - si heller "brukervennlighet", "hastighet", "synlighet" etc.
 
-TONE: Vær positiv og konstruktiv. Ikke vær for skarp når du påpeker svakheter. Bruk mykere ord som "litt", "fortsatt", "kunne vært" osv.
+TONE: Start ALLTID positivt med deres beste resultat. Vær konstruktiv når du påpeker forbedringsområder.
 
-STRUKTUR: "Dere har [bra/god] [område], men [område] er fortsatt litt [svakhet]. Vi kan hjelpe med å [forbedre]."
+STRUKTUR (FØLG NØYAKTIG):
+"[Noe veldig bra om deres BESTE område på NÅVÆRENDE nettside]. Noe annet vi så var [hva som kan bli bedre på NÅVÆRENDE nettside]."
+
+KRITISK: Det MÅ være klart at du snakker om deres EKSISTERENDE/NÅVÆRENDE nettside (den vi analyserte).
 
 Eksempler:
-- "Dere har god synlighet i søk, men ytelsen er fortsatt litt treg. Vi kan hjelpe med å gjøre siden raskere"
-- "Siden er rask og fungerer bra, men SEO kunne vært bedre. Vi kan hjelpe med å øke synligheten"
-- "Bra hastighet, men tilgjengelighet mangler litt. Vi kan gjøre siden mer brukervennlig for alle"
-- "Utmerket på de fleste områder, men det er alltid rom for forbedring. Vi kan optimalisere ytterligere"
+- "Nettsiden deres er rask og laster inn kjapt. Noe annet vi så var at synligheten i søkemotorer kunne vært bedre."
+- "Den nåværende siden har god synlighet i søkemotorer. Noe annet vi så var at hastigheten kunne vært raskere."
+- "Nettsiden deres i dag er svært brukervennlig og lett å navigere. Noe annet vi så var at hastigheten kunne vært forbedret."
+- "Siden deres scorer høyt på hastighet. Noe annet vi så var at brukervennligheten for folk med nedsatt syn kunne vært bedre."
+
+KRITISK: START med den beste scoren, SI noe positivt om den. Deretter "Noe annet vi så var" + forbedringsområde.
 
 KRITISKE SKRIVEREGLER:
 → Bruk enkelt språk - korte, klare setninger

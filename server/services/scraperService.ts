@@ -1558,4 +1558,159 @@ export class ScraperService {
   getLastWebsiteContent(): string {
     return (this as any).lastWebsiteContent || "";
   }
+
+  /**
+   * Scrape Proff.no search results page
+   * Returns array of companies with name and Proff URL
+   */
+  async scrapeProffSearchResults(searchUrl: string): Promise<
+    Array<{
+      id: string;
+      companyName: string;
+      proffUrl: string;
+      organizationNumber?: string;
+      industry?: string;
+      employees?: string;
+      revenue?: string;
+    }>
+  > {
+    try {
+      console.log("🔍 Scraping Proff search results:", searchUrl);
+
+      const response = await axios.get(searchUrl, {
+        headers: {
+          "User-Agent":
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
+        },
+        timeout: 15000,
+      });
+
+      const $ = cheerio.load(response.data);
+      const companies: Array<{
+        id: string;
+        companyName: string;
+        proffUrl: string;
+        organizationNumber?: string;
+        industry?: string;
+        employees?: string;
+        revenue?: string;
+      }> = [];
+
+      // Proff.no uses different structures - try multiple selectors
+      const possibleSelectors = [
+        ".hit-wrapper",
+        ".company-item",
+        ".search-hit",
+        ".company-row",
+        ".result-item",
+        "article",
+        ".list-item",
+        "[data-company]",
+        "tr[data-id]",
+        ".company-list-item",
+      ];
+
+      let foundItems = false;
+
+      for (const selector of possibleSelectors) {
+        const items = $(selector);
+        if (items.length > 0) {
+          console.log(
+            `✅ Found ${items.length} items with selector: ${selector}`
+          );
+
+          items.each((index, element) => {
+            const $el = $(element);
+
+            // Try to find company name and link
+            let nameLink = $el.find("a[href*='/selskap/']").first();
+            if (!nameLink.length) {
+              nameLink = $el.find("a").first();
+            }
+
+            const companyName = nameLink.text().trim();
+            let proffUrl = nameLink.attr("href") || "";
+
+            // Ensure full URL
+            if (proffUrl && !proffUrl.startsWith("http")) {
+              proffUrl = `https://www.proff.no${proffUrl}`;
+            }
+
+            // Only add if we have valid data
+            if (companyName && proffUrl && proffUrl.includes("proff.no")) {
+              // Extract organization number from URL
+              const orgNumberMatch = proffUrl.match(/\/(\d{9})\//);
+              const organizationNumber = orgNumberMatch
+                ? orgNumberMatch[1]
+                : "";
+
+              const id = organizationNumber || companyName;
+
+              companies.push({
+                id,
+                companyName,
+                proffUrl,
+                organizationNumber,
+              });
+            }
+          });
+
+          if (companies.length > 0) {
+            foundItems = true;
+            break;
+          }
+        }
+      }
+
+      if (!foundItems) {
+        console.log(
+          "⚠️ No items found with any selector. Trying generic link search..."
+        );
+
+        // Fallback: find all links to company pages
+        $("a[href*='/selskap/']").each((index, element) => {
+          if (companies.length >= 50) return; // Limit to prevent too many results
+
+          const $link = $(element);
+          const companyName = $link.text().trim();
+          let proffUrl = $link.attr("href") || "";
+
+          if (proffUrl && !proffUrl.startsWith("http")) {
+            proffUrl = `https://www.proff.no${proffUrl}`;
+          }
+
+          if (companyName && proffUrl && companyName.length > 2) {
+            const orgNumberMatch = proffUrl.match(/\/(\d{9})\//);
+            const organizationNumber = orgNumberMatch ? orgNumberMatch[1] : "";
+            const id = organizationNumber || companyName;
+
+            // Check if not already added
+            if (!companies.some((c) => c.id === id)) {
+              companies.push({
+                id,
+                companyName,
+                proffUrl,
+                organizationNumber,
+              });
+            }
+          }
+        });
+      }
+
+      console.log(`✅ Found ${companies.length} companies in search results`);
+
+      // Log first few for debugging
+      if (companies.length > 0) {
+        console.log("First 3 companies:");
+        companies.slice(0, 3).forEach((c) => {
+          console.log(`  - ${c.companyName} (${c.proffUrl})`);
+        });
+      }
+
+      return companies;
+    } catch (error: any) {
+      console.error("Failed to scrape Proff search results:", error.message);
+      return [];
+    }
+  }
 }

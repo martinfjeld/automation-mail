@@ -1,0 +1,24 @@
+{
+  "entries": [
+    {
+      "proffUrl": "https://www.proff.no/selskap/%C3%B8mf-asker-ringerike-as/hvalstad/-/830220852",
+      "companyName": "Ømf Asker Ringerike",
+      "bannedAt": "2026-01-09T12:51:32.974Z"
+    },
+    {
+      "proffUrl": "https://www.proff.no/selskap/%C3%B8mf-evensen-evensen-as/lillehammer/-/984958552",
+      "companyName": "Ømf Evensen & Evensen",
+      "bannedAt": "2026-01-09T12:52:22.878Z"
+    },
+    {
+      "proffUrl": "https://www.proff.no/selskap/%C3%B8mf-romerike-kongsvinger-as/kongsvinger/-/911669668",
+      "companyName": "Ømf Romerike Kongsvinger",
+      "bannedAt": "2026-01-09T13:45:46.484Z"
+    },
+    {
+      "proffUrl": "https://www.proff.no/selskap/%C3%B8mf-hamar-as/hamar/-/930220760",
+      "companyName": "Ømf Hamar",
+      "bannedAt": "2026-01-09T13:45:52.538Z"
+    }
+  ]
+}

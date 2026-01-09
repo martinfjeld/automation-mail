@@ -78,7 +78,8 @@ export class CalendarService {
   async generateProposals(
     earliestStartISO: string,
     latestEndISO: string,
-    myEmail: string
+    myEmail: string,
+    takenTimes: string[] = [] // ISO strings of already-proposed times
   ): Promise<MeetingProposal[]> {
     const proposals: MeetingProposal[] = [];
     const earliestDate = new Date(earliestStartISO);
@@ -87,6 +88,10 @@ export class CalendarService {
 
     // Get all busy slots upfront
     const busySlots = await this.getBusy(earliestStartISO, latestEndISO);
+
+    // Convert taken times to Date objects for comparison
+    const takenTimestamps = takenTimes.map((t) => new Date(t).getTime());
+    console.log(`🚫 Avoiding ${takenTimestamps.length} already-proposed times`);
 
     let currentDate = new Date(earliestDate);
     const preferredTimes = [
@@ -146,7 +151,12 @@ export class CalendarService {
           return slotStart < busyEnd && slotEnd > busyStart;
         });
 
-        if (isAvailable) {
+        // Check if slot conflicts with already-proposed times
+        const isNotAlreadyProposed = !takenTimestamps.includes(
+          slotStart.getTime()
+        );
+
+        if (isAvailable && isNotAlreadyProposed) {
           const display = this.formatDateTime(slotStart, slotEnd);
           const bookingToken = this.generateBookingToken(
             slotStart.toISOString(),

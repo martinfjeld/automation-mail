@@ -1,10 +1,15 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
+import { Helmet } from "react-helmet";
 import Button from "../../components/Button/Button";
 import HistoryPanel from "../../components/HistoryPanel/HistoryPanel";
 import AlertModal from "../../components/AlertModal/AlertModal";
 import styles from "./Generator.module.scss";
-import { API_URL } from "../../config";
+import { API_URL, LOCAL_API_URL } from "../../config";
 import trashIcon from "../../assets/image.png";
+
+// ⏰ Target time for countdown (24-hour format)
+const TARGET_HOUR = 16; // 16:00 (4 PM)
+const TARGET_MINUTE = 0;
 
 interface GenerateResult {
   companyName: string;
@@ -27,6 +32,155 @@ interface GenerateResult {
   logoUrl?: string;
   leadStatus?: string;
 }
+
+const RollingDigit: React.FC<{
+  digit: string;
+  index: number;
+  timeKey: string;
+}> = ({ digit, index, timeKey }) => {
+  const rollerRef = useRef<HTMLSpanElement>(null);
+  const prevTimeKeyRef = useRef<string>(timeKey);
+  const initializedRef = useRef(false);
+
+  useEffect(() => {
+    if (!rollerRef.current || digit === ":" || digit === " ") return;
+
+    const targetDigit = parseInt(digit);
+    if (isNaN(targetDigit)) return;
+
+    const digitHeight = 32; // Height of each digit in pixels
+    const targetY = -targetDigit * digitHeight;
+
+    // Check if time changed
+    const timeChanged = prevTimeKeyRef.current !== timeKey;
+
+    if (!initializedRef.current) {
+      // First mount: set position immediately
+      if (rollerRef.current) {
+        rollerRef.current.style.transform = `translateY(${targetY}px)`;
+      }
+      initializedRef.current = true;
+      prevTimeKeyRef.current = timeKey;
+    } else if (timeChanged) {
+      // Time changed: animate to new position
+      if (rollerRef.current) {
+        rollerRef.current.style.transition = `transform 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55)`;
+        rollerRef.current.style.transitionDelay = `${index * 0.03}s`;
+        rollerRef.current.style.transform = `translateY(${targetY}px)`;
+      }
+      prevTimeKeyRef.current = timeKey;
+    }
+  }, [timeKey, digit, index]);
+
+  if (digit === ":" || digit === " ") {
+    return <span className={styles.digitSeparator}>{digit}</span>;
+  }
+
+  return (
+    <span className={styles.digitContainer}>
+      <span className={styles.digitRoller} ref={rollerRef}>
+        {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
+          <span key={num} className={styles.digit}>
+            {num}
+          </span>
+        ))}
+      </span>
+    </span>
+  );
+};
+
+const RollingClock: React.FC<{ time: Date }> = ({ time }) => {
+  const timeString = time.toLocaleTimeString("nb-NO", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
+
+  // Use time as key to trigger animations
+  const timeKey = timeString;
+
+  return (
+    <span className={styles.rollingClock}>
+      {timeString.split("").map((char, index) => (
+        <RollingDigit
+          key={`${index}`}
+          digit={char}
+          index={index}
+          timeKey={timeKey}
+        />
+      ))}
+    </span>
+  );
+};
+
+const RollingChar: React.FC<{
+  char: string;
+  index: number;
+  textKey: string;
+}> = ({ char, index, textKey }) => {
+  const rollerRef = useRef<HTMLSpanElement>(null);
+  const prevCharRef = useRef<string>(char);
+  const initializedRef = useRef(false);
+
+  useEffect(() => {
+    if (!rollerRef.current) return;
+
+    const allChars = "abcdefghijklmnopqrstuvwxyzæøå0123456789 ";
+    const currentIndex = allChars.indexOf(char.toLowerCase());
+
+    if (currentIndex === -1) {
+      // Character not in our set, just display it
+      return;
+    }
+
+    const charHeight = 20; // Height of each character in pixels
+    const targetY = -currentIndex * charHeight;
+
+    // Check if char changed
+    const charChanged = prevCharRef.current !== char;
+
+    if (!initializedRef.current) {
+      // First mount: set position immediately
+      if (rollerRef.current) {
+        rollerRef.current.style.transform = `translateY(${targetY}px)`;
+      }
+      initializedRef.current = true;
+      prevCharRef.current = char;
+    } else if (charChanged) {
+      // Char changed: animate to new position
+      if (rollerRef.current) {
+        rollerRef.current.style.transition = `transform 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55)`;
+        rollerRef.current.style.transitionDelay = `${index * 0.04}s`;
+        rollerRef.current.style.transform = `translateY(${targetY}px)`;
+      }
+      prevCharRef.current = char;
+    }
+  }, [char, index, textKey]);
+
+  const allChars = "abcdefghijklmnopqrstuvwxyzæøå0123456789 ";
+
+  return (
+    <span className={styles.charContainer}>
+      <span className={styles.charRoller} ref={rollerRef}>
+        {allChars.split("").map((c, i) => (
+          <span key={i} className={styles.char}>
+            {c}
+          </span>
+        ))}
+      </span>
+    </span>
+  );
+};
+
+const RollingText: React.FC<{ text: string }> = ({ text }) => {
+  return (
+    <span className={styles.rollingText}>
+      {text.split("").map((char, index) => (
+        <RollingChar key={index} char={char} index={index} textKey={text} />
+      ))}
+    </span>
+  );
+};
 
 const Generator: React.FC = () => {
   const [loading, setLoading] = useState(false);
@@ -80,6 +234,16 @@ const Generator: React.FC = () => {
   const [clientId] = useState(
     () => `client_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
   );
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [proffQueue, setProffQueue] = useState<any[]>([]);
+  const [loadingQueue, setLoadingQueue] = useState(false);
+  const [currentQueueCompany, setCurrentQueueCompany] = useState<any>(null);
+  const [queueUpdateKey, setQueueUpdateKey] = useState(0);
+  const [batchGenerating, setBatchGenerating] = useState(false);
+  const [batchProgress, setBatchProgress] = useState({ current: 0, total: 0 });
+  const [batchCancelled, setBatchCancelled] = useState(false);
+  const [searchUrl, setSearchUrl] = useState("");
+  const [editingSearchUrl, setEditingSearchUrl] = useState(false);
 
   // Detect screen size changes
   useEffect(() => {
@@ -96,6 +260,15 @@ const Generator: React.FC = () => {
     setCheckingSetup(false);
   }, []);
 
+  // Update clock every second
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
   // Restore current entry from backend on mount
   useEffect(() => {
     const savedEntryId = localStorage.getItem("generator_currentEntryId");
@@ -103,8 +276,9 @@ const Generator: React.FC = () => {
       // Fetch the entry from backend and load it
       fetch(`${API_URL}/api/history`)
         .then((res) => res.json())
-        .then((data) => {
-          const entry = data.find((e: any) => e.id === savedEntryId);
+        .then((response) => {
+          const entries = response.data || response;
+          const entry = entries.find((e: any) => e.id === savedEntryId);
           if (entry) {
             handleLoadHistoryEntry(entry);
           }
@@ -121,6 +295,20 @@ const Generator: React.FC = () => {
       localStorage.setItem("generator_currentEntryId", currentEntryId);
     }
   }, [currentEntryId]);
+
+  // Warn user before leaving during active generation
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (loading || runningAutomation) {
+        e.preventDefault();
+        e.returnValue = "";
+        return "";
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [loading, runningAutomation]);
 
   // Keep editable fields in sync with the latest generation result
   useEffect(() => {
@@ -143,15 +331,6 @@ const Generator: React.FC = () => {
     setIsEmailModified(false);
     console.log("useEffect - after setEditableEmailContent");
   }, [result, isLoadingHistory]);
-
-  // Auto-copy company name to clipboard when result loads
-  useEffect(() => {
-    if (result?.companyName) {
-      navigator.clipboard.writeText(result.companyName).catch((err) => {
-        console.warn("Failed to copy to clipboard:", err);
-      });
-    }
-  }, [result]);
 
   // Poll for updates to the current entry (e.g., booking confirmations)
   useEffect(() => {
@@ -291,6 +470,327 @@ const Generator: React.FC = () => {
     [result?.sanityPresentationId, result?.notionPageId]
   );
 
+  // Fetch Proff queue
+  const fetchProffQueue = useCallback(async () => {
+    try {
+      const response = await fetch(`${LOCAL_API_URL}/api/proff-queue`);
+      const data = await response.json();
+      if (data.success) {
+        console.log(`📥 Fetched queue: ${data.queue.length} companies`);
+        setProffQueue(data.queue || []);
+        setSearchUrl(data.metadata?.searchUrl || "");
+        setQueueUpdateKey((prev) => prev + 1); // Force re-render
+        return data.queue || [];
+      }
+    } catch (error) {
+      // Silently fail if backend is not running
+      console.log("❌ Failed to fetch queue (backend offline?)");
+      setProffQueue([]);
+    }
+    return [];
+  }, []);
+
+  // Refill Proff queue
+  const refillProffQueue = useCallback(async () => {
+    setLoadingQueue(true);
+    try {
+      console.log("🔄 Refilling queue...");
+      const response = await fetch(`${LOCAL_API_URL}/api/proff-queue/refill`, {
+        method: "POST",
+      });
+      const data = await response.json();
+      if (data.success) {
+        console.log(`✅ Refill complete: added ${data.added} companies`);
+        await fetchProffQueue();
+      }
+    } catch (error) {
+      console.error("Failed to refill Proff queue:", error);
+      setProffQueue([]);
+    } finally {
+      setLoadingQueue(false);
+    }
+  }, [fetchProffQueue]);
+
+  // Update search URL
+  const updateSearchUrl = useCallback(async (newUrl: string) => {
+    try {
+      const response = await fetch(`${LOCAL_API_URL}/api/proff-queue/search-url`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ searchUrl: newUrl }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        console.log("✅ Search URL updated successfully");
+        setSearchUrl(newUrl);
+        setEditingSearchUrl(false);
+      }
+    } catch (error) {
+      console.error("Failed to update search URL:", error);
+    }
+  }, []);
+
+  // Generate from queue item
+  const handleGenerateFromQueue = async (company: any) => {
+    // Simply update the proffUrl state - the user will then click "Generate" button
+    // Or we can trigger generation directly here
+    setProffUrl(company.proffUrl);
+    setError("");
+
+    // Track which company we're generating
+    setCurrentQueueCompany(company);
+
+    // Trigger generation
+    if (!company.proffUrl) {
+      setError("Ugyldig Proff-lenke");
+      return;
+    }
+
+    setLoading(true);
+    setResult(null);
+    setPitchDeckUrl("");
+    setEditableEmail("");
+    setEditablePhone("");
+    setEditableAddress("");
+    setEditableCity("");
+    setEditableLinkedIn("");
+    setLoadingStep("Starter...");
+
+    try {
+      const response = await fetch(`${LOCAL_API_URL}/api/generate`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "text/event-stream",
+        },
+        body: JSON.stringify({
+          proffUrl: company.proffUrl,
+          service,
+        }),
+      });
+
+      if (!response.body) {
+        throw new Error("No response body");
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value);
+        const lines = chunk.split("\n");
+
+        for (const line of lines) {
+          if (line.startsWith("data: ")) {
+            const data = JSON.parse(line.slice(6));
+
+            if (data.step) {
+              setLoadingStep(data.step);
+            }
+
+            if (data.complete && data.data) {
+              const generatedData = data.data;
+              setResult(generatedData);
+              setEditableCompanyName(generatedData.companyName);
+              setEditableEmail(generatedData.email);
+              setEditablePhone(generatedData.phone || "");
+              setEditableAddress(generatedData.address || "");
+              setEditableCity(generatedData.city || "");
+              setEditableLinkedIn(generatedData.contactPersonUrl || "");
+              setEditableEmailContent(generatedData.emailContent);
+              setCurrentEntryId(generatedData.notionPageId);
+
+              // Set meeting dates and booking links if available
+              if (generatedData.meetingDates) {
+                setMeetingDate1(generatedData.meetingDates[0] || "");
+                setMeetingDate2(generatedData.meetingDates[1] || "");
+                setMeetingDate3(generatedData.meetingDates[2] || "");
+              }
+              if (generatedData.bookingLinks) {
+                setBookingLinks(generatedData.bookingLinks);
+              }
+
+              if (generatedData.leadStatus) {
+                setLeadStatus(generatedData.leadStatus);
+              }
+            }
+
+            if (data.error) {
+              throw new Error(data.error);
+            }
+          }
+        }
+      }
+    } catch (err: any) {
+      setError(err.message || "Generation failed");
+    } finally {
+      setLoading(false);
+      setLoadingStep("");
+    }
+  };
+
+  // Load queue on mount and auto-refill if needed
+  useEffect(() => {
+    const loadAndRefillQueue = async () => {
+      await fetchProffQueue();
+      // Check if we need to refill after fetching
+      const response = await fetch(`${LOCAL_API_URL}/api/proff-queue`);
+      const data = await response.json();
+      if (data.success && data.queue.length < 10) {
+        console.log(
+          `📊 Queue has only ${data.queue.length} items, auto-refilling...`
+        );
+        await refillProffQueue();
+      }
+    };
+    loadAndRefillQueue();
+  }, []);
+
+  // Auto-refill queue when it gets low
+  useEffect(() => {
+    if (
+      proffQueue.length > 0 &&
+      proffQueue.length < 10 &&
+      !loadingQueue &&
+      !batchGenerating
+    ) {
+      console.log(
+        `📊 Queue low (${proffQueue.length} items), auto-refilling...`
+      );
+      refillProffQueue();
+    }
+  }, [proffQueue.length, loadingQueue, batchGenerating]);
+
+  // Remove company from queue after generation/loading completes
+  useEffect(() => {
+    if (currentQueueCompany && result?.notionPageId) {
+      console.log(
+        "🎯 Removing company from queue after generation/load:",
+        currentQueueCompany.companyName
+      );
+
+      // Clear the current company reference immediately
+      const companyToRemove = currentQueueCompany;
+      setCurrentQueueCompany(null);
+
+      // Handle backend operations and UI update
+      (async () => {
+        try {
+          // Delete from backend
+          console.log(`🗑️ Deleting ${companyToRemove.id} from backend...`);
+          await fetch(
+            `${LOCAL_API_URL}/api/proff-queue/${companyToRemove.id}`,
+            {
+              method: "DELETE",
+            }
+          );
+          console.log(
+            `✅ Removed ${companyToRemove.companyName} from backend queue`
+          );
+
+          // Refill to get next company
+          console.log("🔄 Refilling queue...");
+          await refillProffQueue();
+
+          // Force immediate UI refresh by fetching the entire queue again
+          console.log("🔄 Fetching updated queue...");
+          await fetchProffQueue();
+
+          // Force re-render
+          setQueueUpdateKey((prev) => prev + 1);
+
+          console.log("✨ Queue update complete!");
+        } catch (error) {
+          console.error("Failed to remove/refill queue:", error);
+        }
+      })();
+    }
+  }, [
+    currentQueueCompany,
+    result?.notionPageId,
+    refillProffQueue,
+    fetchProffQueue,
+  ]);
+
+  // Batch generate all companies in queue
+  const handleGenerateAll = async () => {
+    if (proffQueue.length === 0) {
+      setError("Ingen bedrifter i køen");
+      return;
+    }
+
+    setBatchGenerating(true);
+    setBatchCancelled(false);
+    const companies = [...proffQueue]; // Copy the queue
+    setBatchProgress({ current: 0, total: companies.length });
+
+    console.log(
+      `🚀 Starting batch generation for ${companies.length} companies`
+    );
+
+    for (let i = 0; i < companies.length; i++) {
+      // Check if cancelled
+      if (batchCancelled) {
+        console.log("❌ Batch generation cancelled");
+        break;
+      }
+
+      const company = companies[i];
+      setBatchProgress({ current: i + 1, total: companies.length });
+      console.log(
+        `📧 Generating ${i + 1}/${companies.length}: ${company.companyName}`
+      );
+
+      try {
+        // Call the generation function (reuse handleGenerateFromQueue logic)
+        await handleGenerateFromQueue(company);
+
+        // Wait for generation to complete (watch for result to be set)
+        await new Promise<void>((resolve) => {
+          const checkInterval = setInterval(() => {
+            // Simple wait - in practice the generation will set result
+            setTimeout(() => {
+              clearInterval(checkInterval);
+              resolve();
+            }, 1000);
+          }, 500);
+        });
+
+        console.log(
+          `✅ Completed ${i + 1}/${companies.length}: ${company.companyName}`
+        );
+
+        // Small delay between generations to avoid overwhelming the API
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+      } catch (error) {
+        console.error(
+          `❌ Failed to generate for ${company.companyName}:`,
+          error
+        );
+        // Continue with next company even if this one fails
+      }
+    }
+
+    setBatchGenerating(false);
+    setBatchProgress({ current: 0, total: 0 });
+    console.log("🎉 Batch generation complete!");
+
+    // Refresh the queue
+    await fetchProffQueue();
+  };
+
+  // Cancel batch generation
+  const handleCancelBatch = () => {
+    setBatchCancelled(true);
+    setBatchGenerating(false);
+    setBatchProgress({ current: 0, total: 0 });
+  };
+
   const handleGenerate = async () => {
     if (!proffUrl) {
       setError("Lim inn en Proff.no-lenke");
@@ -309,7 +809,7 @@ const Generator: React.FC = () => {
     setLoadingStep("Starter...");
 
     try {
-      const response = await fetch(`${API_URL}/api/generate`, {
+      const response = await fetch(`${LOCAL_API_URL}/api/generate`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -401,7 +901,7 @@ const Generator: React.FC = () => {
 
     // Connect to SSE for progress updates
     const eventSource = new EventSource(
-      `${API_URL}/api/progress/stream?clientId=${clientId}`
+      `${LOCAL_API_URL}/api/progress/stream?clientId=${clientId}`
     );
 
     eventSource.onmessage = (event) => {
@@ -416,20 +916,38 @@ const Generator: React.FC = () => {
           console.log("✅ Setting imagesGenerated to true");
           setImagesGenerated(true);
 
-          // Save imagesGenerated flag to backend
+          // Save imagesGenerated flag to backend (both local and production)
           if (result?.notionPageId) {
+            const updatePayload = {
+              pageId: result.notionPageId,
+              imagesGenerated: true,
+            };
+
+            // Update local backend
+            fetch(`${LOCAL_API_URL}/api/update`, {
+              method: "PATCH",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(updatePayload),
+            })
+              .then(() => {
+                console.log("✅ Saved imagesGenerated flag to local backend");
+              })
+              .catch((error) => {
+                console.error("Failed to save imagesGenerated flag to local backend:", error);
+              });
+
+            // Update production backend
             fetch(`${API_URL}/api/update`, {
               method: "PATCH",
               headers: {
                 "Content-Type": "application/json",
               },
-              body: JSON.stringify({
-                pageId: result.notionPageId,
-                imagesGenerated: true,
-              }),
+              body: JSON.stringify(updatePayload),
             })
               .then(() => {
-                console.log("✅ Saved imagesGenerated flag to backend");
+                console.log("✅ Saved imagesGenerated flag to production backend");
               })
               .catch((error) => {
                 console.error("Failed to save imagesGenerated flag:", error);
@@ -444,7 +962,7 @@ const Generator: React.FC = () => {
     };
 
     try {
-      const response = await fetch(`${API_URL}/api/automation/run`, {
+      const response = await fetch(`${LOCAL_API_URL}/api/automation/run`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -460,11 +978,14 @@ const Generator: React.FC = () => {
       });
 
       const data = await response.json();
+      console.log("📊 Automation completed:", data);
 
       if (data.success) {
+        console.log("✅ Automation successful, triggering file upload...");
         // Trigger file upload after automation completes
         await handleUploadGeneratedFiles(data.finalsPath, data.rendersPath);
       } else {
+        console.error("❌ Automation failed:", data.error);
         setError(data.error || "Failed to run automation");
         setRunningAutomation(false);
         setAutomationProgress("");
@@ -472,6 +993,7 @@ const Generator: React.FC = () => {
 
       eventSource.close();
     } catch (error) {
+      console.error("❌ Automation request error:", error);
       setError("Failed to run automation. Please try again.");
       setRunningAutomation(false);
       setAutomationProgress("");
@@ -484,37 +1006,50 @@ const Generator: React.FC = () => {
     rendersPath: string
   ) => {
     if (!result?.sanityPresentationId) {
+      console.error("❌ No Sanity presentation ID found, cannot upload files");
       setRunningAutomation(false);
       setAutomationProgress("");
       return;
     }
 
+    console.log("📤 Starting file upload to Sanity...");
+    console.log("  Presentation ID:", result.sanityPresentationId);
+    console.log("  Industry:", automationIndustry);
+    console.log("  Finals path:", finalsPath);
+    console.log("  Renders path:", rendersPath);
+
     try {
-      const response = await fetch(`${API_URL}/api/files/upload-generated`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          presentationId: result.sanityPresentationId,
-          industry: automationIndustry,
-          finalsPath: finalsPath,
-          rendersPath: rendersPath,
-          clientId: clientId,
-        }),
-      });
+      const response = await fetch(
+        `${LOCAL_API_URL}/api/files/upload-generated`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            presentationId: result.sanityPresentationId,
+            industry: automationIndustry,
+            finalsPath: finalsPath,
+            rendersPath: rendersPath,
+            clientId: clientId,
+          }),
+        }
+      );
 
       const data = await response.json();
 
       if (data.success) {
+        console.log("✅ File upload successful:", data);
         setUploadSuccess(true);
         setAutomationProgress("");
         console.log("Uploaded files:", data.uploadedFiles);
       } else {
+        console.error("❌ File upload failed:", data.error);
         setError(data.error || "Failed to upload generated files");
         setAutomationProgress("");
       }
     } catch (error) {
+      console.error("❌ File upload error:", error);
       setError("Failed to upload generated files. Please try again.");
       setAutomationProgress("");
     } finally {
@@ -960,7 +1495,7 @@ const Generator: React.FC = () => {
     // Set møtedato if available
     console.log("📅 Loading entry møtedato:", entry.møtedato);
     setMøtedato(entry.møtedato || null);
-    
+
     // Set emailLocked if available
     setEmailLocked(entry.emailLocked || false);
 
@@ -1064,9 +1599,86 @@ const Generator: React.FC = () => {
     return `mailto:${to}?subject=${subject}&body=${body}`;
   })();
 
+  // Calculate hours remaining until target time
+  const hoursRemaining = (() => {
+    const now = currentTime;
+    const targetTime = new Date(now);
+    targetTime.setHours(TARGET_HOUR, TARGET_MINUTE, 0, 0);
+
+    // If it's already past target time, show 0
+    if (now.getTime() >= targetTime.getTime()) {
+      return 0;
+    }
+
+    const msRemaining = targetTime.getTime() - now.getTime();
+    const hoursLeft = Math.ceil(msRemaining / (1000 * 60 * 60));
+    return hoursLeft;
+  })();
+
+  // const countdownText =
+  //   hoursRemaining === 0
+  //     ? "du jobber overtid"
+  //     : `det er ${hoursRemaining} timer igjen`;
+
+  // Calculate time until December 2026
+  const decemberCountdown = (() => {
+    const now = currentTime;
+    const targetDate = new Date(2026, 11, 31, 23, 59, 59); // December 31, 2026
+
+    const msRemaining = targetDate.getTime() - now.getTime();
+    if (msRemaining <= 0) return "tiden er ute. Begynn å søke jobber.";
+
+    // Calculate months and days
+    const daysRemaining = Math.ceil(msRemaining / (1000 * 60 * 60 * 24));
+    const monthsRemaining = Math.floor(daysRemaining / 30);
+    const remainingDays = daysRemaining % 30;
+
+    if (monthsRemaining === 0) {
+      return `${daysRemaining} dager til å stå på egne ben`;
+    } else {
+      return `${monthsRemaining} måneder til å stå på egne ben`;
+    }
+  })();
+
+  // Compute dynamic page title
+  const pageTitle = (() => {
+    // Email generation in progress
+    if (loading && loadingStep) {
+      // Extract percentage from loading step if present
+      const percentMatch = loadingStep.match(/(\d+)%/);
+      if (percentMatch) {
+        const percent = parseInt(percentMatch[1]);
+        const emoji = percent < 30 ? "🔴" : percent < 70 ? "🟠" : "🟢";
+        return `${emoji} Salesmode - ${percentMatch[1]}%`;
+      }
+      // Otherwise show the loading step with orange emoji
+      return `🟠 Salesmode - ${loadingStep}`;
+    }
+
+    // Mockup/automation generation in progress
+    if (runningAutomation && automationProgress) {
+      const percentMatch = automationProgress.match(/(\d+)%/);
+      if (percentMatch) {
+        const percent = parseInt(percentMatch[1]);
+        const emoji = percent < 30 ? "🔴" : percent < 70 ? "🟠" : "🟢";
+        return `${emoji} Salesmode - ${percentMatch[1]}%`;
+      }
+      return `🟠 Salesmode - ${automationProgress}`;
+    }
+
+    if (result?.companyName || editableCompanyName) {
+      return `Salesmode - ${editableCompanyName || result?.companyName}`;
+    }
+
+    return "Salesmode";
+  })();
+
   if (checkingSetup) {
     return (
       <div className={styles.generator}>
+        <Helmet>
+          <title>{pageTitle}</title>
+        </Helmet>
         <div className={styles.container}>
           <p>Sjekker oppsett...</p>
         </div>
@@ -1077,6 +1689,9 @@ const Generator: React.FC = () => {
   if (deleting) {
     return (
       <div className={styles.generator}>
+        <Helmet>
+          <title>{pageTitle}</title>
+        </Helmet>
         <div className={styles.deletingOverlay}>
           <div className={styles.spinner}></div>
           <p>Sletter...</p>
@@ -1087,19 +1702,58 @@ const Generator: React.FC = () => {
 
   return (
     <div className={styles.generator}>
+      <Helmet>
+        <title>{pageTitle}</title>
+      </Helmet>
       <div className={styles.container}>
-        <h1 className={styles.title}>No Offence</h1>
+        <h1
+          className={styles.title}
+          onClick={() => {
+            setResult(null);
+            setError("");
+            setProffUrl("");
+            setCurrentEntryId(null);
+            setCurrentQueueCompany(null);
+          }}
+          style={{ cursor: "pointer" }}
+        >
+          No Offence
+        </h1>
 
         <p
           className={styles.subtitle}
           style={{
-            fontSize: ".7rem",
-            fontWeight: "bold",
             textTransform: "uppercase",
-            letterSpacing: "5px",
+            letterSpacing: "2px",
           }}
         >
-          Salgsautomatisering™
+          <RollingClock time={currentTime} />
+          <br />
+          {/* <span
+            style={{
+              fontSize: "0.65rem",
+              fontWeight: "normal",
+              opacity: 0.7,
+              marginTop: "8px",
+              display: "inline-block",
+            }}
+          >
+            <RollingText text={countdownText} />
+          </span> */}
+
+          {/* <span
+            style={{
+              fontSize: "0.55rem",
+              fontWeight: "normal",
+              opacity: 0.9,
+              marginTop: "4px",
+              display: "inline-block",
+              textTransform: "none",
+              letterSpacing: "auto",
+            }}
+          >
+            ({decemberCountdown})
+          </span> */}
         </p>
 
         <div className={styles.form}>
@@ -1141,9 +1795,110 @@ const Generator: React.FC = () => {
             disabled={loading}
             loading={loading}
             loadingText={loadingStep}
+            data-generate-button
           >
             Generer e-post
           </Button>
+
+          {/* Proff Queue Section - Hidden when viewing a result */}
+          {!result && (
+            <div className={styles.proffQueue}>
+              <div className={styles.queueHeader}>
+                <h3>Kø fra Proff.no</h3>
+                <div className={styles.queueActions}>
+                  <button
+                    onClick={refillProffQueue}
+                    disabled={loadingQueue || batchGenerating}
+                    className={styles.refillButton}
+                  >
+                    {loadingQueue ? "Laster..." : "Last inn bedrifter"}
+                  </button>
+                  {proffQueue.length > 0 && !batchGenerating && (
+                    <button
+                      onClick={handleGenerateAll}
+                      disabled={loading || loadingQueue}
+                      className={styles.generateAllButton}
+                    >
+                      Generer alle ({proffQueue.length})
+                    </button>
+                  )}
+                  {batchGenerating && (
+                    <button
+                      onClick={handleCancelBatch}
+                      className={styles.cancelBatchButton}
+                    >
+                      Avbryt ({batchProgress.current}/{batchProgress.total})
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Source URL Section */}
+              <div className={styles.sourceUrlSection}>
+                <label className={styles.sourceUrlLabel}>Kilde-URL:</label>
+                {editingSearchUrl ? (
+                  <div className={styles.sourceUrlEdit}>
+                    <input
+                      type="text"
+                      value={searchUrl}
+                      onChange={(e) => setSearchUrl(e.target.value)}
+                      className={styles.sourceUrlInput}
+                      placeholder="Proff.no søke-URL"
+                    />
+                    <button
+                      onClick={() => updateSearchUrl(searchUrl)}
+                      className={styles.saveButton}
+                    >
+                      Lagre
+                    </button>
+                    <button
+                      onClick={() => {
+                        setEditingSearchUrl(false);
+                        fetchProffQueue(); // Reset to saved value
+                      }}
+                      className={styles.cancelButton}
+                    >
+                      Avbryt
+                    </button>
+                  </div>
+                ) : (
+                  <div className={styles.sourceUrlDisplay}>
+                    <span className={styles.sourceUrlText}>{searchUrl || "Ingen URL satt"}</span>
+                    <button
+                      onClick={() => setEditingSearchUrl(true)}
+                      className={styles.editButton}
+                    >
+                      Rediger
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {batchGenerating && (
+                <div className={styles.batchProgress}>
+                  Genererer {batchProgress.current} av {batchProgress.total}...
+                </div>
+              )}
+              {proffQueue.length > 0 ? (
+                <div className={styles.queueList}>
+                  {proffQueue.slice(0, 10).map((company, index) => (
+                    <button
+                      key={`${company.id}-${queueUpdateKey}-${index}`}
+                      onClick={() => handleGenerateFromQueue(company)}
+                      disabled={loading || loadingQueue || batchGenerating}
+                      className={styles.queueButton}
+                    >
+                      Generer {company.companyName}
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <div className={styles.queueEmpty}>
+                  Klikk "Last inn bedrifter" for å hente fra Proff.no
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {result && (
@@ -1184,22 +1939,21 @@ const Generator: React.FC = () => {
                       )}
                     </div>
                   )}
-                  {result.email && (
-                    <div className={styles.infoItem}>
-                      <strong>Email:</strong>{" "}
-                      <input
-                        type="email"
-                        className={styles.inlineEditable}
-                        value={editableEmail}
-                        onChange={(e) => {
-                          const newValue = e.target.value;
-                          setEditableEmail(newValue);
-                          autoSaveContactField("email", newValue);
-                        }}
-                        disabled={loading}
-                      />
-                    </div>
-                  )}
+                  <div className={styles.infoItem}>
+                    <strong>Email:</strong>{" "}
+                    <input
+                      type="email"
+                      className={styles.inlineEditable}
+                      value={editableEmail}
+                      onChange={(e) => {
+                        const newValue = e.target.value;
+                        setEditableEmail(newValue);
+                        autoSaveContactField("email", newValue);
+                      }}
+                      disabled={loading}
+                      placeholder="Enter email address"
+                    />
+                  </div>
                   {result.phone && (
                     <div className={styles.infoItem}>
                       <strong>Phone:</strong>{" "}
@@ -1613,44 +2367,49 @@ const Generator: React.FC = () => {
               disabled={emailLocked || emailSent}
             />
 
-            {!emailLocked && <div className={styles.emailSentCheckbox}>
-              <label>
-                <input
-                  type="checkbox"
-                  checked={emailSent}
-                  onChange={async (e) => {
-                    const newValue = e.target.checked;
-                    setEmailSent(newValue);
+            {!emailLocked && (
+              <div className={styles.emailSentCheckbox}>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={emailSent}
+                    onChange={async (e) => {
+                      const newValue = e.target.checked;
+                      setEmailSent(newValue);
 
-                    // Update leadStatus when email is sent
-                    const newLeadStatus = newValue
-                      ? "Tilbud sendt"
-                      : "Ikke startet";
-                    setLeadStatus(newLeadStatus);
+                      // Update leadStatus when email is sent
+                      const newLeadStatus = newValue
+                        ? "Tilbud sendt"
+                        : "Ikke startet";
+                      setLeadStatus(newLeadStatus);
 
-                    // Save to backend
-                    if (result?.notionPageId) {
-                      try {
-                        await fetch(`${API_URL}/api/update`, {
-                          method: "PATCH",
-                          headers: {
-                            "Content-Type": "application/json",
-                          },
-                          body: JSON.stringify({
-                            pageId: result.notionPageId,
-                            emailSent: newValue,
-                            leadStatus: newLeadStatus,
-                          }),
-                        });
-                      } catch (error) {
-                        console.error("Failed to save emailSent flag:", error);
+                      // Save to backend
+                      if (result?.notionPageId) {
+                        try {
+                          await fetch(`${API_URL}/api/update`, {
+                            method: "PATCH",
+                            headers: {
+                              "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({
+                              pageId: result.notionPageId,
+                              emailSent: newValue,
+                              leadStatus: newLeadStatus,
+                            }),
+                          });
+                        } catch (error) {
+                          console.error(
+                            "Failed to save emailSent flag:",
+                            error
+                          );
+                        }
                       }
-                    }
-                  }}
-                />
-                <span>Mark email as sent</span>
-              </label>
-            </div>}
+                    }}
+                  />
+                  <span>Mark email as sent</span>
+                </label>
+              </div>
+            )}
 
             <div className={styles.field}>
               <div
@@ -1667,16 +2426,31 @@ const Generator: React.FC = () => {
                   className={styles.refreshButton}
                   title="Refresh data from server (e.g., to check for booking updates)"
                 >
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M14 8C14 11.3137 11.3137 14 8 14C4.68629 14 2 11.3137 2 8C2 4.68629 4.68629 2 8 2C10.3869 2 12.4584 3.29441 13.5 5.2M13.5 2V5.2M13.5 5.2H10.3" 
-                      stroke="url(#gradient)" 
-                      strokeWidth="1.5" 
-                      strokeLinecap="round" 
-                      strokeLinejoin="round"/>
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M14 8C14 11.3137 11.3137 14 8 14C4.68629 14 2 11.3137 2 8C2 4.68629 4.68629 2 8 2C10.3869 2 12.4584 3.29441 13.5 5.2M13.5 2V5.2M13.5 5.2H10.3"
+                      stroke="url(#gradient)"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
                     <defs>
-                      <linearGradient id="gradient" x1="2" y1="2" x2="14" y2="14" gradientUnits="userSpaceOnUse">
-                        <stop offset="0%" stopColor="#e3deea"/>
-                        <stop offset="100%" stopColor="#edd1d1"/>
+                      <linearGradient
+                        id="gradient"
+                        x1="2"
+                        y1="2"
+                        x2="14"
+                        y2="14"
+                        gradientUnits="userSpaceOnUse"
+                      >
+                        <stop offset="0%" stopColor="#e3deea" />
+                        <stop offset="100%" stopColor="#edd1d1" />
                       </linearGradient>
                     </defs>
                   </svg>
@@ -1688,7 +2462,7 @@ const Generator: React.FC = () => {
                 onChange={async (e) => {
                   const newStatus = e.target.value;
                   setLeadStatus(newStatus);
-                  
+
                   // Lock email if status becomes "Avventer svar"
                   if (newStatus === "Avventer svar" && !emailLocked) {
                     setEmailLocked(true);
@@ -1705,7 +2479,8 @@ const Generator: React.FC = () => {
                         body: JSON.stringify({
                           pageId: result.notionPageId,
                           leadStatus: newStatus,
-                          emailLocked: newStatus === "Avventer svar" ? true : undefined,
+                          emailLocked:
+                            newStatus === "Avventer svar" ? true : undefined,
                         }),
                       });
                     } catch (error) {
@@ -1788,7 +2563,7 @@ const Generator: React.FC = () => {
               >
                 LinkedIn
               </Button>
-              {result.email && (
+              {editableEmailContent && (
                 <Button
                   variant="secondary"
                   href={isMobile ? mailtoUrl : gmailComposeUrl}
@@ -1939,12 +2714,6 @@ const Generator: React.FC = () => {
                       complete.
                     </p>
                   </div>
-
-                  {runningAutomation && automationProgress && (
-                    <div className={styles.progressMessage}>
-                      {automationProgress}
-                    </div>
-                  )}
 
                   {uploadSuccess && (
                     <div className={styles.success}>

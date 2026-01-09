@@ -1,11 +1,16 @@
 import { Router, Request, Response } from "express";
 import { HistoryService } from "../services/historyService";
 import { NotionService } from "../services/notionService";
-import { SanityService } from "../services/sanityService";import { UrlShortenerService } from "../services/urlShortenerService";import * as fs from "fs";
+import { SanityService } from "../services/sanityService";
+import { UrlShortenerService } from "../services/urlShortenerService";
+import { ProposedMeetingsService } from "../services/proposedMeetingsService";
+import { BanListService } from "../services/banListService";
+import * as fs from "fs";
 import * as path from "path";
 
 const router = Router();
 const historyService = new HistoryService();
+const banListService = new BanListService();
 
 // Auto-sync from production in development mode
 if (process.env.NODE_ENV === "development") {
@@ -14,8 +19,9 @@ if (process.env.NODE_ENV === "development") {
     process.env.PRODUCTION_BACKEND_URL ||
     "https://automation-mail-zk8t.onrender.com";
 
-  setInterval(async () => {
+  const syncFromProduction = async () => {
     try {
+      console.log("🔄 Fetching data from production...");
       const response = await fetch(`${PRODUCTION_URL}/api/history`);
       if (response.ok) {
         const data = (await response.json()) as {
@@ -23,45 +29,51 @@ if (process.env.NODE_ENV === "development") {
           data: any[];
         };
         const productionEntries = data.data || [];
+        console.log(
+          `📥 Received ${productionEntries.length} entries from production`
+        );
 
         // Merge production entries into local history
         const localEntries = historyService.getAllEntries();
         const localMap = new Map(localEntries.map((e) => [e.id, e]));
+        console.log(`📋 Local history has ${localEntries.length} entries`);
 
-        let updated = false;
+        let added = 0;
+        let updated = 0;
         for (const prodEntry of productionEntries) {
           const localEntry = localMap.get(prodEntry.id);
 
-          // Debug log for first entry
-          if (prodEntry.id === "2e15fc42-3c97-8184-a200-cb821dc1e4c5") {
-            console.log("🔍 Production entry:", {
-              leadStatus: prodEntry.leadStatus,
-              bookedSlotIndex: prodEntry.bookedSlotIndex,
-              updatedAt: prodEntry.updatedAt,
-            });
-            if (localEntry) {
-              console.log("🔍 Local entry:", {
-                leadStatus: localEntry.leadStatus,
-                bookedSlotIndex: localEntry.bookedSlotIndex,
-                updatedAt: localEntry.updatedAt,
-              });
-            }
-          }
-
-          if (!localEntry || prodEntry.updatedAt > localEntry.updatedAt) {
+          if (!localEntry) {
+            // Entry doesn't exist locally, add it with all fields
+            historyService.addCompleteEntry(prodEntry);
+            added++;
+          } else if (prodEntry.updatedAt > localEntry.updatedAt) {
+            // Entry exists but production is newer, update it
             historyService.updateEntry(prodEntry.id, prodEntry);
-            updated = true;
+            updated++;
           }
         }
 
-        if (updated) {
-          console.log("🔄 Synced updates from production");
+        if (added > 0 || updated > 0) {
+          console.log(
+            `✅ Synced from production: ${added} added, ${updated} updated`
+          );
+        } else {
+          console.log("✓ Local history is up to date");
         }
+      } else {
+        console.error(`⚠️ Production API returned status: ${response.status}`);
       }
     } catch (error: any) {
       console.error("⚠️ Production sync failed:", error.message);
     }
-  }, SYNC_INTERVAL);
+  };
+
+  // Run sync immediately on startup
+  syncFromProduction();
+
+  // Then run on interval
+  setInterval(syncFromProduction, SYNC_INTERVAL);
 
   console.log(
     `🔄 Auto-sync from production enabled (every ${SYNC_INTERVAL / 1000}s)`
@@ -232,6 +244,21 @@ router.delete("/:id", async (req: Request, res: Response) => {
       }
     }
 
+    // Delete associated proposed meeting times
+    if (entry.notionPageId) {
+      try {
+        const proposedMeetingsService = new ProposedMeetingsService();
+        proposedMeetingsService.removeProposedTimes(entry.notionPageId);
+        console.log(
+          "✅ Deleted proposed meeting times for:",
+          entry.notionPageId
+        );
+      } catch (error: any) {
+        console.error("Failed to delete proposed times:", error.message);
+        errors.push(`Proposed times: ${error.message}`);
+      }
+    }
+
     // Delete from history
     const deleted = historyService.deleteEntry(id);
 
@@ -240,6 +267,17 @@ router.delete("/:id", async (req: Request, res: Response) => {
         success: false,
         error: "Failed to delete from history",
       });
+    }
+
+    // Add to ban list if proffUrl exists
+    if (entry.proffUrl) {
+      try {
+        banListService.addToBanList(entry.proffUrl, entry.companyName);
+        console.log(`🚫 Added to ban list: ${entry.companyName}`);
+      } catch (error: any) {
+        console.error("Failed to add to ban list:", error.message);
+        errors.push(`Ban list: ${error.message}`);
+      }
     }
 
     res.json({

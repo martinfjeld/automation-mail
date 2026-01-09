@@ -23,6 +23,23 @@ class FilesController {
       console.log("Industry:", industry);
       console.log("Finals Path:", finalsPath);
       console.log("Renders Path:", rendersPath);
+      
+      // Check if paths exist
+      if (!fs.existsSync(finalsPath)) {
+        console.error(`❌ Finals path does not exist: ${finalsPath}`);
+      } else {
+        console.log(`✓ Finals path exists`);
+        const finalsContents = fs.readdirSync(finalsPath);
+        console.log(`  Files in finals folder:`, finalsContents);
+      }
+      
+      if (!fs.existsSync(rendersPath)) {
+        console.error(`❌ Renders path does not exist: ${rendersPath}`);
+      } else {
+        console.log(`✓ Renders path exists`);
+        const rendersContents = fs.readdirSync(rendersPath);
+        console.log(`  Files in renders folder:`, rendersContents);
+      }
 
       if (clientId) {
         progressController.sendProgress(clientId, "Uploading files to Sanity...");
@@ -93,24 +110,37 @@ class FilesController {
         }
       }
 
-      // Read video files
+      // Read video files - support both .mp4 and .mov formats
       const videoFiles: { [key: string]: Buffer } = {};
-      const videoFilenames = [
-        `${industryPrefix}_template.mp4`,
-        `${industryPrefix}_template_mobile.mp4`,
+      const videoBasenames = [
+        `${industryPrefix}_template`,
+        `${industryPrefix}_template_mobile`,
       ];
 
-      for (const filename of videoFilenames) {
-        const filePath = path.join(rendersPath, filename);
+      for (const basename of videoBasenames) {
+        // Try .mov first, then .mp4
+        let filePath = path.join(rendersPath, `${basename}.mov`);
+        let filename = `${basename}.mov`;
+        
+        if (!fs.existsSync(filePath)) {
+          filePath = path.join(rendersPath, `${basename}.mp4`);
+          filename = `${basename}.mp4`;
+        }
+
         if (fs.existsSync(filePath)) {
           videoFiles[filename] = fs.readFileSync(filePath);
           console.log(`✓ Read ${filename}`);
         } else {
-          console.warn(`⚠ Missing ${filename} at ${filePath}`);
+          console.warn(`⚠ Missing both ${basename}.mov and ${basename}.mp4 at ${rendersPath}`);
         }
       }
 
       // Upload to Sanity
+      console.log("\n=== Uploading to Sanity ===");
+      console.log(`Mockups to upload: ${Object.keys(mockupFiles).length}`);
+      console.log(`Before/After images to upload: ${Object.keys(beforeAfterFiles).length}`);
+      console.log(`Videos to upload: ${Object.keys(videoFiles).length}`);
+      
       await sanityService.uploadGeneratedFiles(
         presentationId,
         mockupFiles,
@@ -119,6 +149,11 @@ class FilesController {
         industryPrefix,
         clientId
       );
+
+      console.log("\n=== Upload Summary ===");
+      console.log(`✓ Successfully uploaded ${Object.keys(mockupFiles).length} mockup images`);
+      console.log(`✓ Successfully uploaded ${Object.keys(beforeAfterFiles).length} before/after images`);
+      console.log(`✓ Successfully uploaded ${Object.keys(videoFiles).length} video files`);
 
       res.json({
         success: true,

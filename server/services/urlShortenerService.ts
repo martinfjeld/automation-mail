@@ -56,7 +56,7 @@ export class UrlShortenerService {
    */
   createShortUrl(fullUrl: string): string {
     const urls = this.readStore();
-    
+
     // Check if URL already exists
     const existing = urls.find((u) => u.fullUrl === fullUrl);
     if (existing) {
@@ -65,7 +65,7 @@ export class UrlShortenerService {
 
     // Generate new code
     let code = this.generateCode();
-    
+
     // Ensure uniqueness
     while (urls.some((u) => u.code === code)) {
       code = this.generateCode();
@@ -104,7 +104,7 @@ export class UrlShortenerService {
   cleanup() {
     const urls = this.readStore();
     const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
-    
+
     const filtered = urls.filter((u) => {
       const created = new Date(u.createdAt).getTime();
       return created > thirtyDaysAgo;
@@ -126,7 +126,7 @@ export class UrlShortenerService {
    */
   deleteCodes(codes: string[]): void {
     if (!codes || codes.length === 0) return;
-    
+
     const urls = this.readStore();
     const filtered = urls.filter((u) => !codes.includes(u.code));
     this.writeStore(filtered);

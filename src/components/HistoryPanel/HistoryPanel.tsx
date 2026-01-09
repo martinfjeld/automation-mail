@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styles from "./HistoryPanel.module.scss";
-import { API_URL } from "../../config";
+import { API_URL, LOCAL_API_URL } from "../../config";
 import AlertModal from "../AlertModal/AlertModal";
 
 interface HistoryEntry {
@@ -114,7 +114,7 @@ const HistoryPanel: React.FC<HistoryPanelProps> = ({
   const fetchHistory = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${API_URL}/api/history`);
+      const response = await fetch(`${LOCAL_API_URL}/api/history`);
       const data = await response.json();
 
       if (data.success) {
@@ -148,17 +148,39 @@ const HistoryPanel: React.FC<HistoryPanelProps> = ({
     }
 
     try {
-      const response = await fetch(`${API_URL}/api/history/${id}`, {
+      // Try to delete from local first (handles Sanity image cleanup)
+      try {
+        const localResponse = await fetch(
+          `${LOCAL_API_URL}/api/history/${id}`,
+          {
+            method: "DELETE",
+          }
+        );
+
+        const localData = await localResponse.json();
+
+        if (localData.success) {
+          console.log("✅ Deleted from local (Sanity images cleaned up)");
+        } else {
+          console.warn("⚠️ Local deletion failed:", localData.error);
+        }
+      } catch (localError) {
+        console.warn("⚠️ Could not delete from local:", localError);
+        // Continue anyway - might be out of sync
+      }
+
+      // Always delete from production regardless of local success
+      const prodResponse = await fetch(`${API_URL}/api/history/${id}`, {
         method: "DELETE",
       });
 
-      const data = await response.json();
+      const prodData = await prodResponse.json();
 
-      if (data.success) {
+      if (prodData.success) {
         // Remove from local state
         setHistory(history.filter((entry) => entry.id !== id));
       } else {
-        setErrorMessage(`Failed to delete: ${data.error}`);
+        setErrorMessage(`Failed to delete from production: ${prodData.error}`);
         setShowErrorModal(true);
       }
     } catch (error) {

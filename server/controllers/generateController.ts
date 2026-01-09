@@ -7,6 +7,7 @@ import { ScreenshotService } from "../services/screenshotService";
 import { SanityService } from "../services/sanityService";
 import { LighthouseService } from "../services/lighthouseService";
 import { HistoryService } from "../services/historyService";
+import { ProposedMeetingsService } from "../services/proposedMeetingsService";
 
 // Normalize company name: proper capitalization and remove AS suffix, prefixes, and countries
 function normalizeCompanyName(name: string): string {
@@ -562,8 +563,9 @@ class GenerateController {
         finalWebsite
       );
 
-      // Step 4b: Generate meeting proposals
+      // Step 4b: Generate meeting proposals with retry logic
       let meetingProposals: any[] = [];
+      let calendarError: string | null = null;
       const myEmail = process.env.MY_EMAIL;
       const googleClientId = process.env.GOOGLE_CLIENT_ID;
       const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
@@ -575,41 +577,88 @@ class GenerateController {
         googleClientSecret &&
         googleRefreshToken
       ) {
-        try {
-          sendProgress("Foreslår møtetidspunkter...");
-          const { CalendarService } = await import(
-            "../services/calendarService"
-          );
-          const calendarService = new CalendarService(
-            googleClientId,
-            googleClientSecret,
-            googleRefreshToken
-          );
+        // Retry logic with exponential backoff
+        const maxRetries = 3;
+        let attempt = 0;
 
-          // Generate proposals for next 14 days
-          const now = new Date();
-          const earliestStart = new Date(now.getTime() + 24 * 60 * 60 * 1000); // Tomorrow
-          const latestEnd = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000); // +14 days
+        while (attempt < maxRetries && meetingProposals.length === 0) {
+          try {
+            attempt++;
+            if (attempt > 1) {
+              const waitTime = Math.pow(2, attempt - 1) * 1000; // 2s, 4s, 8s
+              console.log(
+                `⏳ Retry attempt ${attempt}/${maxRetries} in ${
+                  waitTime / 1000
+                }s...`
+              );
+              sendProgress(
+                `Forsøker møtetidspunkter på nytt (${attempt}/${maxRetries})...`
+              );
+              await new Promise((resolve) => setTimeout(resolve, waitTime));
+            } else {
+              sendProgress("Foreslår møtetidspunkter...");
+            }
 
-          meetingProposals = await calendarService.generateProposals(
-            earliestStart.toISOString(),
-            latestEnd.toISOString(),
-            myEmail
-          );
+            const { CalendarService } = await import(
+              "../services/calendarService"
+            );
+            const calendarService = new CalendarService(
+              googleClientId,
+              googleClientSecret,
+              googleRefreshToken
+            );
 
-          console.log(
-            `✅ Generated ${meetingProposals.length} meeting proposals`
-          );
-        } catch (error: any) {
-          console.error("Failed to generate meeting proposals:", error.message);
-          // Continue without proposals if calendar fails
+            // Generate proposals for next 14 days (starting one week from now)
+            const now = new Date();
+            const earliestStart = new Date(
+              now.getTime() + 7 * 24 * 60 * 60 * 1000
+            ); // One week from now
+            const latestEnd = new Date(now.getTime() + 21 * 24 * 60 * 60 * 1000); // +21 days (3 weeks from now)
+
+            // Get already-proposed times to avoid duplicates
+            const proposedMeetingsService = new ProposedMeetingsService();
+            const takenTimes = proposedMeetingsService.getTakenTimes();
+            console.log(
+              `🚫 ${takenTimes.length} times already proposed to other leads`
+            );
+
+            meetingProposals = await calendarService.generateProposals(
+              earliestStart.toISOString(),
+              latestEnd.toISOString(),
+              myEmail,
+              takenTimes // Pass taken times to avoid proposing them again
+            );
+
+            if (meetingProposals.length === 3) {
+              console.log(
+                `✅ Generated ${meetingProposals.length} meeting proposals (attempt ${attempt})`
+              );
+              break; // Success!
+            } else {
+              throw new Error(
+                `Only generated ${meetingProposals.length} proposals (expected 3)`
+              );
+            }
+          } catch (error: any) {
+            console.error(
+              `❌ Attempt ${attempt}/${maxRetries} failed:`,
+              error.message
+            );
+            calendarError = error.message;
+
+            if (attempt === maxRetries) {
+              console.error(
+                "⚠️ ALL RETRIES EXHAUSTED - Email will be sent without meeting proposals"
+              );
+            }
+          }
         }
       }
 
       // Step 5: Run Lighthouse audit if website exists (before Sanity)
       let lighthouseScores = null;
       let lighthouseSummary = null;
-      if (finalWebsite && service === "Web") {
+      if (finalWebsite) {
         sendProgress("Kjører Lighthouse-analyse...");
         const lighthouseService = new LighthouseService();
         lighthouseScores = await lighthouseService.auditWebsite(finalWebsite);
@@ -724,20 +773,28 @@ class GenerateController {
           ? `https://www.sanity.io/studio/${config.SANITY_PROJECT_ID}/${config.SANITY_DATASET}/presentation;${sanityPresentationId}`
           : null;
 
-      // Add pitch deck section to email if presentation URL exists (for Web service only)
+      // Build final email with pitch deck and lighthouse info
       let finalEmailContent = emailContent;
-      if (service === "Web" && presentationUrl) {
-        const pitchDeckBlock = `Jeg har satt sammen en pitch deck til dere som viser et forslag til hvordan nye nettsider for dere kan se ut + et lite bilde av hvem vi er.\n${presentationUrl}`;
 
-        // Insert before "Med vennlig hilsen," if present
-        if (emailContent.includes("Med vennlig hilsen,")) {
-          finalEmailContent = emailContent.replace(
-            "Med vennlig hilsen,",
-            `${pitchDeckBlock}\n\nMed vennlig hilsen,`
-          );
-        } else {
-          // Otherwise append to the end
-          finalEmailContent = emailContent + pitchDeckBlock;
+      if (service === "Web" && presentationUrl) {
+        // Find where to insert pitch deck URL (after "se ut:")
+        const pitchDeckIntroPattern = /(se ut:)/;
+        const match = finalEmailContent.match(pitchDeckIntroPattern);
+
+        if (match) {
+          const insertionPoint = match.index! + match[0].length;
+          const beforeInsertion = finalEmailContent.slice(0, insertionPoint);
+          const afterInsertion = finalEmailContent.slice(insertionPoint);
+
+          // Build the insertion content
+          let insertContent = `\n${presentationUrl}`;
+
+          // Add Lighthouse summary if available
+          if (lighthouseSummary) {
+            insertContent += `\n\n${lighthouseSummary}`;
+          }
+
+          finalEmailContent = beforeInsertion + insertContent + afterInsertion;
         }
       }
 
@@ -778,7 +835,7 @@ class GenerateController {
         console.log("📅 Extracted meeting dates:", meetingDates);
 
         const meetingBlock =
-          `\n\nHvis du ønsker et kort møte for å diskutere mulighetene, kan du velge et tidspunkt som passer deg:\n\n` +
+          `\n\nHer har du tre forslag til møter. Trykk på linken for å booke:\n\n` +
           (
             await Promise.all(
               meetingProposals.map(async (proposal, index) => {
@@ -849,6 +906,19 @@ class GenerateController {
           presentationUrl: presentationUrl || undefined,
           leadStatus: "Ikke startet",
         });
+
+        // Save proposed meeting times to prevent double-booking
+        if (meetingDates.length > 0) {
+          const proposedMeetingsService = new ProposedMeetingsService();
+          proposedMeetingsService.addProposedTimes(
+            notionPageId,
+            companyName,
+            meetingDates
+          );
+          console.log(
+            `💾 Saved ${meetingDates.length} proposed times for ${companyName}`
+          );
+        }
       } catch (notionError: any) {
         console.error(
           "❌ Notion creation failed, cleaning up Sanity resources..."
@@ -909,6 +979,17 @@ class GenerateController {
           meetingDates: meetingDates.length > 0 ? meetingDates : undefined,
           bookingLinks: bookingLinks.length > 0 ? bookingLinks : undefined,
         },
+        warnings:
+          calendarError && meetingDates.length === 0
+            ? [
+                {
+                  type: "calendar_failed",
+                  message:
+                    "⚠️ Kunne ikke generere møtetidspunkter. E-posten mangler booking-linker!",
+                  details: calendarError,
+                },
+              ]
+            : undefined,
       };
 
       console.log(
@@ -968,6 +1049,7 @@ class GenerateController {
           city: (companyInfo as any).city || "",
           service: service,
           notionPageId: notionPageId,
+          proffUrl: proffUrl, // Add proffUrl to history for queue filtering
           sanityPresentationId: sanityPresentationId || undefined,
           presentationUrl: presentationUrl || undefined,
           emailContent: finalEmailContent || undefined,

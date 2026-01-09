@@ -1198,6 +1198,24 @@ export class SanityService {
   ): Promise<void> {
     try {
       console.log("\n=== Uploading Generated Files to Sanity ===");
+      console.log(`Mockup files received: ${Object.keys(mockupFiles).length}`);
+      console.log(
+        `Before/After files received: ${Object.keys(beforeAfterFiles).length}`
+      );
+      console.log(`Video files received: ${Object.keys(videoFiles).length}`);
+
+      // Check if we have any files to upload
+      if (
+        Object.keys(mockupFiles).length === 0 &&
+        Object.keys(beforeAfterFiles).length === 0 &&
+        Object.keys(videoFiles).length === 0
+      ) {
+        const errorMsg =
+          "⚠️ No files found to upload. Please check that the Python automation generated the files correctly.";
+        console.error(errorMsg);
+        if (clientId) progressController.sendProgress(clientId, errorMsg);
+        throw new Error("No files to upload");
+      }
 
       // Fetch current presentation
       const presentation: any = await (this.client as any).getDocument(
@@ -1367,9 +1385,15 @@ export class SanityService {
         const msg = `Uploading ${filename}...`;
         console.log(msg);
         if (clientId) progressController.sendProgress(clientId, msg);
+
+        // Determine content type based on file extension
+        const contentType = filename.endsWith(".mov")
+          ? "video/quicktime"
+          : "video/mp4";
+
         const asset = await this.client.assets.upload("file", buffer, {
           filename: filename,
-          contentType: "video/mp4",
+          contentType: contentType,
         });
 
         const videoRef = {
@@ -1693,9 +1717,9 @@ export class SanityService {
         presentationId
       );
 
-      if (presentation) {
-        const imageRefs = new Set<string>();
+      const imageRefs = new Set<string>();
 
+      if (presentation) {
         // Extract all image asset references from slides
         if (presentation.slides) {
           presentation.slides.forEach((slide: any) => {
@@ -1712,6 +1736,26 @@ export class SanityService {
             if (slide.afterImage?.asset?._ref) {
               imageRefs.add(slide.afterImage.asset._ref);
             }
+            // Check imageLayout fields (A, C, D, E)
+            if (slide.imageLayoutA?.asset?._ref) {
+              imageRefs.add(slide.imageLayoutA.asset._ref);
+            }
+            if (slide.imageLayoutC?.asset?._ref) {
+              imageRefs.add(slide.imageLayoutC.asset._ref);
+            }
+            if (slide.imageLayoutD?.asset?._ref) {
+              imageRefs.add(slide.imageLayoutD.asset._ref);
+            }
+            if (slide.imageLayoutE?.asset?._ref) {
+              imageRefs.add(slide.imageLayoutE.asset._ref);
+            }
+            // Check desktop/mobile images
+            if (slide.desktopImage?.asset?._ref) {
+              imageRefs.add(slide.desktopImage.asset._ref);
+            }
+            if (slide.mobileImage?.asset?._ref) {
+              imageRefs.add(slide.mobileImage.asset._ref);
+            }
             if (slide.images && Array.isArray(slide.images)) {
               slide.images.forEach((img: any) => {
                 if (img.asset?._ref) {
@@ -1726,26 +1770,24 @@ export class SanityService {
         if (presentation.customerLogo?.asset?._ref) {
           imageRefs.add(presentation.customerLogo.asset._ref);
         }
+      }
 
-        // Delete all image assets
-        if (imageRefs.size > 0) {
-          console.log(`Deleting ${imageRefs.size} image assets...`);
-          for (const imageRef of imageRefs) {
-            try {
-              await (this.client as any).delete(imageRef);
-              console.log(`✅ Deleted image: ${imageRef}`);
-            } catch (err: any) {
-              console.warn(
-                `⚠️ Failed to delete image ${imageRef}:`,
-                err.message
-              );
-            }
+      // Delete the presentation document FIRST to remove references
+      await (this.client as any).delete(presentationId);
+      console.log(`✅ Deleted presentation document: ${presentationId}`);
+
+      // Now delete all image assets (no longer referenced)
+      if (imageRefs.size > 0) {
+        console.log(`Deleting ${imageRefs.size} image assets...`);
+        for (const imageRef of imageRefs) {
+          try {
+            await (this.client as any).delete(imageRef);
+            console.log(`✅ Deleted image: ${imageRef}`);
+          } catch (err: any) {
+            console.warn(`⚠️ Failed to delete image ${imageRef}:`, err.message);
           }
         }
       }
-
-      // Delete the presentation document
-      await (this.client as any).delete(presentationId);
 
       console.log("✅ Sanity presentation and images deleted successfully");
     } catch (error: any) {

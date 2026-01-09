@@ -281,4 +281,59 @@ router.post("/book", async (req: Request, res: Response) => {
   }
 });
 
+/**
+ * GET /api/calendar/generate-proposals
+ * Generate 3 meeting proposals (for backfill script)
+ */
+router.get("/generate-proposals", async (req: Request, res: Response) => {
+  try {
+    const clientId = process.env.GOOGLE_CLIENT_ID;
+    const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+    const refreshToken = process.env.GOOGLE_REFRESH_TOKEN;
+    const myEmail = process.env.MY_EMAIL;
+
+    if (!clientId || !clientSecret || !refreshToken || !myEmail) {
+      return res.status(500).json({
+        success: false,
+        error: "Google Calendar not configured",
+      });
+    }
+
+    const calendarService = new CalendarService(
+      clientId,
+      clientSecret,
+      refreshToken
+    );
+
+    const now = new Date();
+    const earliestStart = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+    const latestEnd = new Date(now.getTime() + 21 * 24 * 60 * 60 * 1000);
+
+    // Get already-proposed times to avoid duplicates
+    const { ProposedMeetingsService } = await import(
+      "../services/proposedMeetingsService"
+    );
+    const proposedMeetingsService = new ProposedMeetingsService();
+    const takenTimes = proposedMeetingsService.getTakenTimes();
+
+    const proposals = await calendarService.generateProposals(
+      earliestStart.toISOString(),
+      latestEnd.toISOString(),
+      myEmail,
+      takenTimes
+    );
+
+    res.json({
+      success: true,
+      proposals: proposals,
+    });
+  } catch (error: any) {
+    console.error("Generate proposals error:", error);
+    res.status(500).json({
+      success: false,
+      error: error.message || "Failed to generate proposals",
+    });
+  }
+});
+
 export default router;

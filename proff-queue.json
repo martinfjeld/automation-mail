@@ -1,0 +1,67 @@
+{
+  "searchUrl": "https://www.proff.no/laglister?profitFrom=512&profitTo=47479000&numEmployeesFrom=10&numEmployeesTo=32524&naceIndustry=41.000&proffIndustryCode=10158%2C47420",
+  "queue": [
+    {
+      "id": "VESTVIKEN ENTREPRENØR AS",
+      "companyName": "VESTVIKEN ENTREPRENØR AS",
+      "proffUrl": "https://www.proff.no/selskap/vestviken-entrepren%C3%B8r-as/hokksund/-/918004750",
+      "organizationNumber": ""
+    },
+    {
+      "id": "VESTKYST BYGG AS",
+      "companyName": "VESTKYST BYGG AS",
+      "proffUrl": "https://www.proff.no/selskap/vestkyst-bygg-as/tjeldst%C3%B8/-/992850531",
+      "organizationNumber": ""
+    },
+    {
+      "id": "VEST STÅL & FASADE AS",
+      "companyName": "VEST STÅL & FASADE AS",
+      "proffUrl": "https://www.proff.no/selskap/vest-st%C3%A5l-fasade-as/sandeid/-/930622176",
+      "organizationNumber": ""
+    },
+    {
+      "id": "VEST BYGGTEKNIKK AS",
+      "companyName": "VEST BYGGTEKNIKK AS",
+      "proffUrl": "https://www.proff.no/selskap/vest-byggteknikk-as/%C3%A5gotnes/-/822151302",
+      "organizationNumber": ""
+    },
+    {
+      "id": "VEST BETONG AS",
+      "companyName": "VEST BETONG AS",
+      "proffUrl": "https://www.proff.no/selskap/vest-betong-as/stavanger/-/991374736",
+      "organizationNumber": ""
+    },
+    {
+      "id": "VEIDEKKE LOGISTIKKBYGG AS",
+      "companyName": "VEIDEKKE LOGISTIKKBYGG AS",
+      "proffUrl": "https://www.proff.no/selskap/veidekke-logistikkbygg-as/larvik/-/971203587",
+      "organizationNumber": ""
+    },
+    {
+      "id": "VEIDEKKE FELLESTJENESTER AS",
+      "companyName": "VEIDEKKE FELLESTJENESTER AS",
+      "proffUrl": "https://www.proff.no/selskap/veidekke-fellestjenester-as/oslo/-/923477675",
+      "organizationNumber": ""
+    },
+    {
+      "id": "VEIDEKKE ENTREPRENØR AS",
+      "companyName": "VEIDEKKE ENTREPRENØR AS",
+      "proffUrl": "https://www.proff.no/selskap/veidekke-entrepren%C3%B8r-as/oslo/-/984024290",
+      "organizationNumber": ""
+    },
+    {
+      "id": "VEF ENTREPRENØR AS",
+      "companyName": "VEF ENTREPRENØR AS",
+      "proffUrl": "https://www.proff.no/selskap/vef-entrepren%C3%B8r-as/vennesla/-/963228074",
+      "organizationNumber": ""
+    },
+    {
+      "id": "VEDAL ENTREPRENØR AS",
+      "companyName": "VEDAL ENTREPRENØR AS",
+      "proffUrl": "https://www.proff.no/selskap/vedal-entrepren%C3%B8r-as/oslo/-/983797652",
+      "organizationNumber": ""
+    }
+  ],
+  "lastScrapedCompany": "VEDAL ENTREPRENØR AS",
+  "currentPage": 7
+}

@@ -16,6 +16,10 @@ import calendarRoutes from "./routes/calendar";
 import shortRoutes from "./routes/short";
 import shortUrlsRoutes from "./routes/short-urls";
 import bookingRoutes from "./routes/booking";
+import proposedMeetingsRoutes from "./routes/proposed-meetings";
+import proffQueueRoutes from "./routes/proff-queue";
+import migrateProffUrlsRoutes from "./routes/migrate-proff-urls";
+import migrateImagesGeneratedRoutes from "./routes/migrate-images-generated";
 import { errorHandler } from "./middleware/errorHandler";
 
 // Load .env file from project root - try multiple paths for robustness
@@ -77,6 +81,10 @@ app.use("/api/booking", bookingRoutes); // Booking confirmations
 app.use("/book", calendarRoutes); // Shorter alias: /book/:token instead of /api/calendar/:token
 app.use("/s", shortRoutes); // Short URL redirects: /s/:code
 app.use("/api/short-urls", shortUrlsRoutes); // API to create short URLs
+app.use("/api/proposed-meetings", proposedMeetingsRoutes); // Track proposed meeting times
+app.use("/api/proff-queue", proffQueueRoutes); // Proff company queue
+app.use("/api/migrate-proff-urls", migrateProffUrlsRoutes); // Migrate proffUrl to history
+app.use("/api/migrate-images-generated", migrateImagesGeneratedRoutes); // Backfill imagesGenerated flag
 
 // Health check
 app.get("/api/health", (req: Request, res: Response) => {

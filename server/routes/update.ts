@@ -221,7 +221,9 @@ router.patch("/", async (req: Request, res: Response) => {
         historyUpdates.bookingLinks = bookingLinks;
       if (emailLocked !== undefined) historyUpdates.emailLocked = emailLocked;
 
+      console.log(`📝 Updating history for pageId: ${pageId}, updates:`, historyUpdates);
       historyService.updateEntry(pageId, historyUpdates);
+      console.log(`✅ History update completed for pageId: ${pageId}`);
     } catch (historyError: any) {
       console.error("Failed to update history:", historyError.message);
       // Don't fail the entire request if history update fails
