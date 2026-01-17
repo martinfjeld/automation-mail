@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import styles from "./HistoryPanel.module.scss";
 import { API_URL, LOCAL_API_URL } from "../../config";
 import AlertModal from "../AlertModal/AlertModal";
@@ -204,50 +204,59 @@ const HistoryPanel: React.FC<HistoryPanelProps> = ({
     });
   };
 
-  // Filter history based on search query and filters
-  const filteredHistory = history.filter((entry) => {
-    // Search filter - search in company name, contact person, email, city
-    const searchLower = searchQuery.toLowerCase();
-    const matchesSearch =
-      !searchQuery ||
-      entry.companyName.toLowerCase().includes(searchLower) ||
-      entry.contactPerson.toLowerCase().includes(searchLower) ||
-      entry.email.toLowerCase().includes(searchLower) ||
-      (entry.city && entry.city.toLowerCase().includes(searchLower)) ||
-      (entry.address && entry.address.toLowerCase().includes(searchLower));
+  // Filter history based on search query and filters (memoized to prevent recalculation)
+  const filteredHistory = useMemo(() => {
+    return history.filter((entry) => {
+      // Search filter - search in company name, contact person, email, city
+      const searchLower = searchQuery.toLowerCase();
+      const matchesSearch =
+        !searchQuery ||
+        entry.companyName.toLowerCase().includes(searchLower) ||
+        entry.contactPerson.toLowerCase().includes(searchLower) ||
+        entry.email.toLowerCase().includes(searchLower) ||
+        (entry.city && entry.city.toLowerCase().includes(searchLower)) ||
+        (entry.address && entry.address.toLowerCase().includes(searchLower));
 
-    // Industry filter - use automationIndustry which has consistent values (Bygg, Helse, Advokat)
-    const matchesIndustry =
-      filterIndustry === "all" ||
-      (entry.automationIndustry &&
-        entry.automationIndustry.toLowerCase() ===
-          filterIndustry.toLowerCase());
+      // Industry filter - use automationIndustry which has consistent values (Bygg, Helse, Advokat)
+      const matchesIndustry =
+        filterIndustry === "all" ||
+        (entry.automationIndustry &&
+          entry.automationIndustry.toLowerCase() ===
+            filterIndustry.toLowerCase());
 
-    // Service filter
-    const matchesService =
-      filterService === "all" || entry.service === filterService;
+      // Service filter
+      const matchesService =
+        filterService === "all" || entry.service === filterService;
 
-    // Email sent filter
-    const matchesEmailSent =
-      filterEmailSent === "all" ||
-      (filterEmailSent === "sent" && entry.emailSent === true) ||
-      (filterEmailSent === "notSent" && !entry.emailSent);
+      // Email sent filter
+      const matchesEmailSent =
+        filterEmailSent === "all" ||
+        (filterEmailSent === "sent" && entry.emailSent === true) ||
+        (filterEmailSent === "notSent" && !entry.emailSent);
 
-    // Images generated filter
-    const matchesImagesGenerated =
-      filterImagesGenerated === "all" ||
-      (filterImagesGenerated === "hasMockups" &&
-        entry.imagesGenerated === true) ||
-      (filterImagesGenerated === "noMockups" && !entry.imagesGenerated);
+      // Images generated filter
+      const matchesImagesGenerated =
+        filterImagesGenerated === "all" ||
+        (filterImagesGenerated === "hasMockups" &&
+          entry.imagesGenerated === true) ||
+        (filterImagesGenerated === "noMockups" && !entry.imagesGenerated);
 
-    return (
-      matchesSearch &&
-      matchesIndustry &&
-      matchesService &&
-      matchesEmailSent &&
-      matchesImagesGenerated
-    );
-  });
+      return (
+        matchesSearch &&
+        matchesIndustry &&
+        matchesService &&
+        matchesEmailSent &&
+        matchesImagesGenerated
+      );
+    });
+  }, [
+    history,
+    searchQuery,
+    filterIndustry,
+    filterService,
+    filterEmailSent,
+    filterImagesGenerated,
+  ]);
 
   return (
     <>
@@ -264,7 +273,13 @@ const HistoryPanel: React.FC<HistoryPanelProps> = ({
       <div className={`${styles.panel} ${isOpen ? styles.panelOpen : ""}`}>
         <div className={styles.topSection}>
           <div className={styles.header}>
-            <h2 className={styles.title}>Generated Emails</h2>
+            <div className={styles.titleContainer}>
+              <h2 className={styles.title}>Generated Emails</h2>
+              <span className={styles.entryCount}>
+                {filteredHistory.length}{" "}
+                {filteredHistory.length === 1 ? "entry" : "entries"}
+              </span>
+            </div>
             <button
               className={styles.refreshButton}
               onClick={fetchHistory}
@@ -463,4 +478,4 @@ const HistoryPanel: React.FC<HistoryPanelProps> = ({
   );
 };
 
-export default HistoryPanel;
+export default React.memo(HistoryPanel);

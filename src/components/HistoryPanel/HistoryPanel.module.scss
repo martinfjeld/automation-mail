@@ -97,12 +97,27 @@
   background: transparent;
 }
 
+.titleContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+}
+
 .title {
   margin: 0;
   font-size: 1.5rem;
   @include gradient-text;
   text-transform: uppercase;
-  text-align: center;
+  text-align: left;
+}
+
+.entryCount {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0.5px;
 }
 
 .refreshButton {

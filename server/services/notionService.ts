@@ -232,6 +232,8 @@ export class NotionService {
       presentationUrl?: string;
       leadStatus?: string;
       møtedato?: string;
+      contactDate?: string;
+      followUpDate?: string;
     }
   ): Promise<void> {
     if (!this.client || !this.databaseId) {
@@ -370,6 +372,29 @@ export class NotionService {
         };
       }
 
+      if (updates.contactDate !== undefined) {
+        console.log(`📅 Setting Contact Date to: ${updates.contactDate}`);
+        properties["Contact Date"] = {
+          date: {
+            start: updates.contactDate,
+          },
+        };
+      }
+
+      if (updates.followUpDate !== undefined) {
+        console.log(`📅 Setting Follow-up Date to: ${updates.followUpDate}`);
+        properties["Follow-up Date"] = {
+          date: {
+            start: updates.followUpDate,
+          },
+        };
+      }
+
+      console.log(
+        `🔵 Updating Notion page ${pageId} with properties:`,
+        JSON.stringify(properties, null, 2)
+      );
+
       await this.client.pages.update({
         page_id: pageId,
         properties,
@@ -422,6 +447,28 @@ export class NotionService {
     } catch (error: any) {
       console.error("Notion meeting date update failed:", error.message);
       throw new Error("Failed to update meeting date in Notion");
+    }
+  }
+
+  async clearMeetingDate(pageId: string): Promise<void> {
+    if (!this.client || !this.databaseId) {
+      throw new Error("Notion client not initialized");
+    }
+
+    try {
+      await this.client.pages.update({
+        page_id: pageId,
+        properties: {
+          Møtedato: {
+            date: null,
+          },
+        },
+      });
+
+      console.log(`✅ Notion meeting date cleared: ${pageId}`);
+    } catch (error: any) {
+      console.error("Failed to clear meeting date:", error.message);
+      throw new Error("Failed to clear meeting date in Notion");
     }
   }
 

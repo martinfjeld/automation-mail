@@ -30,11 +30,10 @@
       "www.no-offence.io/s/b9d349"
     ],
     "createdAt": "2026-01-10T02:38:38.557Z",
-    "updatedAt": "2026-01-10T15:59:48.858Z",
+    "updatedAt": "2026-01-10T13:39:41.439Z",
     "logoMode": "light",
     "linkedIn": "https://www.linkedin.com/in/tor-kristian-nordhus-plahte-904007209/",
     "imagesGenerated": true,
-    "bookedSlotIndex": 1,
     "møtedato": "2026-03-12T12:00:00.000+00:00"
   },
   {
@@ -140,10 +139,7 @@
       "www.no-offence.io/s/24cf3e"
     ],
     "createdAt": "2026-01-10T02:23:52.125Z",
-    "updatedAt": "2026-01-10T16:15:02.205Z",
-    "imagesGenerated": true,
-    "logoMode": "light",
-    "linkedIn": ""
+    "updatedAt": "2026-01-10T02:23:52.125Z"
   },
   {
     "id": "2e45fc42-3c97-813e-b633-d1367151478a",
@@ -176,10 +172,7 @@
       "www.no-offence.io/s/4196b4"
     ],
     "createdAt": "2026-01-10T02:22:52.202Z",
-    "updatedAt": "2026-01-10T17:42:56.763Z",
-    "logoMode": "dark",
-    "linkedIn": "https://www.linkedin.com/in/thor-arne-wullum-8099a733/",
-    "imagesGenerated": true
+    "updatedAt": "2026-01-10T02:22:52.202Z"
   },
   {
     "id": "2e45fc42-3c97-812a-94f5-ff6142fdb4ad",
@@ -195,7 +188,7 @@
     "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-hjort-as/oslo/-/929191811",
     "sanityPresentationId": "fJ8g4Op5RbsDsqbs0b2o2a",
     "presentationUrl": "https://www.no-offence.io/presentation/hjort/1768011708636-7ungq5l",
-    "emailContent": "Hei Anne,\n\nJeg heter Martin Fjeld og er gründer av et kreativt design- og digitalbyrå kalt No Offence. Jeg har satt sammen en presentasjon som viser hvordan deres nye nettsider kan se ut:\nhttps://www.no-offence.io/presentation/hjort/1768011708636-7ungq5l\n\nNettsiden deres har 100% synlighet i søkemotorer. Noe annet vi så var at hastigheten kunne vært litt bedre.\n\n\nJeg foreslår at vi tar en uforpliktende prat over en kopp kaffe for å diskutere mulighetene.\n\n\n\nHer har du tre forslag til møter. Trykk på linken for å booke:\n\n1. Ons 4. mar, 11:00–11:30 - www.no-offence.io/s/4b5257\n\n2. Tor 5. mar, 11:00–11:30 - www.no-offence.io/s/c43183\n\n3. Fre 6. mar, 14:00–14:30 - www.no-offence.io/s/439fb4\n\nMed vennlig hilsen,",
+    "emailContent": "Hei Anne,\n\nJeg heter Martin Fjeld og er gründer av et kreativt design- og digitalbyrå kalt No Offence. Jeg har satt sammen en presentasjon som viser hvordan deres nye nettsider kan se ut:\nhttps://www.no-offence.io/presentation/hjort/1768011708636-7ungq5l\n\nNettsiden deres har 100% synlighet i søkemotorer. Noe annet vi så var at hastigheten kunne vært litt bedre.\n\n[Presentasjon og Lighthouse-analyse]\n\nJeg foreslår at vi tar en uforpliktende prat over en kopp kaffe for å diskutere mulighetene.\n\n\n\nHer har du tre forslag til møter. Trykk på linken for å booke:\n\n1. Ons 4. mar, 11:00–11:30 - www.no-offence.io/s/4b5257\n\n2. Tor 5. mar, 11:00–11:30 - www.no-offence.io/s/c43183\n\n3. Fre 6. mar, 14:00–14:30 - www.no-offence.io/s/439fb4\n\nMed vennlig hilsen,",
     "automationIndustry": "Advokat",
     "automationText1": "Advokatfirmaet",
     "automationText2": "Hjort",
@@ -212,10 +205,7 @@
       "www.no-offence.io/s/439fb4"
     ],
     "createdAt": "2026-01-10T02:21:51.122Z",
-    "updatedAt": "2026-01-10T17:50:09.321Z",
-    "linkedIn": "https://www.linkedin.com/in/annemariedue/",
-    "logoMode": "light",
-    "imagesGenerated": true
+    "updatedAt": "2026-01-10T02:21:51.122Z"
   },
   {
     "id": "2e45fc42-3c97-81a7-9901-c8047c13a6cc",
@@ -248,10 +238,7 @@
       "www.no-offence.io/s/05255a"
     ],
     "createdAt": "2026-01-10T02:20:39.622Z",
-    "updatedAt": "2026-01-10T17:56:08.571Z",
-    "linkedIn": "https://www.linkedin.com/in/jakob-chr-christensen-3069b0274/",
-    "logoMode": "light",
-    "imagesGenerated": true
+    "updatedAt": "2026-01-10T02:20:39.622Z"
   },
   {
     "id": "2e45fc42-3c97-81f4-9887-d451e6615a72",
@@ -284,8 +271,7 @@
       "www.no-offence.io/s/103444"
     ],
     "createdAt": "2026-01-10T02:19:43.884Z",
-    "updatedAt": "2026-01-17T08:11:46.070Z",
-    "emailSent": false
+    "updatedAt": "2026-01-10T02:19:43.884Z"
   },
   {
     "id": "2e35fc42-3c97-814d-a086-c820e6e33eb8",
@@ -967,7 +953,7 @@
     "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-wiersholm-as/oslo/-/981371593",
     "sanityPresentationId": "S6obyrU4ey6rmIvHJuJtVu",
     "presentationUrl": "https://www.no-offence.io/presentation/wiersholm/1767981530849-6ty1j97",
-    "emailContent": "Hei Stephan,\n\nJeg heter Martin Fjeld og er gründer av et kreativt design- og digitalbyrå kalt No Offence. Jeg har satt sammen en presentasjon som viser hvordan deres nye nettsider kan se ut:\nhttps://www.no-offence.io/presentation/wiersholm/1767981530849-6ty1j97\n\nNettsiden deres har høy synlighet i s��kemotorer. Noe annet vi så var at hastigheten kunne vært litt bedre. Vi kan hjelpe med forbedringer.\n\n[TOM LINJE]\n\nJeg foreslår at vi tar en uforpliktende prat over en kopp kaffe for å diskutere mulighetene.\n\n\n\nHer har du tre forslag til møter. Trykk på linken for å booke:\n\n1. Tir 17. feb, 11:00–11:30 - www.no-offence.io/s/24159f\n\n2. Ons 18. feb, 13:00–13:30 - www.no-offence.io/s/2ed250\n\n3. Tor 19. feb, 10:00–10:30 - www.no-offence.io/s/f19ddc\n\nMed vennlig hilsen,",
+    "emailContent": "Hei Stephan,\n\nJeg heter Martin Fjeld og er gründer av et kreativt design- og digitalbyrå kalt No Offence. Jeg har satt sammen en presentasjon som viser hvordan deres nye nettsider kan se ut:\nhttps://www.no-offence.io/presentation/wiersholm/1767981530849-6ty1j97\n\nNettsiden deres har høy synlighet i søkemotorer. Noe annet vi så var at hastigheten kunne vært litt bedre. Vi kan hjelpe med forbedringer.\n\n[TOM LINJE]\n\nJeg foreslår at vi tar en uforpliktende prat over en kopp kaffe for å diskutere mulighetene.\n\n\n\nHer har du tre forslag til møter. Trykk på linken for å booke:\n\n1. Tir 17. feb, 11:00–11:30 - www.no-offence.io/s/24159f\n\n2. Ons 18. feb, 13:00–13:30 - www.no-offence.io/s/2ed250\n\n3. Tor 19. feb, 10:00–10:30 - www.no-offence.io/s/f19ddc\n\nMed vennlig hilsen,",
     "automationIndustry": "Advokat",
     "automationText1": "Advokatfirmaet",
     "automationText2": "Wiersholm",
@@ -1321,8 +1307,8 @@
     ],
     "createdAt": "2026-01-09T17:23:11.926Z",
     "updatedAt": "2026-01-10T13:08:49.970Z",
-    "bookedSlotIndex": 1,
-    "møtedato": "2026-02-12T13:00:00.000Z"
+    "møtedato": "2026-02-12T13:00:00.000Z",
+    "bookedSlotIndex": 1
   },
   {
     "id": "2e35fc42-3c97-8184-acfe-d86fed8fa35e",
@@ -2545,8 +2531,8 @@
     "imagesGenerated": true,
     "logoMode": "light",
     "linkedIn": "",
-    "bookedSlotIndex": 0,
-    "møtedato": "2026-01-16T10:30:00.000+00:00"
+    "møtedato": "2026-01-16T10:30:00.000+00:00",
+    "bookedSlotIndex": 0
   },
   {
     "id": "2e35fc42-3c97-815d-ab59-f20d2a9d976b",
@@ -3333,8 +3319,8 @@
     "createdAt": "2026-01-09T09:43:34.004Z",
     "updatedAt": "2026-01-09T13:34:42.019Z",
     "proffUrl": "https://www.proff.no/selskap/%C3%B8stu-stettin-hoch-und-tiefbau-gmbh-nuf/kvits%C3%B8y/-/924271043",
-    "imagesGenerated": true,
-    "møtedato": "2026-01-20T13:00:00.000+00:00"
+    "møtedato": "2026-01-20T13:00:00.000+00:00",
+    "imagesGenerated": true
   },
   {
     "id": "2e35fc42-3c97-81d7-99e2-f1895e54b165",
@@ -3468,9 +3454,7 @@
     "createdAt": "2026-01-09T09:21:23.864Z",
     "updatedAt": "2026-01-09T13:34:42.025Z",
     "proffUrl": "https://www.proff.no/selskap/%C3%B8ystein-henriksen-as/hokksund/-/980263037",
-    "imagesGenerated": true,
-    "logoMode": "light",
-    "linkedIn": ""
+    "imagesGenerated": true
   },
   {
     "id": "2e35fc42-3c97-811e-a302-c045ef5dc93c",
@@ -3503,8 +3487,6 @@
     "createdAt": "2026-01-09T08:12:18.157Z",
     "updatedAt": "2026-01-09T13:42:46.066Z",
     "proffUrl": "https://www.proff.no/selskap/virtus-advokat-as/trondheim/advokater-og-juridiske-tjenester/IF2ZDHM07U6",
-    "imagesGenerated": true,
-    "logoMode": "light",
-    "linkedIn": "https://www.linkedin.com/in/hans-petter-wist-a471547b/?originalSubdomain=no"
+    "imagesGenerated": true
   }
 ]

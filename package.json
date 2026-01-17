@@ -27,6 +27,7 @@
     "express-rate-limit": "^8.2.1",
     "google-auth-library": "^10.5.0",
     "googleapis": "^169.0.0",
+    "gsap": "^3.14.2",
     "helmet": "^8.1.0",
     "lighthouse": "^12.8.2",
     "openai": "^6.15.0",

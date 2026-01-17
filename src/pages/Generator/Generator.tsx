@@ -20,6 +20,7 @@ interface GenerateResult {
   website: string;
   address?: string;
   city?: string;
+  linkedIn?: string;
   emailContent: string;
   notionPageId: string;
   industry?: string;
@@ -86,6 +87,168 @@ const RollingDigit: React.FC<{
         ))}
       </span>
     </span>
+  );
+};
+
+// Separate RollingDigit for startup percentage with custom sizing
+const StartupRollingDigit: React.FC<{
+  digit: string;
+  index: number;
+  timeKey: string;
+  fontSize: number;
+}> = ({ digit, index, timeKey, fontSize }) => {
+  const rollerRef = useRef<HTMLSpanElement>(null);
+  const prevTimeKeyRef = useRef<string>("");
+
+  useEffect(() => {
+    if (!rollerRef.current) return;
+    if (prevTimeKeyRef.current !== timeKey) {
+      const targetDigit = parseInt(digit);
+      if (!isNaN(targetDigit)) {
+        const digitHeight = fontSize * 1.2; // Line height ratio
+        const translateY = -targetDigit * digitHeight;
+        rollerRef.current.style.transform = `translateY(${translateY}px)`;
+      }
+      prevTimeKeyRef.current = timeKey;
+    }
+  }, [timeKey, digit, fontSize]);
+
+  if (digit === ":" || digit === " ") {
+    return <span className={styles.digitSeparator}>{digit}</span>;
+  }
+
+  const digitHeight = fontSize * 1.2;
+  const digitWidth = fontSize * 0.65;
+
+  return (
+    <span
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        height: `${digitHeight}px`,
+        width: `${digitWidth}px`,
+        overflow: "hidden",
+        position: "relative",
+
+        borderRadius: "6px",
+      }}
+    >
+      <span
+        ref={rollerRef}
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          fontSize: `${fontSize}px`,
+          fontFamily: '"Europa Grotesk SH", sans-serif',
+          fontWeight: 600,
+          transition: "transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)",
+          willChange: "transform",
+        }}
+      >
+        {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
+          <span
+            key={num}
+            style={{
+              height: `${digitHeight}px`,
+              lineHeight: `${digitHeight}px`,
+              fontSize: `${fontSize}px`,
+              display: "block",
+              textAlign: "center",
+              color: "#ffffff",
+              width: "100%",
+              flexShrink: 0,
+            }}
+          >
+            {num}
+          </span>
+        ))}
+      </span>
+    </span>
+  );
+};
+
+const RollingPercentage: React.FC<{ percentage: number }> = ({
+  percentage,
+}) => {
+  const roundedPercent = Math.round(percentage);
+  const percentString = roundedPercent.toString();
+  const percentKey = percentString; // Use as key to trigger animations
+
+  // CHANGE FONT SIZE HERE - This controls the size of startup digits
+  const STARTUP_DIGIT_SIZE = 290; // Change this value to resize all digits
+  const digitWidth = STARTUP_DIGIT_SIZE * 0.65;
+
+  // Determine how many digits to show (1, 2, or 3)
+  const showHundreds = roundedPercent >= 100;
+  const showTens = roundedPercent >= 10;
+
+  return (
+    <div className={styles.rollingPercentage}>
+      {/* Hundreds digit - only show if >= 100 */}
+      <span
+        style={{
+          width: showHundreds ? `${digitWidth}px` : "0px",
+          overflow: "hidden",
+          transition: "width 0.3s ease",
+          display: "inline-block",
+        }}
+      >
+        {showHundreds && (
+          <StartupRollingDigit
+            key={`percent-hundreds`}
+            digit={percentString[percentString.length - 3] || "0"}
+            index={0}
+            timeKey={percentKey}
+            fontSize={STARTUP_DIGIT_SIZE}
+          />
+        )}
+      </span>
+
+      {/* Tens digit - only show if >= 10 */}
+      <span
+        style={{
+          width: showTens ? `${digitWidth}px` : "0px",
+          overflow: "hidden",
+          transition: "width 0.3s ease",
+          display: "inline-block",
+        }}
+      >
+        {showTens && (
+          <StartupRollingDigit
+            key={`percent-tens`}
+            digit={
+              roundedPercent >= 100
+                ? percentString[percentString.length - 2]
+                : percentString[0]
+            }
+            index={1}
+            timeKey={percentKey}
+            fontSize={STARTUP_DIGIT_SIZE}
+          />
+        )}
+      </span>
+
+      {/* Ones digit - always show */}
+      <StartupRollingDigit
+        key={`percent-ones`}
+        digit={percentString[percentString.length - 1]}
+        index={2}
+        timeKey={percentKey}
+        fontSize={STARTUP_DIGIT_SIZE}
+      />
+
+      <span
+        className={styles.percentSymbol}
+        style={{ fontSize: `${STARTUP_DIGIT_SIZE * 0.5}px` }}
+      >
+        %
+      </span>
+    </div>
   );
 };
 
@@ -214,6 +377,8 @@ const Generator: React.FC = () => {
   const [isEmailModified, setIsEmailModified] = useState(false);
   const [savingEmail, setSavingEmail] = useState(false);
   const [emailSaved, setEmailSaved] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [saveErrorRed, setSaveErrorRed] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [uploadSuccess, setUploadSuccess] = useState(false);
   const [automationIndustry, setAutomationIndustry] = useState("Helse");
@@ -230,6 +395,7 @@ const Generator: React.FC = () => {
   const [showLogoPreview, setShowLogoPreview] = useState(false);
   const [isClosingPreview, setIsClosingPreview] = useState(false);
   const [logoMode, setLogoMode] = useState<"light" | "dark">("light");
+  const [sanityLogoUrl, setSanityLogoUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [clientId] = useState(
     () => `client_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
@@ -244,6 +410,15 @@ const Generator: React.FC = () => {
   const [batchCancelled, setBatchCancelled] = useState(false);
   const [searchUrl, setSearchUrl] = useState("");
   const [editingSearchUrl, setEditingSearchUrl] = useState(false);
+  const [showBanModal, setShowBanModal] = useState(false);
+  const [companyToBan, setCompanyToBan] = useState<any>(null);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [syncing, setSyncing] = useState(false);
+  const [startingUp, setStartingUp] = useState(true);
+  const [startupProgress, setStartupProgress] = useState(0);
+  const [startupMessage, setStartupMessage] = useState(
+    "Starter opp Salgsautomator..."
+  );
 
   // Detect screen size changes
   useEffect(() => {
@@ -260,6 +435,91 @@ const Generator: React.FC = () => {
     setCheckingSetup(false);
   }, []);
 
+  // Startup: Wait for server to be ready (only on first load of session)
+  useEffect(() => {
+    const checkServerHealth = async () => {
+      // Ensure we're showing the startup screen
+      setStartingUp(true);
+
+      // Quick check if server was recently verified (skip full loading sequence)
+      const serverReady = sessionStorage.getItem("serverReady");
+      if (serverReady === "true") {
+        // Do a quick health check to confirm server is still up
+        try {
+          const response = await fetch(`${LOCAL_API_URL}/api/proff-queue`, {
+            signal: AbortSignal.timeout(1000),
+          });
+          if (response.ok) {
+            // Server is still responding, skip full startup sequence
+            setStartingUp(false);
+            return;
+          }
+        } catch (error) {
+          // Server not responding, continue with full health check
+          console.log("Server not responding, showing startup screen...");
+        }
+        // Clear the cached flag if server is down
+        sessionStorage.removeItem("serverReady");
+      }
+
+      let retries = 0;
+      const maxRetries = 30; // 30 seconds max
+
+      setStartupProgress(5);
+      setStartupMessage("Kobler til server...");
+
+      while (retries < maxRetries) {
+        try {
+          const response = await fetch(`${LOCAL_API_URL}/api/proff-queue`, {
+            signal: AbortSignal.timeout(2000),
+          });
+
+          if (response.ok) {
+            setStartupProgress(70);
+            setStartupMessage("Laster historikk...");
+
+            // Load history
+            await new Promise((resolve) => setTimeout(resolve, 300));
+
+            setStartupProgress(95);
+            setStartupMessage("Klar!");
+
+            // Smooth transition to 100
+            await new Promise((resolve) => setTimeout(resolve, 200));
+            setStartupProgress(100);
+
+            // Wait a bit to show completion
+            await new Promise((resolve) => setTimeout(resolve, 600));
+
+            // Remember that server is ready for this session
+            sessionStorage.setItem("serverReady", "true");
+
+            setStartingUp(false);
+            return;
+          }
+        } catch (error) {
+          // Server not ready yet
+        }
+
+        retries++;
+        const progress = 5 + (retries / maxRetries) * 60;
+        setStartupProgress(Math.min(Math.round(progress), 65));
+        setStartupMessage(`Venter på server... (${retries}/${maxRetries})`);
+
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+      }
+
+      // Timeout - show error but allow app to load
+      setStartupProgress(80);
+      setStartupMessage("Kunne ikke koble til server. Fortsetter likevel...");
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      sessionStorage.setItem("serverReady", "true"); // Don't show again this session
+      setStartingUp(false);
+    };
+
+    checkServerHealth();
+  }, []);
+
   // Update clock every second
   useEffect(() => {
     const timer = setInterval(() => {
@@ -269,37 +529,12 @@ const Generator: React.FC = () => {
     return () => clearInterval(timer);
   }, []);
 
-  // Restore current entry from backend on mount
-  useEffect(() => {
-    const savedEntryId = localStorage.getItem("generator_currentEntryId");
-    if (savedEntryId) {
-      // Fetch the entry from backend and load it
-      fetch(`${API_URL}/api/history`)
-        .then((res) => res.json())
-        .then((response) => {
-          const entries = response.data || response;
-          const entry = entries.find((e: any) => e.id === savedEntryId);
-          if (entry) {
-            handleLoadHistoryEntry(entry);
-          }
-        })
-        .catch((error) => {
-          console.error("Failed to restore entry from backend:", error);
-        });
-    }
-  }, []);
+  // localStorage functionality removed - always start fresh on page load
 
-  // Save current entry ID to localStorage
-  useEffect(() => {
-    if (currentEntryId) {
-      localStorage.setItem("generator_currentEntryId", currentEntryId);
-    }
-  }, [currentEntryId]);
-
-  // Warn user before leaving during active generation
+  // Warn user before leaving during active generation or with unsaved changes
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (loading || runningAutomation) {
+      if (loading || runningAutomation || hasUnsavedChanges) {
         e.preventDefault();
         e.returnValue = "";
         return "";
@@ -308,7 +543,7 @@ const Generator: React.FC = () => {
 
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, [loading, runningAutomation]);
+  }, [loading, runningAutomation, hasUnsavedChanges]);
 
   // Keep editable fields in sync with the latest generation result
   useEffect(() => {
@@ -326,11 +561,34 @@ const Generator: React.FC = () => {
     setEditablePhone(result?.phone || "");
     setEditableAddress(result?.address || "");
     setEditableCity(result?.city || "");
-    setEditableLinkedIn("");
+    setEditableLinkedIn(result?.linkedIn || "");
     setEditableEmailContent(result?.emailContent || "");
     setIsEmailModified(false);
     console.log("useEffect - after setEditableEmailContent");
   }, [result, isLoadingHistory]);
+
+  // Reset save status when any field changes
+  useEffect(() => {
+    if (emailSaved) {
+      setEmailSaved(false);
+    }
+    if (saveError) {
+      setSaveError(null);
+      setSaveErrorRed(false);
+    }
+  }, [
+    editableCompanyName,
+    editableEmail,
+    editablePhone,
+    editableAddress,
+    editableCity,
+    editableLinkedIn,
+    editableEmailContent,
+    meetingDate1,
+    meetingDate2,
+    meetingDate3,
+    logoMode,
+  ]);
 
   // Poll for updates to the current entry (e.g., booking confirmations)
   useEffect(() => {
@@ -338,7 +596,7 @@ const Generator: React.FC = () => {
 
     const pollInterval = setInterval(async () => {
       try {
-        const response = await fetch(`${API_URL}/api/history`);
+        const response = await fetch(`${LOCAL_API_URL}/api/history`);
         const data = await response.json();
 
         if (data.success) {
@@ -366,10 +624,10 @@ const Generator: React.FC = () => {
 
               setLeadStatus(currentEntry.leadStatus || "Ikke startet");
 
-              // If there's a booking date, you might want to show a notification
+              // Update møtedato if there's a booking
               if (hasBookingUpdate) {
                 console.log("🎉 Meeting booked:", currentEntry.møtedato);
-                // Optionally show a toast/notification to the user
+                setMøtedato(currentEntry.møtedato);
               }
             }
           }
@@ -377,7 +635,7 @@ const Generator: React.FC = () => {
       } catch (error) {
         console.error("Failed to poll for updates:", error);
       }
-    }, 10000); // Poll every 10 seconds
+    }, 15000); // Poll every 15 seconds (reduced frequency to minimize performance impact)
 
     return () => clearInterval(pollInterval);
   }, [result?.notionPageId, result?.leadStatus]);
@@ -449,26 +707,159 @@ const Generator: React.FC = () => {
 
   const autoSaveLogoMode = useCallback(
     async (mode: "light" | "dark") => {
-      if (!result?.sanityPresentationId || !result?.notionPageId) return;
+      // Save to history.json only (local, no rate limits)
+      // Notion/Sanity sync is manual via "Refresh notion" button
+
+      if (!result?.notionPageId) return;
 
       try {
-        await fetch(`${API_URL}/api/update`, {
+        console.log(`💾 Saving logo mode to history.json...`);
+        await fetch(`${LOCAL_API_URL}/api/history`, {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
             pageId: result.notionPageId,
-            presentationId: result.sanityPresentationId,
             logoMode: mode,
           }),
         });
+        console.log(`✅ Logo mode saved to history`);
       } catch (err: any) {
-        console.error("Auto-save logo mode error:", err);
+        console.error(`❌ History save error:`, err.message);
       }
     },
-    [result?.sanityPresentationId, result?.notionPageId]
+    [result?.notionPageId]
   );
+
+  // Fetch Sanity logo URL
+  const fetchSanityLogo = useCallback(async (presentationId: string) => {
+    try {
+      console.log(
+        `🔍 Fetching Sanity logo for presentation: ${presentationId}`
+      );
+      const response = await fetch(
+        `${LOCAL_API_URL}/api/sanity/logo/${presentationId}`
+      );
+      const data = await response.json();
+
+      if (data.success && data.logoUrl) {
+        console.log("✅ Sanity logo URL found:", data.logoUrl);
+        setSanityLogoUrl(data.logoUrl);
+      } else {
+        console.log("❌ No Sanity logo found");
+        setSanityLogoUrl(null);
+      }
+    } catch (error) {
+      console.error("Failed to fetch Sanity logo:", error);
+      setSanityLogoUrl(null);
+    }
+  }, []);
+
+  // Load Sanity logo when result changes
+  useEffect(() => {
+    if (result?.sanityPresentationId) {
+      fetchSanityLogo(result.sanityPresentationId);
+    } else {
+      setSanityLogoUrl(null);
+    }
+  }, [result?.sanityPresentationId, fetchSanityLogo]);
+
+  // Manual sync function to update all changes to Notion/Sanity at once
+  const syncToNotion = useCallback(async () => {
+    if (!result?.notionPageId) return;
+
+    setSyncing(true);
+    try {
+      console.log("🔄 Syncing: Local → Sanity → Notion...");
+
+      const requestBody = {
+        pageId: result.notionPageId,
+        companyName: editableCompanyName,
+        contactPerson: result.contactPerson,
+        email: editableEmail,
+        phone: editablePhone,
+        address: editableAddress,
+        city: editableCity,
+        linkedIn: editableLinkedIn,
+        website: result.website,
+        emailContent: editableEmailContent,
+        meetingDates: [meetingDate1, meetingDate2, meetingDate3],
+        logoMode: logoMode,
+        sanityPresentationId: result.sanityPresentationId,
+        sanityUniqueId: result.sanityUniqueId,
+      };
+
+      console.log("📤 Syncing to production:", requestBody);
+
+      // Use the local API which has Notion credentials and latest code
+      const response = await fetch(`${LOCAL_API_URL}/api/update`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      console.log("📥 Response status:", response.status);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("❌ Server error response:", errorText);
+        throw new Error(`Server returned ${response.status}: ${errorText}`);
+      }
+
+      const data = await response.json();
+      if (data.success) {
+        console.log("✅ Sync complete:", {
+          historyUpdated: true,
+          sanityUpdated: true,
+          notionSuccess: data.notionSuccess,
+        });
+        if (data.presentationUrl) {
+          setPitchDeckUrl(data.presentationUrl);
+        }
+        setHasUnsavedChanges(false);
+
+        if (data.notionSuccess) {
+          alert(
+            "✅ Alle endringer synkronisert til history.json, Sanity og Notion!"
+          );
+        } else {
+          alert(
+            "⚠️ Synkronisert til history.json og Sanity. Notion feilet, men lokale endringer er bevart."
+          );
+        }
+      } else {
+        console.warn("⚠️ Sync returned non-success:", data);
+        alert("⚠️ Synkronisering fullført med advarsler. Sjekk konsollen.");
+      }
+    } catch (err: any) {
+      console.error("❌ Sync error:", err.message);
+      alert(
+        "❌ Kunne ikke synkronisere. Lokale endringer i history.json bevart."
+      );
+    } finally {
+      setSyncing(false);
+    }
+  }, [
+    result?.notionPageId,
+    result?.sanityPresentationId,
+    result?.sanityUniqueId,
+    result?.contactPerson,
+    result?.website,
+    logoMode,
+    editableCompanyName,
+    editableEmail,
+    editablePhone,
+    editableAddress,
+    editableCity,
+    editableLinkedIn,
+    editableEmailContent,
+    meetingDate1,
+    meetingDate2,
+    meetingDate3,
+  ]);
 
   // Fetch Proff queue
   const fetchProffQueue = useCallback(async () => {
@@ -514,13 +905,16 @@ const Generator: React.FC = () => {
   // Update search URL
   const updateSearchUrl = useCallback(async (newUrl: string) => {
     try {
-      const response = await fetch(`${LOCAL_API_URL}/api/proff-queue/search-url`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ searchUrl: newUrl }),
-      });
+      const response = await fetch(
+        `${LOCAL_API_URL}/api/proff-queue/search-url`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ searchUrl: newUrl }),
+        }
+      );
       const data = await response.json();
       if (data.success) {
         console.log("✅ Search URL updated successfully");
@@ -637,15 +1031,32 @@ const Generator: React.FC = () => {
   // Load queue on mount and auto-refill if needed
   useEffect(() => {
     const loadAndRefillQueue = async () => {
-      await fetchProffQueue();
-      // Check if we need to refill after fetching
-      const response = await fetch(`${LOCAL_API_URL}/api/proff-queue`);
-      const data = await response.json();
-      if (data.success && data.queue.length < 10) {
-        console.log(
-          `📊 Queue has only ${data.queue.length} items, auto-refilling...`
-        );
-        await refillProffQueue();
+      // Wait for server to be ready before loading queue
+      const serverReady = sessionStorage.getItem("serverReady");
+      if (serverReady !== "true") {
+        // Wait for startup to complete
+        const checkInterval = setInterval(() => {
+          if (sessionStorage.getItem("serverReady") === "true") {
+            clearInterval(checkInterval);
+            loadAndRefillQueue();
+          }
+        }, 100);
+        return;
+      }
+
+      try {
+        await fetchProffQueue();
+        // Check if we need to refill after fetching
+        const response = await fetch(`${LOCAL_API_URL}/api/proff-queue`);
+        const data = await response.json();
+        if (data.success && data.queue.length < 10) {
+          console.log(
+            `📊 Queue has only ${data.queue.length} items, auto-refilling...`
+          );
+          await refillProffQueue();
+        }
+      } catch (error) {
+        console.log("Queue loading will retry after server is ready");
       }
     };
     loadAndRefillQueue();
@@ -789,6 +1200,59 @@ const Generator: React.FC = () => {
     setBatchCancelled(true);
     setBatchGenerating(false);
     setBatchProgress({ current: 0, total: 0 });
+  };
+
+  // Show ban confirmation modal
+  const handleBanCompany = (company: any) => {
+    setCompanyToBan(company);
+    setShowBanModal(true);
+  };
+
+  // Confirm and execute ban
+  const confirmBanCompany = async () => {
+    if (!companyToBan) return;
+
+    setShowBanModal(false);
+
+    try {
+      const response = await fetch(`${LOCAL_API_URL}/api/proff-queue/ban`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: companyToBan.id,
+          proffUrl: companyToBan.proffUrl,
+          companyName: companyToBan.companyName,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        console.log(`🚫 Banned ${companyToBan.companyName}`);
+
+        // Refresh queue to show updated list
+        await fetchProffQueue();
+
+        // Try to refill if queue is getting low
+        if (proffQueue.length < 10) {
+          await refillProffQueue();
+        }
+
+        // Force UI update
+        setQueueUpdateKey((prev) => prev + 1);
+      } else {
+        throw new Error(data.error || "Failed to ban company");
+      }
+    } catch (error) {
+      console.error("Failed to ban company:", error);
+      setAlertTitle("Feil");
+      setAlertMessage("Kunne ikke legge til i sperrelisten");
+      setShowAlertModal(true);
+    } finally {
+      setCompanyToBan(null);
+    }
   };
 
   const handleGenerate = async () => {
@@ -935,7 +1399,10 @@ const Generator: React.FC = () => {
                 console.log("✅ Saved imagesGenerated flag to local backend");
               })
               .catch((error) => {
-                console.error("Failed to save imagesGenerated flag to local backend:", error);
+                console.error(
+                  "Failed to save imagesGenerated flag to local backend:",
+                  error
+                );
               });
 
             // Update production backend
@@ -947,7 +1414,9 @@ const Generator: React.FC = () => {
               body: JSON.stringify(updatePayload),
             })
               .then(() => {
-                console.log("✅ Saved imagesGenerated flag to production backend");
+                console.log(
+                  "✅ Saved imagesGenerated flag to production backend"
+                );
               })
               .catch((error) => {
                 console.error("Failed to save imagesGenerated flag:", error);
@@ -1060,42 +1529,114 @@ const Generator: React.FC = () => {
   const handleSaveEmail = async () => {
     if (!result?.notionPageId) return;
 
+    console.log("🔵 ========== SAVE BUTTON CLICKED ==========");
+    console.log("🔵 Page ID:", result.notionPageId);
+    console.log("🔵 Timestamp:", new Date().toISOString());
+
     setSavingEmail(true);
     try {
-      const response = await fetch(`${API_URL}/api/update`, {
+      console.log(
+        "💾 Save button: Syncing all fields to history.json, Sanity, and Notion..."
+      );
+
+      const requestBody = {
+        pageId: result.notionPageId,
+        companyName: editableCompanyName,
+        contactPerson: result.contactPerson,
+        email: editableEmail,
+        phone: editablePhone,
+        address: editableAddress,
+        city: editableCity,
+        linkedIn: editableLinkedIn,
+        website: result.website,
+        emailContent: editableEmailContent,
+        meetingDates: [meetingDate1, meetingDate2, meetingDate3],
+        logoMode: logoMode,
+        sanityPresentationId: result.sanityPresentationId,
+        sanityUniqueId: result.sanityUniqueId,
+      };
+
+      console.log("🔵 Request body:", JSON.stringify(requestBody, null, 2));
+      console.log("🔵 Calling:", `${LOCAL_API_URL}/api/update`);
+
+      const requestStartTime = Date.now();
+
+      // Use the local API which has Notion credentials and latest code
+      const response = await fetch(`${LOCAL_API_URL}/api/update`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          pageId: result.notionPageId,
-          emailContent: editableEmailContent,
-        }),
+        body: JSON.stringify(requestBody),
       });
+
+      const requestDuration = Date.now() - requestStartTime;
+      console.log("🔵 Response received in", requestDuration, "ms");
 
       const data = await response.json();
 
+      console.log("🔵 Response status:", response.status);
+      console.log("🔵 Response data:", JSON.stringify(data, null, 2));
+
       if (!response.ok) {
-        throw new Error(data.error || "Failed to save email");
+        console.error("🔴 Request failed:", data.error);
+        throw new Error(data.error || "Failed to save");
       }
 
-      // Update result state with new email content
+      // Update result state with all current values
       setResult((prev) =>
-        prev ? { ...prev, emailContent: editableEmailContent } : prev
+        prev
+          ? {
+              ...prev,
+              companyName: editableCompanyName,
+              email: editableEmail,
+              phone: editablePhone,
+              address: editableAddress,
+              city: editableCity,
+              linkedIn: editableLinkedIn,
+              emailContent: editableEmailContent,
+            }
+          : prev
       );
 
-      setIsEmailModified(false);
-      setEmailSaved(true);
+      if (data.presentationUrl) {
+        setPitchDeckUrl(data.presentationUrl);
+      }
 
-      // Hide success message after 2 seconds
-      setTimeout(() => {
-        setEmailSaved(false);
-      }, 2000);
+      setIsEmailModified(false);
+      setHasUnsavedChanges(false);
+      setSaveError(null);
+
+      // Check for partial failures
+      if (!data.notionSuccess) {
+        setSaveError("Notion sync failed");
+        setSaveErrorRed(true);
+        console.warn(
+          "⚠️ Synced to history.json and Sanity. Notion failed but local changes preserved."
+        );
+        // Still show "Saved" since data is preserved locally and in Sanity
+        setEmailSaved(true);
+        // Fade from red back to normal after 3 seconds, clear message after 5
+        setTimeout(() => setSaveErrorRed(false), 3000);
+        setTimeout(() => setSaveError(null), 5000);
+        setTimeout(() => setEmailSaved(false), 2000);
+      } else {
+        console.log(
+          "✅ All changes synced to history.json, Sanity, and Notion!"
+        );
+        setEmailSaved(true);
+        // Hide success message after 2 seconds
+        setTimeout(() => setEmailSaved(false), 2000);
+      }
+
+      console.log("🔵 ========== SAVE COMPLETE ==========");
     } catch (err: any) {
-      console.error("Save email error:", err);
-      setAlertTitle("Feil ved lagring");
-      setAlertMessage(`Failed to save email: ${err.message}`);
-      setShowAlertModal(true);
+      console.error("Save error:", err);
+      setSaveError(`Failed: ${err.message}`);
+      setSaveErrorRed(true);
+      // Fade from red back to normal after 3 seconds, clear message after 5
+      setTimeout(() => setSaveErrorRed(false), 3000);
+      setTimeout(() => setSaveError(null), 5000);
     } finally {
       setSavingEmail(false);
     }
@@ -1106,17 +1647,19 @@ const Generator: React.FC = () => {
 
   const autoSaveContactField = useCallback(
     (fieldName: string, value: string) => {
+      // Save to history.json only (local, no rate limits)
+      // Notion/Sanity sync is manual via "Refresh notion" button
+
       if (!result?.notionPageId) return;
 
-      // Clear existing timeout
       if (updateTimeoutRef.current) {
         clearTimeout(updateTimeoutRef.current);
       }
 
-      // Set new timeout to update after 500ms of no typing
       updateTimeoutRef.current = setTimeout(async () => {
         try {
-          await fetch(`${API_URL}/api/update`, {
+          console.log(`💾 Saving ${fieldName} to history.json...`);
+          await fetch(`${LOCAL_API_URL}/api/history`, {
             method: "PATCH",
             headers: {
               "Content-Type": "application/json",
@@ -1126,8 +1669,9 @@ const Generator: React.FC = () => {
               [fieldName]: value,
             }),
           });
+          console.log(`✅ ${fieldName} saved to history`);
         } catch (err: any) {
-          console.error(`Auto-save ${fieldName} error:`, err);
+          console.error(`❌ History save error:`, err.message);
         }
       }, 500);
     },
@@ -1137,17 +1681,19 @@ const Generator: React.FC = () => {
   // Auto-save meeting dates to history
   const autoSaveMeetingDates = useCallback(
     (dates: [string, string, string]) => {
+      // Save to history.json only (local, no rate limits)
+      // Notion/Sanity sync is manual via "Refresh notion" button
+
       if (!result?.notionPageId) return;
 
-      // Clear existing timeout
       if (updateTimeoutRef.current) {
         clearTimeout(updateTimeoutRef.current);
       }
 
-      // Set new timeout to update after 500ms
       updateTimeoutRef.current = setTimeout(async () => {
         try {
-          await fetch(`${API_URL}/api/update`, {
+          console.log("💾 Saving meeting dates to history.json...");
+          await fetch(`${LOCAL_API_URL}/api/history`, {
             method: "PATCH",
             headers: {
               "Content-Type": "application/json",
@@ -1157,9 +1703,9 @@ const Generator: React.FC = () => {
               meetingDates: dates,
             }),
           });
-          console.log("✅ Meeting dates saved to history:", dates);
+          console.log("✅ Meeting dates saved to history");
         } catch (err: any) {
-          console.error("Auto-save meeting dates error:", err);
+          console.error("❌ History save error:", err.message);
         }
       }, 500);
     },
@@ -1227,20 +1773,15 @@ const Generator: React.FC = () => {
         .join(" ");
       setAutomationText2(capitalizedName);
 
-      // 2. THEN UPDATE BACKEND AFTER DEBOUNCE
-
-      // Clear existing timeout
+      // Auto-save to history.json (local only, no rate limits)
       if (updateTimeoutRef.current) {
         clearTimeout(updateTimeoutRef.current);
       }
 
-      // Set new timeout to update backend after 500ms of no typing
       updateTimeoutRef.current = setTimeout(async () => {
         try {
-          console.log("💾 Saving to backend:", value);
-
-          // Update in Notion and Sanity
-          const response = await fetch(`${API_URL}/api/update`, {
+          console.log("💾 Saving company name to history.json...");
+          await fetch(`${LOCAL_API_URL}/api/history`, {
             method: "PATCH",
             headers: {
               "Content-Type": "application/json",
@@ -1248,15 +1789,11 @@ const Generator: React.FC = () => {
             body: JSON.stringify({
               pageId: result.notionPageId,
               companyName: value,
-              sanityPresentationId: result.sanityPresentationId,
-              sanityUniqueId: result.sanityUniqueId,
             }),
           });
-
-          const data = await response.json();
-          console.log("✅ Backend update complete:", data);
+          console.log("✅ Company name saved to history");
         } catch (err: any) {
-          console.error("❌ Auto-save company name error:", err);
+          console.error("❌ History save error:", err.message);
         }
       }, 500);
     },
@@ -1432,6 +1969,7 @@ const Generator: React.FC = () => {
 
   const handleLoadHistoryEntry = useCallback((entry: any) => {
     console.log("Loading history entry:", entry.companyName);
+    console.log("LinkedIn from entry:", entry.linkedIn);
     console.log(
       "Email content from history:",
       entry.emailContent?.substring(0, 100)
@@ -1450,6 +1988,7 @@ const Generator: React.FC = () => {
       website: entry.website,
       address: entry.address,
       city: entry.city,
+      linkedIn: entry.linkedIn,
       emailContent: entry.emailContent || "",
       notionPageId: entry.notionPageId,
       industry: entry.industry,
@@ -1474,7 +2013,7 @@ const Generator: React.FC = () => {
     setEditablePhone(loadedResult.phone || "");
     setEditableAddress(loadedResult.address || "");
     setEditableCity(loadedResult.city || "");
-    setEditableLinkedIn("");
+    setEditableLinkedIn(entry.linkedIn || "");
     setEditableEmailContent(loadedResult.emailContent);
     setIsEmailModified(false);
 
@@ -1569,6 +2108,39 @@ const Generator: React.FC = () => {
 
     // Set leadStatus
     setLeadStatus(entry.leadStatus || "Ikke startet");
+  }, []);
+
+  const handleDeleteCurrentEntry = useCallback(async () => {
+    // Show full-screen spinner
+    setDeleting(true);
+
+    // Small delay to ensure spinner is visible
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    // Clear all states to reset the page
+    setResult(null);
+    setPitchDeckUrl("");
+    setEditableCompanyName("");
+    setEditableEmail("");
+    setEditablePhone("");
+    setEditableAddress("");
+    setEditableCity("");
+    setEditableLinkedIn("");
+    setEditableEmailContent("");
+    setAutomationText1("");
+    setAutomationText2("");
+    setAutomationIndustry("Helse");
+    setImagesGenerated(false);
+    setEmailSent(false);
+    setError("");
+    setIsEmailModified(false);
+    setEmailSaved(false);
+    setProffUrl("");
+    // Clear saved state when deleting current entry
+    localStorage.removeItem("generator_savedState");
+
+    // Hide spinner after a short delay
+    setTimeout(() => setDeleting(false), 300);
   }, []);
 
   const gmailComposeUrl = (() => {
@@ -1700,6 +2272,21 @@ const Generator: React.FC = () => {
     );
   }
 
+  // Show startup loading screen
+  if (startingUp) {
+    return (
+      <div className={styles.startupScreen}>
+        <Helmet>
+          <title>Starter opp...</title>
+        </Helmet>
+        <div className={styles.startupContent}>
+          <RollingPercentage percentage={startupProgress} />
+        </div>
+        <div className={styles.startupFooter}>© 2026 No offence</div>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.generator}>
       <Helmet>
@@ -1811,6 +2398,24 @@ const Generator: React.FC = () => {
                     disabled={loadingQueue || batchGenerating}
                     className={styles.refillButton}
                   >
+                    <svg
+                      viewBox="0 0 20 20"
+                      xmlns="http://www.w3.org/2000/svg"
+                      className={styles.sparkleIcon}
+                    >
+                      <path
+                        d="M10 4 L10.5 9 L11 9.5 L16 10 L11 10.5 L10.5 11 L10 16 L9.5 11 L9 10.5 L4 10 L9 9.5 L9.5 9 Z"
+                        fill="currentColor"
+                      />
+                      <path
+                        d="M5 5 L5.3 6.5 L5.7 6.8 L7.2 7 L5.7 7.2 L5.3 7.5 L5 9 L4.7 7.5 L4.3 7.2 L2.8 7 L4.3 6.8 L4.7 6.5 Z"
+                        fill="currentColor"
+                      />
+                      <path
+                        d="M15 13 L15.2 14.5 L15.5 14.7 L17 15 L15.5 15.3 L15.2 15.5 L15 17 L14.8 15.5 L14.5 15.3 L13 15 L14.5 14.7 L14.8 14.5 Z"
+                        fill="currentColor"
+                      />
+                    </svg>
                     {loadingQueue ? "Laster..." : "Last inn bedrifter"}
                   </button>
                   {proffQueue.length > 0 && !batchGenerating && (
@@ -1819,7 +2424,25 @@ const Generator: React.FC = () => {
                       disabled={loading || loadingQueue}
                       className={styles.generateAllButton}
                     >
-                      Generer alle ({proffQueue.length})
+                      <svg
+                        viewBox="0 0 20 20"
+                        xmlns="http://www.w3.org/2000/svg"
+                        className={styles.sparkleIcon}
+                      >
+                        <path
+                          d="M10 4 L10.5 9 L11 9.5 L16 10 L11 10.5 L10.5 11 L10 16 L9.5 11 L9 10.5 L4 10 L9 9.5 L9.5 9 Z"
+                          fill="currentColor"
+                        />
+                        <path
+                          d="M5 5 L5.3 6.5 L5.7 6.8 L7.2 7 L5.7 7.2 L5.3 7.5 L5 9 L4.7 7.5 L4.3 7.2 L2.8 7 L4.3 6.8 L4.7 6.5 Z"
+                          fill="currentColor"
+                        />
+                        <path
+                          d="M15 13 L15.2 14.5 L15.5 14.7 L17 15 L15.5 15.3 L15.2 15.5 L15 17 L14.8 15.5 L14.5 15.3 L13 15 L14.5 14.7 L14.8 14.5 Z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                      x {proffQueue.length}
                     </button>
                   )}
                   {batchGenerating && (
@@ -1863,7 +2486,9 @@ const Generator: React.FC = () => {
                   </div>
                 ) : (
                   <div className={styles.sourceUrlDisplay}>
-                    <span className={styles.sourceUrlText}>{searchUrl || "Ingen URL satt"}</span>
+                    <span className={styles.sourceUrlText}>
+                      {searchUrl || "Ingen URL satt"}
+                    </span>
                     <button
                       onClick={() => setEditingSearchUrl(true)}
                       className={styles.editButton}
@@ -1882,14 +2507,52 @@ const Generator: React.FC = () => {
               {proffQueue.length > 0 ? (
                 <div className={styles.queueList}>
                   {proffQueue.slice(0, 10).map((company, index) => (
-                    <button
+                    <div
                       key={`${company.id}-${queueUpdateKey}-${index}`}
-                      onClick={() => handleGenerateFromQueue(company)}
-                      disabled={loading || loadingQueue || batchGenerating}
-                      className={styles.queueButton}
+                      className={styles.queueItem}
                     >
-                      Generer {company.companyName}
-                    </button>
+                      <div className={styles.buttonGroup}>
+                        <button
+                          onClick={() => handleGenerateFromQueue(company)}
+                          disabled={loading || loadingQueue || batchGenerating}
+                          className={styles.generateButton}
+                        >
+                          <svg
+                            viewBox="0 0 20 20"
+                            xmlns="http://www.w3.org/2000/svg"
+                            className={styles.sparkleIcon}
+                          >
+                            <path
+                              d="M10 4 L10.5 9 L11 9.5 L16 10 L11 10.5 L10.5 11 L10 16 L9.5 11 L9 10.5 L4 10 L9 9.5 L9.5 9 Z"
+                              fill="currentColor"
+                            />
+                            <path
+                              d="M5 5 L5.3 6.5 L5.7 6.8 L7.2 7 L5.7 7.2 L5.3 7.5 L5 9 L4.7 7.5 L4.3 7.2 L2.8 7 L4.3 6.8 L4.7 6.5 Z"
+                              fill="currentColor"
+                            />
+                            <path
+                              d="M15 13 L15.2 14.5 L15.5 14.7 L17 15 L15.5 15.3 L15.2 15.5 L15 17 L14.8 15.5 L14.5 15.3 L13 15 L14.5 14.7 L14.8 14.5 Z"
+                              fill="currentColor"
+                            />
+                          </svg>
+                          Generer
+                        </button>
+                      </div>
+                      <span className={styles.companyName}>
+                        {company.companyName}
+                      </span>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleBanCompany(company);
+                        }}
+                        disabled={loading || loadingQueue || batchGenerating}
+                        className={styles.removeButton}
+                        title="Legg til i sperrelisten"
+                      >
+                        Slett
+                      </button>
+                    </div>
                   ))}
                 </div>
               ) : (
@@ -1903,11 +2566,25 @@ const Generator: React.FC = () => {
 
         {result && (
           <div className={styles.result}>
-            <h2 className={styles.resultTitle}>Generated Email</h2>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "1rem",
+              }}
+            >
+              <h2 className={styles.resultTitle} style={{ margin: 0 }}>
+                Generated Email
+              </h2>
+            </div>
 
             <div className={styles.info}>
               <div className={styles.companyRow}>
-                <div className={styles.companyInfo}>
+                <div
+                  className={styles.companyInfo}
+                  style={{ position: "relative" }}
+                >
                   <div className={styles.infoItem}>
                     <strong>Company:</strong>{" "}
                     <input
@@ -1917,6 +2594,7 @@ const Generator: React.FC = () => {
                       onChange={(e) => {
                         const newValue = e.target.value;
                         setEditableCompanyName(newValue);
+                        setHasUnsavedChanges(true);
                         autoSaveCompanyName(newValue);
                       }}
                       disabled={loading}
@@ -1948,6 +2626,7 @@ const Generator: React.FC = () => {
                       onChange={(e) => {
                         const newValue = e.target.value;
                         setEditableEmail(newValue);
+                        setHasUnsavedChanges(true);
                         autoSaveContactField("email", newValue);
                       }}
                       disabled={loading}
@@ -1964,54 +2643,56 @@ const Generator: React.FC = () => {
                         onChange={(e) => {
                           const newValue = e.target.value;
                           setEditablePhone(newValue);
+                          setHasUnsavedChanges(true);
                           autoSaveContactField("phone", newValue);
                         }}
                         disabled={loading}
                       />
                     </div>
                   )}
-                  {(result.address || editableAddress) && (
-                    <div className={styles.infoItem}>
-                      <strong>Address:</strong>{" "}
-                      <input
-                        type="text"
-                        className={styles.inlineEditable}
-                        value={editableAddress}
-                        onChange={(e) => {
-                          const newValue = e.target.value;
-                          setEditableAddress(newValue);
-                          autoSaveContactField("address", newValue);
-                        }}
-                        disabled={loading}
-                      />
-                    </div>
-                  )}
-                  {(result.city || editableCity) && (
-                    <div className={styles.infoItem}>
-                      <strong>City:</strong>{" "}
-                      <input
-                        type="text"
-                        className={styles.inlineEditable}
-                        value={editableCity}
-                        onChange={(e) => {
-                          const newValue = e.target.value;
-                          setEditableCity(newValue);
-                          autoSaveContactField("city", newValue);
-                        }}
-                        disabled={loading}
-                      />
-                    </div>
-                  )}
+                  <div className={styles.infoItem}>
+                    <strong>Address:</strong>{" "}
+                    <input
+                      type="text"
+                      className={styles.inlineEditable}
+                      placeholder="Enter address"
+                      value={editableAddress}
+                      onChange={(e) => {
+                        const newValue = e.target.value;
+                        setEditableAddress(newValue);
+                        setHasUnsavedChanges(true);
+                        autoSaveContactField("address", newValue);
+                      }}
+                      disabled={loading}
+                    />
+                  </div>
+                  <div className={styles.infoItem}>
+                    <strong>City:</strong>{" "}
+                    <input
+                      type="text"
+                      className={styles.inlineEditable}
+                      placeholder="Enter city"
+                      value={editableCity}
+                      onChange={(e) => {
+                        const newValue = e.target.value;
+                        setEditableCity(newValue);
+                        setHasUnsavedChanges(true);
+                        autoSaveContactField("city", newValue);
+                      }}
+                      disabled={loading}
+                    />
+                  </div>
                   <div className={styles.infoItem}>
                     <strong>LinkedIn:</strong>{" "}
                     <input
-                      type="url"
+                      type="text"
                       className={styles.inlineEditable}
                       placeholder="Enter LinkedIn profile URL"
                       value={editableLinkedIn}
                       onChange={(e) => {
                         const newValue = e.target.value;
                         setEditableLinkedIn(newValue);
+                        setHasUnsavedChanges(true);
                         autoSaveContactField("linkedIn", newValue);
                       }}
                       disabled={loading}
@@ -2126,6 +2807,7 @@ const Generator: React.FC = () => {
                                     ? new Date(e.target.value).toISOString()
                                     : "";
                                   setMeetingDate1(newDate);
+                                  setHasUnsavedChanges(true);
                                   autoSaveMeetingDates([
                                     newDate,
                                     meetingDate2,
@@ -2171,6 +2853,7 @@ const Generator: React.FC = () => {
                                     ? new Date(e.target.value).toISOString()
                                     : "";
                                   setMeetingDate2(newDate);
+                                  setHasUnsavedChanges(true);
                                   autoSaveMeetingDates([
                                     meetingDate1,
                                     newDate,
@@ -2216,6 +2899,7 @@ const Generator: React.FC = () => {
                                     ? new Date(e.target.value).toISOString()
                                     : "";
                                   setMeetingDate3(newDate);
+                                  setHasUnsavedChanges(true);
                                   autoSaveMeetingDates([
                                     meetingDate1,
                                     meetingDate2,
@@ -2240,11 +2924,13 @@ const Generator: React.FC = () => {
                       )}
                     </div>
                   )}
+
+                  {/* Save Button - positioned at bottom left */}
                 </div>
 
                 <div className={styles.logoColumn}>
                   <div className={styles.logoSection}>
-                    {result.logoUrl && (
+                    {(sanityLogoUrl || result.logoUrl) && (
                       <>
                         <div className={styles.logoPreviews}>
                           <div
@@ -2257,11 +2943,12 @@ const Generator: React.FC = () => {
                             }}
                             onClick={() => {
                               setLogoMode("light");
+                              setHasUnsavedChanges(true);
                               autoSaveLogoMode("light");
                             }}
                           >
                             <img
-                              src={result.logoUrl}
+                              src={sanityLogoUrl || result.logoUrl}
                               alt={`${editableCompanyName} logo`}
                               className={styles.logo}
                               onError={(e) => {
@@ -2280,11 +2967,12 @@ const Generator: React.FC = () => {
                             }}
                             onClick={() => {
                               setLogoMode("dark");
+                              setHasUnsavedChanges(true);
                               autoSaveLogoMode("dark");
                             }}
                           >
                             <img
-                              src={result.logoUrl}
+                              src={sanityLogoUrl || result.logoUrl}
                               alt={`${editableCompanyName} logo`}
                               className={styles.logo}
                               onError={(e) => {
@@ -2304,7 +2992,7 @@ const Generator: React.FC = () => {
                         onChange={handleLogoUpload}
                         style={{ display: "none" }}
                       />
-                      {result.logoUrl && (
+                      {(sanityLogoUrl || result.logoUrl) && (
                         <button
                           className={styles.logoActionBtn}
                           onClick={handleLogoDelete}
@@ -2325,7 +3013,7 @@ const Generator: React.FC = () => {
                       >
                         {uploadingLogo
                           ? "Uploading..."
-                          : result.logoUrl
+                          : sanityLogoUrl || result.logoUrl
                           ? "Replace Logo"
                           : "Upload Logo"}
                       </button>
@@ -2333,8 +3021,97 @@ const Generator: React.FC = () => {
                   </div>
                 </div>
               </div>
-
-              {showLogoPreview && result.logoUrl && (
+              <div
+                style={{
+                  bottom: "16px",
+                  right: "16px",
+                  zIndex: 10,
+                }}
+              >
+                <div
+                  style={{
+                    backgroundColor: saveErrorRed
+                      ? "#ff4444"
+                      : emailSaved
+                      ? "#6b7280"
+                      : "#ffffff",
+                    color: saveErrorRed
+                      ? "#ffffff"
+                      : emailSaved
+                      ? "#ffffff"
+                      : "#000000",
+                    border: saveErrorRed
+                      ? "1px solid #ff4444"
+                      : emailSaved
+                      ? "1px solid #6b7280"
+                      : "1px solid #ddd",
+                    borderRadius: "999px",
+                    padding: "14px 32px",
+                    cursor:
+                      savingEmail || emailSaved ? "not-allowed" : "pointer",
+                    transition: "all 0.8s ease",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: "1rem",
+                    fontWeight: "600",
+                    fontFamily: '"Europa Grotesk SH", sans-serif',
+                    opacity: savingEmail || emailSaved ? 0.7 : 1,
+                    userSelect: "none",
+                    position: "relative",
+                    overflow: "hidden",
+                  }}
+                  onClick={handleSaveEmail}
+                  onMouseEnter={(e) => {
+                    if (!(savingEmail || emailSaved)) {
+                      e.currentTarget.style.transform = "translateY(-2px)";
+                      e.currentTarget.style.opacity = "0.9";
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!(savingEmail || emailSaved)) {
+                      e.currentTarget.style.transform = "none";
+                      e.currentTarget.style.opacity = "1";
+                    }
+                  }}
+                >
+                  {savingEmail && (
+                    <>
+                      <div
+                        style={{
+                          position: "absolute",
+                          top: 0,
+                          left: "-100%",
+                          width: "100%",
+                          height: "100%",
+                          background:
+                            "linear-gradient(90deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.35) 50%, rgba(0,0,0,0.15) 100%)",
+                          animation: "slideRight 1.5s ease-in-out infinite",
+                          zIndex: 1,
+                        }}
+                      />
+                      <style>
+                        {`
+                              @keyframes slideRight {
+                                0% { left: -100%; }
+                                100% { left: 100%; }
+                              }
+                            `}
+                      </style>
+                    </>
+                  )}
+                  <span style={{ position: "relative", zIndex: 2 }}>
+                    {saveError
+                      ? saveError
+                      : emailSaved
+                      ? "Saved"
+                      : savingEmail
+                      ? "Saving..."
+                      : "Save"}
+                  </span>
+                </div>
+              </div>
+              {showLogoPreview && (sanityLogoUrl || result.logoUrl) && (
                 <div
                   className={`${styles.logoModal} ${
                     isClosingPreview ? styles.closing : ""
@@ -2345,7 +3122,7 @@ const Generator: React.FC = () => {
                 >
                   <div className={styles.logoModalContent}>
                     <img
-                      src={result.logoUrl}
+                      src={sanityLogoUrl || result.logoUrl}
                       alt={`${editableCompanyName} logo`}
                       className={`${styles.logoModalImage} ${
                         isClosingPreview ? styles.closingImage : ""
@@ -2360,14 +3137,41 @@ const Generator: React.FC = () => {
               className={styles.textarea}
               value={editableEmailContent}
               onChange={(e) => {
-                setEditableEmailContent(e.target.value);
+                const newValue = e.target.value;
+                setEditableEmailContent(newValue);
                 setIsEmailModified(true);
+                setHasUnsavedChanges(true);
+
+                // Auto-save email content to history.json
+                if (updateTimeoutRef.current) {
+                  clearTimeout(updateTimeoutRef.current);
+                }
+
+                updateTimeoutRef.current = setTimeout(async () => {
+                  if (!result?.notionPageId) return;
+                  try {
+                    console.log("💾 Saving email content to history.json...");
+                    await fetch(`${LOCAL_API_URL}/api/history`, {
+                      method: "PATCH",
+                      headers: {
+                        "Content-Type": "application/json",
+                      },
+                      body: JSON.stringify({
+                        pageId: result.notionPageId,
+                        emailContent: newValue,
+                      }),
+                    });
+                    console.log("✅ Email content saved to history");
+                  } catch (err: any) {
+                    console.error("❌ History save error:", err.message);
+                  }
+                }, 500);
               }}
               rows={15}
-              disabled={emailLocked || emailSent}
+              disabled={emailLocked || emailSent || !!møtedato}
             />
 
-            {!emailLocked && (
+            {!emailLocked && !møtedato && (
               <div className={styles.emailSentCheckbox}>
                 <label>
                   <input
@@ -2383,24 +3187,47 @@ const Generator: React.FC = () => {
                         : "Ikke startet";
                       setLeadStatus(newLeadStatus);
 
-                      // Save to backend
+                      // Save to backend (local state already updated above)
                       if (result?.notionPageId) {
                         try {
-                          await fetch(`${API_URL}/api/update`, {
-                            method: "PATCH",
-                            headers: {
-                              "Content-Type": "application/json",
-                            },
-                            body: JSON.stringify({
-                              pageId: result.notionPageId,
-                              emailSent: newValue,
-                              leadStatus: newLeadStatus,
-                            }),
+                          // Calculate dates
+                          const now = new Date();
+                          const contactDate = now.toISOString().split("T")[0];
+                          
+                          const followUpDate = new Date(now);
+                          followUpDate.setDate(followUpDate.getDate() + 7);
+                          const followUp = followUpDate.toISOString().split("T")[0];
+
+                          console.log("📅 Setting dates:", {
+                            contactDate,
+                            followUp,
+                            emailSent: newValue
                           });
-                        } catch (error) {
+
+                          const response = await fetch(
+                            `${LOCAL_API_URL}/api/update`,
+                            {
+                              method: "PATCH",
+                              headers: {
+                                "Content-Type": "application/json",
+                              },
+                              body: JSON.stringify({
+                                pageId: result.notionPageId,
+                                emailSent: newValue,
+                                leadStatus: newLeadStatus,
+                                contactDate: newValue ? contactDate : undefined,
+                                followUpDate: newValue ? followUp : undefined,
+                              }),
+                            }
+                          );
+                          const data = await response.json();
+                          if (data.success) {
+                            console.log("✅ Email sent flag saved to backend");
+                          }
+                        } catch (error: any) {
                           console.error(
-                            "Failed to save emailSent flag:",
-                            error
+                            "❌ Failed to save emailSent flag (local state preserved):",
+                            error.message
                           );
                         }
                       }
@@ -2468,25 +3295,41 @@ const Generator: React.FC = () => {
                     setEmailLocked(true);
                   }
 
-                  // Save to backend
-                  if (result?.notionPageId) {
-                    try {
-                      await fetch(`${API_URL}/api/update`, {
-                        method: "PATCH",
-                        headers: {
-                          "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({
-                          pageId: result.notionPageId,
-                          leadStatus: newStatus,
-                          emailLocked:
-                            newStatus === "Avventer svar" ? true : undefined,
-                        }),
-                      });
-                    } catch (error) {
-                      console.error("Failed to save lead status:", error);
-                    }
+                  // Debounce API call to prevent rate limiting
+                  if (updateTimeoutRef.current) {
+                    clearTimeout(updateTimeoutRef.current);
                   }
+
+                  updateTimeoutRef.current = setTimeout(async () => {
+                    // Save to backend (local state already updated above)
+                    if (result?.notionPageId) {
+                      try {
+                        const response = await fetch(`${API_URL}/api/update`, {
+                          method: "PATCH",
+                          headers: {
+                            "Content-Type": "application/json",
+                          },
+                          body: JSON.stringify({
+                            pageId: result.notionPageId,
+                            leadStatus: newStatus,
+                            emailLocked:
+                              newStatus === "Avventer svar" ? true : undefined,
+                          }),
+                        });
+                        const data = await response.json();
+                        if (data.success) {
+                          console.log(
+                            `✅ Lead status '${newStatus}' saved to backend`
+                          );
+                        }
+                      } catch (error: any) {
+                        console.error(
+                          "❌ Failed to save lead status (local state preserved):",
+                          error.message
+                        );
+                      }
+                    }
+                  }, 800); // 800ms delay to prevent rate limiting
                 }}
               >
                 <option value="Ikke startet">Ikke startet</option>
@@ -2501,19 +3344,6 @@ const Generator: React.FC = () => {
                 <option value="Avventer svar">Avventer svar</option>
               </select>
             </div>
-
-            {(isEmailModified || emailSaved) && (
-              <div className={styles.saveButtonContainer}>
-                <Button
-                  onClick={handleSaveEmail}
-                  disabled={savingEmail || emailSaved}
-                  loading={savingEmail}
-                  loadingText="Saving..."
-                >
-                  {emailSaved ? "Saved!" : "Save"}
-                </Button>
-              </div>
-            )}
 
             <div className={styles.actions}>
               <Button
@@ -2626,23 +3456,32 @@ const Generator: React.FC = () => {
                           const newValue = e.target.value;
                           setAutomationText1(newValue);
 
-                          // Save to backend
+                          // Save to backend (local state already updated above)
                           if (result?.notionPageId) {
                             try {
-                              await fetch(`${API_URL}/api/update`, {
-                                method: "PATCH",
-                                headers: {
-                                  "Content-Type": "application/json",
-                                },
-                                body: JSON.stringify({
-                                  pageId: result.notionPageId,
-                                  automationText1: newValue,
-                                }),
-                              });
-                            } catch (error) {
+                              const response = await fetch(
+                                `${API_URL}/api/update`,
+                                {
+                                  method: "PATCH",
+                                  headers: {
+                                    "Content-Type": "application/json",
+                                  },
+                                  body: JSON.stringify({
+                                    pageId: result.notionPageId,
+                                    automationText1: newValue,
+                                  }),
+                                }
+                              );
+                              const data = await response.json();
+                              if (data.success) {
+                                console.log(
+                                  "✅ Automation text 1 saved to backend"
+                                );
+                              }
+                            } catch (error: any) {
                               console.error(
-                                "Failed to save automationText1:",
-                                error
+                                "❌ Failed to save automationText1 (local state preserved):",
+                                error.message
                               );
                             }
                           }
@@ -2662,23 +3501,32 @@ const Generator: React.FC = () => {
                           const newValue = e.target.value;
                           setAutomationText2(newValue);
 
-                          // Save to backend
+                          // Save to backend (local state already updated above)
                           if (result?.notionPageId) {
                             try {
-                              await fetch(`${API_URL}/api/update`, {
-                                method: "PATCH",
-                                headers: {
-                                  "Content-Type": "application/json",
-                                },
-                                body: JSON.stringify({
-                                  pageId: result.notionPageId,
-                                  automationText2: newValue,
-                                }),
-                              });
-                            } catch (error) {
+                              const response = await fetch(
+                                `${API_URL}/api/update`,
+                                {
+                                  method: "PATCH",
+                                  headers: {
+                                    "Content-Type": "application/json",
+                                  },
+                                  body: JSON.stringify({
+                                    pageId: result.notionPageId,
+                                    automationText2: newValue,
+                                  }),
+                                }
+                              );
+                              const data = await response.json();
+                              if (data.success) {
+                                console.log(
+                                  "✅ Automation text 2 saved to backend"
+                                );
+                              }
+                            } catch (error: any) {
                               console.error(
-                                "Failed to save automationText2:",
-                                error
+                                "❌ Failed to save automationText2 (local state preserved):",
+                                error.message
                               );
                             }
                           }
@@ -2731,38 +3579,7 @@ const Generator: React.FC = () => {
       <HistoryPanel
         onLoadEntry={handleLoadHistoryEntry}
         currentEntryId={result?.notionPageId}
-        onDeleteCurrentEntry={async () => {
-          // Show full-screen spinner
-          setDeleting(true);
-
-          // Small delay to ensure spinner is visible
-          await new Promise((resolve) => setTimeout(resolve, 100));
-
-          // Clear all states to reset the page
-          setResult(null);
-          setPitchDeckUrl("");
-          setEditableCompanyName("");
-          setEditableEmail("");
-          setEditablePhone("");
-          setEditableAddress("");
-          setEditableCity("");
-          setEditableLinkedIn("");
-          setEditableEmailContent("");
-          setAutomationText1("");
-          setAutomationText2("");
-          setAutomationIndustry("Helse");
-          setImagesGenerated(false);
-          setEmailSent(false);
-          setError("");
-          setIsEmailModified(false);
-          setEmailSaved(false);
-          setProffUrl("");
-          // Clear saved state when deleting current entry
-          localStorage.removeItem("generator_savedState");
-
-          // Hide spinner after a short delay
-          setTimeout(() => setDeleting(false), 300);
-        }}
+        onDeleteCurrentEntry={handleDeleteCurrentEntry}
       />
 
       <AlertModal
@@ -2773,6 +3590,22 @@ const Generator: React.FC = () => {
         cancelText="Avbryt"
         onConfirm={confirmLogoDelete}
         onCancel={() => setShowLogoDeleteModal(false)}
+        confirmButtonStyle="danger"
+      />
+
+      <AlertModal
+        isOpen={showBanModal}
+        title="Legg til i sperrelisten"
+        message={`Er du sikker på at du vil legge til ${
+          companyToBan?.companyName || "dette firmaet"
+        } i sperrelisten? Dette firmaet vil ikke dukke opp i køen igjen.`}
+        confirmText="Ja, legg til"
+        cancelText="Avbryt"
+        onConfirm={confirmBanCompany}
+        onCancel={() => {
+          setShowBanModal(false);
+          setCompanyToBan(null);
+        }}
         confirmButtonStyle="danger"
       />
 

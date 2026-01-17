@@ -1,67 +1,337 @@
 {
-  "searchUrl": "https://www.proff.no/laglister?profitFrom=512&profitTo=47479000&numEmployeesFrom=10&numEmployeesTo=32524&naceIndustry=41.000&proffIndustryCode=10158%2C47420",
+  "searchUrl": "https://www.proff.no/laglister?profitFrom=512&profitTo=47479000&numEmployeesFrom=10&numEmployeesTo=32524&proffIndustryCode=10158",
   "queue": [
     {
-      "id": "VESTVIKEN ENTREPRENØR AS",
-      "companyName": "VESTVIKEN ENTREPRENØR AS",
-      "proffUrl": "https://www.proff.no/selskap/vestviken-entrepren%C3%B8r-as/hokksund/-/918004750",
+      "id": "AUSTIN LYNGMYR & CO ADVOKATFIRMA AS",
+      "companyName": "AUSTIN LYNGMYR & CO ADVOKATFIRMA AS",
+      "proffUrl": "https://www.proff.no/selskap/austin-lyngmyr-co-advokatfirma-as/oslo/-/812889192",
       "organizationNumber": ""
     },
     {
-      "id": "VESTKYST BYGG AS",
-      "companyName": "VESTKYST BYGG AS",
-      "proffUrl": "https://www.proff.no/selskap/vestkyst-bygg-as/tjeldst%C3%B8/-/992850531",
+      "id": "AURLIEN VORDAHL & CO ADVOKATFIRMA AS",
+      "companyName": "AURLIEN VORDAHL & CO ADVOKATFIRMA AS",
+      "proffUrl": "https://www.proff.no/selskap/aurlien-vordahl-co-advokatfirma-as/oslo/-/996820734",
       "organizationNumber": ""
     },
     {
-      "id": "VEST STÅL & FASADE AS",
-      "companyName": "VEST STÅL & FASADE AS",
-      "proffUrl": "https://www.proff.no/selskap/vest-st%C3%A5l-fasade-as/sandeid/-/930622176",
+      "id": "ANGELL ADVOKATFIRMA AS",
+      "companyName": "ANGELL ADVOKATFIRMA AS",
+      "proffUrl": "https://www.proff.no/selskap/angell-advokatfirma-as/bod%C3%B8/-/892047782",
       "organizationNumber": ""
     },
     {
-      "id": "VEST BYGGTEKNIKK AS",
-      "companyName": "VEST BYGGTEKNIKK AS",
-      "proffUrl": "https://www.proff.no/selskap/vest-byggteknikk-as/%C3%A5gotnes/-/822151302",
+      "id": "AGP ADVOKATER AS",
+      "companyName": "AGP ADVOKATER AS",
+      "proffUrl": "https://www.proff.no/selskap/agp-advokater-as/oslo/-/923559841",
       "organizationNumber": ""
     },
     {
-      "id": "VEST BETONG AS",
-      "companyName": "VEST BETONG AS",
-      "proffUrl": "https://www.proff.no/selskap/vest-betong-as/stavanger/-/991374736",
+      "id": "ADVOKATFIRMAET ØVERBØ GJØRTZ AS",
+      "companyName": "ADVOKATFIRMAET ØVERBØ GJØRTZ AS",
+      "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-%C3%B8verb%C3%B8-gj%C3%B8rtz-as/molde/-/916611455",
       "organizationNumber": ""
     },
     {
-      "id": "VEIDEKKE LOGISTIKKBYGG AS",
-      "companyName": "VEIDEKKE LOGISTIKKBYGG AS",
-      "proffUrl": "https://www.proff.no/selskap/veidekke-logistikkbygg-as/larvik/-/971203587",
+      "id": "ADVOKATFIRMAET ØKLAND & CO AS",
+      "companyName": "ADVOKATFIRMAET ØKLAND & CO AS",
+      "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-%C3%B8kland-co-as/lillestr%C3%B8m/-/933371727",
       "organizationNumber": ""
     },
     {
-      "id": "VEIDEKKE FELLESTJENESTER AS",
-      "companyName": "VEIDEKKE FELLESTJENESTER AS",
-      "proffUrl": "https://www.proff.no/selskap/veidekke-fellestjenester-as/oslo/-/923477675",
+      "id": "ADVOKATFIRMAET YTTERBØL & CO AS",
+      "companyName": "ADVOKATFIRMAET YTTERBØL & CO AS",
+      "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-ytterb%C3%B8l-co-as/sarpsborg/-/977048958",
       "organizationNumber": ""
     },
     {
-      "id": "VEIDEKKE ENTREPRENØR AS",
-      "companyName": "VEIDEKKE ENTREPRENØR AS",
-      "proffUrl": "https://www.proff.no/selskap/veidekke-entrepren%C3%B8r-as/oslo/-/984024290",
+      "id": "ADVOKATFIRMAET WIERSHOLM AS",
+      "companyName": "ADVOKATFIRMAET WIERSHOLM AS",
+      "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-wiersholm-as/oslo/-/981371593",
       "organizationNumber": ""
     },
     {
-      "id": "VEF ENTREPRENØR AS",
-      "companyName": "VEF ENTREPRENØR AS",
-      "proffUrl": "https://www.proff.no/selskap/vef-entrepren%C3%B8r-as/vennesla/-/963228074",
+      "id": "ADVOKATFIRMAET VARDER AS",
+      "companyName": "ADVOKATFIRMAET VARDER AS",
+      "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-varder-as/moss/-/995041030",
       "organizationNumber": ""
     },
     {
-      "id": "VEDAL ENTREPRENØR AS",
-      "companyName": "VEDAL ENTREPRENØR AS",
-      "proffUrl": "https://www.proff.no/selskap/vedal-entrepren%C3%B8r-as/oslo/-/983797652",
+      "id": "ADVOKATFIRMAET THOMMESSEN AS",
+      "companyName": "ADVOKATFIRMAET THOMMESSEN AS",
+      "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-thommessen-as/oslo/-/957423248",
+      "organizationNumber": ""
+    },
+    {
+      "id": "ADVOKATFIRMAET THALLAUG ANS",
+      "companyName": "ADVOKATFIRMAET THALLAUG ANS",
+      "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-thallaug-ans/lillehammer/-/950522550",
+      "organizationNumber": ""
+    },
+    {
+      "id": "ADVOKATFIRMAET SULLAND AS",
+      "companyName": "ADVOKATFIRMAET SULLAND AS",
+      "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-sulland-as/oslo/-/918627995",
+      "organizationNumber": ""
+    },
+    {
+      "id": "ADVOKATFIRMAET STRAND & CO ANS",
+      "companyName": "ADVOKATFIRMAET STRAND & CO ANS",
+      "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-strand-co-ans/trondheim/-/980039439",
+      "organizationNumber": ""
+    },
+    {
+      "id": "ADVOKATFIRMAET STORRVIK AS",
+      "companyName": "ADVOKATFIRMAET STORRVIK AS",
+      "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-storrvik-as/oslo/-/929474635",
+      "organizationNumber": ""
+    },
+    {
+      "id": "ADVOKATFIRMAET STAFF AS",
+      "companyName": "ADVOKATFIRMAET STAFF AS",
+      "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-staff-as/oslo/-/976549406",
+      "organizationNumber": ""
+    },
+    {
+      "id": "ADVOKATFIRMAET SJØDINMELING AS",
+      "companyName": "ADVOKATFIRMAET SJØDINMELING AS",
+      "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-sj%C3%B8dinmeling-as/stavanger/-/932193043",
+      "organizationNumber": ""
+    },
+    {
+      "id": "ADVOKATFIRMAET SIMONSEN VOGT WIIG AS",
+      "companyName": "ADVOKATFIRMAET SIMONSEN VOGT WIIG AS",
+      "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-simonsen-vogt-wiig-as/oslo/-/898783812",
+      "organizationNumber": ""
+    },
+    {
+      "id": "ADVOKATFIRMAET SGB AS",
+      "companyName": "ADVOKATFIRMAET SGB AS",
+      "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-sgb-as/oslo/-/986552073",
+      "organizationNumber": ""
+    },
+    {
+      "id": "ADVOKATFIRMAET SELMER AS",
+      "companyName": "ADVOKATFIRMAET SELMER AS",
+      "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-selmer-as/oslo/-/920969798",
+      "organizationNumber": ""
+    },
+    {
+      "id": "ADVOKATFIRMAET SCHJØDT AS",
+      "companyName": "ADVOKATFIRMAET SCHJØDT AS",
+      "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-schj%C3%B8dt-as/oslo/-/996918122",
+      "organizationNumber": ""
+    },
+    {
+      "id": "ADVOKATFIRMAET SALOMON JOHANSEN AS",
+      "companyName": "ADVOKATFIRMAET SALOMON JOHANSEN AS",
+      "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-salomon-johansen-as/oslo/-/987665440",
+      "organizationNumber": ""
+    },
+    {
+      "id": "ADVOKATFIRMAET ROGSTAD AS",
+      "companyName": "ADVOKATFIRMAET ROGSTAD AS",
+      "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-rogstad-as/oslo/-/813409682",
+      "organizationNumber": ""
+    },
+    {
+      "id": "ADVOKATFIRMAET RESPONSA AS",
+      "companyName": "ADVOKATFIRMAET RESPONSA AS",
+      "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-responsa-as/stord/-/987744197",
+      "organizationNumber": ""
+    },
+    {
+      "id": "ADVOKATFIRMAET PRICEWATERHOUSECOOPERS AS",
+      "companyName": "ADVOKATFIRMAET PRICEWATERHOUSECOOPERS AS",
+      "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-pricewaterhousecoopers-as/oslo/-/988371084",
+      "organizationNumber": ""
+    },
+    {
+      "id": "ADVOKATFIRMAET NESS LUNDIN DA",
+      "companyName": "ADVOKATFIRMAET NESS LUNDIN DA",
+      "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-ness-lundin-da/oslo/-/956567270",
+      "organizationNumber": ""
+    },
+    {
+      "id": "ADVOKATFIRMAET MAGELI DA",
+      "companyName": "ADVOKATFIRMAET MAGELI DA",
+      "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-mageli-da/hamar/-/880636502",
+      "organizationNumber": ""
+    },
+    {
+      "id": "ADVOKATFIRMAET LÆRUM, LIER, STENDE & BERVEN AS",
+      "companyName": "ADVOKATFIRMAET LÆRUM, LIER, STENDE & BERVEN AS",
+      "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-l%C3%A6rum-lier-stende-berven-as/lillestr%C3%B8m/-/977470064",
+      "organizationNumber": ""
+    },
+    {
+      "id": "ADVOKATFIRMAET LIPPESTAD AS",
+      "companyName": "ADVOKATFIRMAET LIPPESTAD AS",
+      "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-lippestad-as/oslo/-/996400832",
+      "organizationNumber": ""
+    },
+    {
+      "id": "ADVOKATFIRMAET LEGALIS AS",
+      "companyName": "ADVOKATFIRMAET LEGALIS AS",
+      "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-legalis-as/oslo/-/974675366",
+      "organizationNumber": ""
+    },
+    {
+      "id": "ADVOKATFIRMAET KYRRE ANS",
+      "companyName": "ADVOKATFIRMAET KYRRE ANS",
+      "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-kyrre-ans/bergen/-/985813760",
+      "organizationNumber": ""
+    },
+    {
+      "id": "ADVOKATFIRMAET HJORT AS",
+      "companyName": "ADVOKATFIRMAET HJORT AS",
+      "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-hjort-as/oslo/-/929191811",
+      "organizationNumber": ""
+    },
+    {
+      "id": "ADVOKATFIRMAET HELMR AS",
+      "companyName": "ADVOKATFIRMAET HELMR AS",
+      "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-helmr-as/oslo/-/922696810",
+      "organizationNumber": ""
+    },
+    {
+      "id": "ADVOKATFIRMAET HASLE AS",
+      "companyName": "ADVOKATFIRMAET HASLE AS",
+      "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-hasle-as/t%C3%B8nsberg/-/991099751",
+      "organizationNumber": ""
+    },
+    {
+      "id": "ADVOKATFIRMAET HALVORSEN & CO AS",
+      "companyName": "ADVOKATFIRMAET HALVORSEN & CO AS",
+      "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-halvorsen-co-as/lillestr%C3%B8m/-/992833424",
+      "organizationNumber": ""
+    },
+    {
+      "id": "ADVOKATFIRMAET HAAVIND AS",
+      "companyName": "ADVOKATFIRMAET HAAVIND AS",
+      "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-haavind-as/oslo/-/986420177",
+      "organizationNumber": ""
+    },
+    {
+      "id": "ADVOKATFIRMAET GLITTERTIND AS",
+      "companyName": "ADVOKATFIRMAET GLITTERTIND AS",
+      "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-glittertind-as/oslo/-/916284055",
+      "organizationNumber": ""
+    },
+    {
+      "id": "ADVOKATFIRMAET FØYEN AS",
+      "companyName": "ADVOKATFIRMAET FØYEN AS",
+      "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-f%C3%B8yen-as/oslo/-/885719392",
+      "organizationNumber": ""
+    },
+    {
+      "id": "ADVOKATFIRMAET FRØY AS",
+      "companyName": "ADVOKATFIRMAET FRØY AS",
+      "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-fr%C3%B8y-as/lysaker/-/997721934",
+      "organizationNumber": ""
+    },
+    {
+      "id": "ADVOKATFIRMAET FINN AS",
+      "companyName": "ADVOKATFIRMAET FINN AS",
+      "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-finn-as/harstad/-/991340580",
+      "organizationNumber": ""
+    },
+    {
+      "id": "ADVOKATFIRMAET EUROJURIS HAUGESUND AS",
+      "companyName": "ADVOKATFIRMAET EUROJURIS HAUGESUND AS",
+      "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-eurojuris-haugesund-as/haugesund/-/995483335",
+      "organizationNumber": ""
+    },
+    {
+      "id": "ADVOKATFIRMAET DIETRICHSON AS",
+      "companyName": "ADVOKATFIRMAET DIETRICHSON AS",
+      "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-dietrichson-as/oslo/-/977515742",
+      "organizationNumber": ""
+    },
+    {
+      "id": "ADVOKATFIRMAET DEHN DA",
+      "companyName": "ADVOKATFIRMAET DEHN DA",
+      "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-dehn-da/sandvika/-/921625189",
+      "organizationNumber": ""
+    },
+    {
+      "id": "ADVOKATFIRMAET CLP DA",
+      "companyName": "ADVOKATFIRMAET CLP DA",
+      "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-clp-da/oslo/-/991341129",
+      "organizationNumber": ""
+    },
+    {
+      "id": "ADVOKATFIRMAET CAMPBELL & CO AS",
+      "companyName": "ADVOKATFIRMAET CAMPBELL & CO AS",
+      "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-campbell-co-as/hamar/-/981291409",
+      "organizationNumber": ""
+    },
+    {
+      "id": "ADVOKATFIRMAET BULL AS",
+      "companyName": "ADVOKATFIRMAET BULL AS",
+      "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-bull-as/oslo/-/981459326",
+      "organizationNumber": ""
+    },
+    {
+      "id": "ADVOKATFIRMAET BJØRGE - SKAARAAS & CO AS",
+      "companyName": "ADVOKATFIRMAET BJØRGE - SKAARAAS & CO AS",
+      "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-bj%C3%B8rge-skaaraas-co-as/sarpsborg/-/884665582",
+      "organizationNumber": ""
+    },
+    {
+      "id": "ADVOKATFIRMAET BERNGAARD AS",
+      "companyName": "ADVOKATFIRMAET BERNGAARD AS",
+      "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-berngaard-as/oslo/-/990625972",
+      "organizationNumber": ""
+    },
+    {
+      "id": "ADVOKATFIRMAET BAHR AS",
+      "companyName": "ADVOKATFIRMAET BAHR AS",
+      "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-bahr-as/oslo/-/919513063",
+      "organizationNumber": ""
+    },
+    {
+      "id": "ADVOKATFIRMAET ARNTZEN AS",
+      "companyName": "ADVOKATFIRMAET ARNTZEN AS",
+      "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-arntzen-as/oslo/-/982409705",
+      "organizationNumber": ""
+    },
+    {
+      "id": "ADVOKATFIRMAET ALVER AS",
+      "companyName": "ADVOKATFIRMAET ALVER AS",
+      "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-alver-as/lillehammer/-/991435271",
+      "organizationNumber": ""
+    },
+    {
+      "id": "ADVOKATFIRMA WIGEMYR & CO DA",
+      "companyName": "ADVOKATFIRMA WIGEMYR & CO DA",
+      "proffUrl": "https://www.proff.no/selskap/advokatfirma-wigemyr-co-da/kristiansand-s/-/977049997",
+      "organizationNumber": ""
+    },
+    {
+      "id": "ADVOKATFIRMA TOFTE HALD AS",
+      "companyName": "ADVOKATFIRMA TOFTE HALD AS",
+      "proffUrl": "https://www.proff.no/selskap/advokatfirma-tofte-hald-as/kristiansand-s/-/926311999",
+      "organizationNumber": ""
+    },
+    {
+      "id": "ADVOKATFIRMA SULEIMAN & CO AS",
+      "companyName": "ADVOKATFIRMA SULEIMAN & CO AS",
+      "proffUrl": "https://www.proff.no/selskap/advokatfirma-suleiman-co-as/oslo/-/915138039",
+      "organizationNumber": ""
+    },
+    {
+      "id": "ADVOKATFIRMA KONTRAKT AS",
+      "companyName": "ADVOKATFIRMA KONTRAKT AS",
+      "proffUrl": "https://www.proff.no/selskap/advokatfirma-kontrakt-as/lysaker/-/966769912",
+      "organizationNumber": ""
+    },
+    {
+      "id": "ADVOKATENE LÆGLAND, KOSBERG & HANISCH AS",
+      "companyName": "ADVOKATENE LÆGLAND, KOSBERG & HANISCH AS",
+      "proffUrl": "https://www.proff.no/selskap/advokatene-l%C3%A6gland-kosberg-hanisch-as/eidsvoll/-/944788573",
       "organizationNumber": ""
     }
   ],
-  "lastScrapedCompany": "VEDAL ENTREPRENØR AS",
-  "currentPage": 7
+  "lastScrapedCompany": "ADVOKATENE LÆGLAND, KOSBERG & HANISCH AS",
+  "currentPage": 11
 }

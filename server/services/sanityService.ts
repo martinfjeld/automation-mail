@@ -744,7 +744,7 @@ export class SanityService {
             _key: "slide-9",
             title: "Klienter",
             slideType: "clients",
-            heading: "Klienter",
+            heading: "Kunder",
             backgroundTheme: "dark",
             transition: "slide",
             clientLogos: [
@@ -1792,6 +1792,112 @@ export class SanityService {
       console.log("✅ Sanity presentation and images deleted successfully");
     } catch (error: any) {
       console.error("Failed to delete Sanity presentation:", error.message);
+      throw error;
+    }
+  }
+
+  /**
+   * Get the company logo URL from a Sanity presentation
+   */
+  async getCompanyLogoUrl(presentationId: string): Promise<string | null> {
+    try {
+      console.log(
+        `🔍 Fetching company logo from Sanity presentation: ${presentationId}`
+      );
+
+      const presentation = await (this.client as any).getDocument(
+        presentationId
+      );
+
+      // Debug: Log the entire presentation structure to understand the data
+      console.log(
+        "🔍 DEBUG: Full presentation structure:",
+        JSON.stringify(presentation, null, 2)
+      );
+
+      // Also check specifically for company logo related fields
+      console.log("🔍 DEBUG: Company logo field:", presentation?.companyLogo);
+      console.log(
+        "🔍 DEBUG: All keys in presentation:",
+        Object.keys(presentation || {})
+      );
+
+      if (presentation?.companyLogo?.asset?._ref) {
+        console.log("🔍 Found company logo reference, fetching asset URL...");
+        const assetId = presentation.companyLogo.asset._ref;
+
+        // Get the asset document to retrieve the URL
+        const asset = await (this.client as any).getDocument(assetId);
+
+        if (asset?.url) {
+          console.log("✅ Found company logo URL from Sanity:", asset.url);
+          return asset.url;
+        } else {
+          console.log("❌ Asset found but no URL available");
+          return null;
+        }
+      } else {
+        console.log(
+          "❌ No company logo reference found in Sanity presentation"
+        );
+        return null;
+      }
+    } catch (error: any) {
+      console.error("Failed to fetch company logo from Sanity:", error.message);
+      return null;
+    }
+  }
+
+  /**
+   * Bulk update client slide titles from "Klienter" to "Kunder" across all presentations
+   */
+  async bulkUpdateClientSlideTitles(): Promise<{ updated: number; total: number }> {
+    try {
+      console.log("🔄 Starting bulk update of client slide titles...");
+      
+      // Query all presentations
+      const query = `*[_type == "presentation"]`;
+      const presentations = await (this.client as any).fetch(query);
+      
+      console.log(`📊 Found ${presentations.length} presentations to check`);
+      
+      let updatedCount = 0;
+      const totalCount = presentations.length;
+      
+      for (const presentation of presentations) {
+        let needsUpdate = false;
+        const updatedSlides = presentation.slides?.map((slide: any) => {
+          // Find the clients slide (slideType: "clients") with heading "Klienter"
+          if (slide.slideType === "clients" && slide.heading === "Klienter") {
+            console.log(`📝 Updating client slide in presentation: ${presentation.customerName} (${presentation._id})`);
+            needsUpdate = true;
+            return {
+              ...slide,
+              heading: "Kunder"
+            };
+          }
+          return slide;
+        }) || [];
+        
+        // Update the presentation if changes were made
+        if (needsUpdate) {
+          await (this.client as any)
+            .patch(presentation._id)
+            .set({ slides: updatedSlides })
+            .commit();
+          
+          updatedCount++;
+          console.log(`✅ Updated presentation: ${presentation.customerName}`);
+        }
+      }
+      
+      console.log(`🎉 Bulk update completed!`);
+      console.log(`  - Total presentations checked: ${totalCount}`);
+      console.log(`  - Presentations updated: ${updatedCount}`);
+      
+      return { updated: updatedCount, total: totalCount };
+    } catch (error: any) {
+      console.error("❌ Failed to bulk update client slide titles:", error.message);
       throw error;
     }
   }

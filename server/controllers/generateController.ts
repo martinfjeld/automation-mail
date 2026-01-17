@@ -608,12 +608,14 @@ class GenerateController {
               googleRefreshToken
             );
 
-            // Generate proposals for next 14 days (starting one week from now)
+            // Generate proposals for next 60 days (starting one week from now)
             const now = new Date();
             const earliestStart = new Date(
               now.getTime() + 7 * 24 * 60 * 60 * 1000
             ); // One week from now
-            const latestEnd = new Date(now.getTime() + 21 * 24 * 60 * 60 * 1000); // +21 days (3 weeks from now)
+            const latestEnd = new Date(
+              now.getTime() + 67 * 24 * 60 * 60 * 1000
+            ); // +67 days (60 days from earliest start)
 
             // Get already-proposed times to avoid duplicates
             const proposedMeetingsService = new ProposedMeetingsService();

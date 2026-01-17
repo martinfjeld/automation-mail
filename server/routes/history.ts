@@ -85,85 +85,68 @@ router.get("/", async (req: Request, res: Response) => {
   try {
     const entries = historyService.getAllEntries();
 
-    // Enrich entries with data from Notion
-    const notionToken = process.env.NOTION_TOKEN;
-    const notionDatabaseId = process.env.NOTION_DATABASE_ID;
+    // DISABLED: Notion enrichment causes rate limiting when loading many entries
+    // history.json is now the source of truth
+    // Use "Refresh notion" button on individual entries to sync changes manually
 
-    if (notionToken && notionDatabaseId) {
-      const notionService = new NotionService(notionToken, notionDatabaseId);
-
-      // Fetch additional data from Notion for each entry
-      const enrichedEntries = await Promise.all(
-        entries.map(async (entry) => {
-          try {
-            const page = await notionService.getPageProperties(
-              entry.notionPageId
-            );
-
-            // Check if we need to sync data back to history.json
-            let needsUpdate = false;
-            const updates: any = {};
-
-            if (page.leadStatus && page.leadStatus !== entry.leadStatus) {
-              updates.leadStatus = page.leadStatus;
-              needsUpdate = true;
-            }
-
-            if (page.møtedato && page.møtedato !== entry.møtedato) {
-              updates.møtedato = page.møtedato;
-              needsUpdate = true;
-            }
-
-            if (
-              page.bookedSlotIndex !== undefined &&
-              page.bookedSlotIndex !== entry.bookedSlotIndex
-            ) {
-              updates.bookedSlotIndex = page.bookedSlotIndex;
-              needsUpdate = true;
-            }
-
-            // Sync changes back to history.json
-            if (needsUpdate) {
-              console.log(
-                `🔄 Syncing Notion changes to history for ${entry.companyName}:`,
-                updates
-              );
-              historyService.updateEntry(entry.id, updates);
-            }
-
-            return {
-              ...entry,
-              emailContent: page.emailContent,
-              industry: page.industry,
-              leadStatus: page.leadStatus || entry.leadStatus,
-              bookedSlotIndex: page.bookedSlotIndex ?? entry.bookedSlotIndex,
-              møtedato: page.møtedato || entry.møtedato,
-            };
-          } catch (error) {
-            console.error(
-              `Failed to fetch Notion data for ${entry.id}:`,
-              error
-            );
-            return entry; // Return entry without enrichment if fetch fails
-          }
-        })
-      );
-
-      res.json({
-        success: true,
-        data: enrichedEntries,
-      });
-    } else {
-      res.json({
-        success: true,
-        data: entries,
-      });
-    }
+    res.json({
+      success: true,
+      data: entries,
+    });
   } catch (error: any) {
     console.error("Get history error:", error);
     res.status(500).json({
       success: false,
       error: error.message || "Failed to get history",
+    });
+  }
+});
+
+// Update history entry (local only, no Notion/Sanity sync)
+router.patch("/", async (req: Request, res: Response) => {
+  try {
+    const {
+      pageId,
+      companyName,
+      email,
+      phone,
+      address,
+      city,
+      linkedIn,
+      meetingDates,
+      logoMode,
+    } = req.body;
+
+    if (!pageId) {
+      return res.status(400).json({
+        success: false,
+        error: "Page ID is required",
+      });
+    }
+
+    const updates: any = {};
+    if (companyName !== undefined) updates.companyName = companyName;
+    if (email !== undefined) updates.email = email;
+    if (phone !== undefined) updates.phone = phone;
+    if (address !== undefined) updates.address = address;
+    if (city !== undefined) updates.city = city;
+    if (linkedIn !== undefined) updates.linkedIn = linkedIn;
+    if (meetingDates !== undefined) updates.meetingDates = meetingDates;
+    if (logoMode !== undefined) updates.logoMode = logoMode;
+
+    console.log(`📝 Updating history for pageId: ${pageId}`, updates);
+    historyService.updateEntry(pageId, updates);
+    console.log(`✅ History updated for pageId: ${pageId}`);
+
+    res.json({
+      success: true,
+      message: "History updated",
+    });
+  } catch (error: any) {
+    console.error("Update history error:", error);
+    res.status(500).json({
+      success: false,
+      error: error.message || "Failed to update history",
     });
   }
 });

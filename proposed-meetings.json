@@ -1,46 +1,172 @@
 [
   {
-    "notionPageId": "2e35fc42-3c97-811e-a302-c045ef5dc93c",
-    "companyName": "Virtus",
+    "notionPageId": "2e35fc42-3c97-8152-b438-f8e53b23e78d",
+    "companyName": "Zikzac",
     "meetingTimes": [
-      "2026-01-12T10:00:00.000Z",
-      "2026-01-13T10:00:00.000Z",
-      "2026-01-14T08:30:00.000Z"
+      "2026-01-16T10:30:00.000Z",
+      "2026-01-17T12:45:00.000Z",
+      "2026-01-18T15:00:00.000Z"
     ]
   },
   {
-    "notionPageId": "2e35fc42-3c97-816c-a3af-f6538ec20f14",
-    "companyName": "Mester Øystein Henriksen",
+    "notionPageId": "2e35fc42-3c97-8123-a593-f9a1dd1b2425",
+    "companyName": "Älvsbyhus",
     "meetingTimes": [
-      "2026-01-16T12:00:00.000Z",
-      "2026-01-19T09:00:00.000Z",
-      "2026-01-20T12:00:00.000Z"
+      "2026-01-16T08:45:00.000Z",
+      "2026-01-17T10:00:00.000Z",
+      "2026-01-18T13:15:00.000Z"
     ]
   },
   {
-    "notionPageId": "2e35fc42-3c97-81bd-873f-deafedce8fa7",
-    "companyName": "Øynebråten Steknikk",
+    "notionPageId": "2e35fc42-3c97-8199-a21c-f34ceb2d63e1",
+    "companyName": "Å",
     "meetingTimes": [
-      "2026-01-16T14:00:00.000Z",
-      "2026-01-19T08:30:00.000Z",
-      "2026-01-20T09:00:00.000Z"
+      "2026-01-16T09:00:00.000Z",
+      "2026-01-17T11:15:00.000Z",
+      "2026-01-18T14:30:00.000Z"
     ]
   },
   {
-    "notionPageId": "2e35fc42-3c97-817d-8b70-fd984a418f9e",
-    "companyName": "Øy",
+    "notionPageId": "2e35fc42-3c97-81f5-8be8-fb65d87426ff",
+    "companyName": "Åge Haverstad",
     "meetingTimes": [
-      "2026-01-16T13:00:00.000Z",
-      "2026-01-19T13:00:00.000Z",
-      "2026-01-20T14:00:00.000Z"
+      "2026-01-16T10:15:00.000Z",
+      "2026-01-17T12:30:00.000Z",
+      "2026-01-18T15:45:00.000Z"
     ]
   },
   {
-    "notionPageId": "2e35fc42-3c97-81d7-99e2-f1895e54b165",
-    "companyName": "Øverdal",
+    "notionPageId": "2e35fc42-3c97-815d-ab59-f20d2a9d976b",
+    "companyName": "Ålesund",
+    "meetingTimes": [
+      "2026-01-16T08:30:00.000Z",
+      "2026-01-17T10:45:00.000Z",
+      "2026-01-18T13:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-8173-943f-e2fa86ed14fc",
+    "companyName": "Ålhytta",
+    "meetingTimes": [
+      "2026-01-16T09:45:00.000Z",
+      "2026-01-17T11:00:00.000Z",
+      "2026-01-18T14:15:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-81de-8977-eac2aaaf48d0",
+    "companyName": "Årdal Skeie",
+    "meetingTimes": [
+      "2026-01-17T10:30:00.000Z",
+      "2026-01-18T12:45:00.000Z",
+      "2026-01-19T16:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-813f-af87-e179ff1f7aaa",
+    "companyName": "Årstad",
+    "meetingTimes": [
+      "2026-01-17T09:30:00.000Z",
+      "2026-01-18T11:45:00.000Z",
+      "2026-01-19T14:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-818e-9688-e89316049102",
+    "companyName": "Ømf Wito",
+    "meetingTimes": [
+      "2026-01-18T11:00:00.000Z",
+      "2026-01-20T14:00:00.000Z",
+      "2026-01-21T17:15:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-81d3-b91e-ecaf75dc339f",
+    "companyName": "Østby Aarskog",
+    "meetingTimes": [
+      "2026-01-18T08:15:00.000Z",
+      "2026-01-19T10:30:00.000Z",
+      "2026-01-20T13:45:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-8122-adb2-ee5bb3271c13",
+    "companyName": "Øster Hus",
+    "meetingTimes": [
+      "2026-01-18T09:30:00.000Z",
+      "2026-01-19T11:45:00.000Z",
+      "2026-01-20T15:30:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-819a-aa60-e2b75ff48ec8",
+    "companyName": "Østerdalen E",
+    "meetingTimes": [
+      "2026-01-18T11:15:00.000Z",
+      "2026-01-20T14:45:00.000Z",
+      "2026-01-21T17:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-81fc-9545-dc8c58f90e3b",
+    "companyName": "Østfold Asfalt",
+    "meetingTimes": [
+      "2026-01-19T08:00:00.000Z",
+      "2026-01-20T10:15:00.000Z",
+      "2026-01-21T13:30:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-81d5-84d4-f0424dd34c3e",
+    "companyName": "Østfold Betongsaging",
+    "meetingTimes": [
+      "2026-01-19T09:15:00.000Z",
+      "2026-01-20T11:30:00.000Z",
+      "2026-01-21T14:45:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-81af-ac02-ccb33b8cdeb8",
+    "companyName": "Østfold Brønnboring",
     "meetingTimes": [
       "2026-01-19T10:00:00.000Z",
+      "2026-01-20T12:15:00.000Z",
+      "2026-01-21T16:30:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-81a3-b8bf-d81ddf0f3747",
+    "companyName": "Østfold Sten",
+    "meetingTimes": [
+      "2026-01-19T08:45:00.000Z",
       "2026-01-20T10:00:00.000Z",
+      "2026-01-21T13:15:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-81db-ad54-ded169bcb7d5",
+    "companyName": "Østheim Fornyelse",
+    "meetingTimes": [
+      "2026-01-19T09:00:00.000Z",
+      "2026-01-20T11:15:00.000Z",
+      "2026-01-21T14:30:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-8193-b9e1-fc914781dc50",
+    "companyName": "Østhus & Maskin",
+    "meetingTimes": [
+      "2026-01-19T10:15:00.000Z",
+      "2026-01-20T12:30:00.000Z",
+      "2026-01-21T15:45:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-813e-986e-f844acc594b9",
+    "companyName": "Østlandske Partner",
+    "meetingTimes": [
+      "2026-01-19T08:30:00.000Z",
+      "2026-01-20T10:45:00.000Z",
       "2026-01-21T13:00:00.000Z"
     ]
   },
@@ -48,126 +174,747 @@
     "notionPageId": "2e35fc42-3c97-81af-b0e2-d85367ca2272",
     "companyName": "Østu-stettin Hoch Und Tiefbau Gmbh",
     "meetingTimes": [
-      "2026-01-19T14:00:00.000Z",
-      "2026-01-20T13:00:00.000Z",
-      "2026-01-21T09:00:00.000Z"
+      "2026-01-19T09:45:00.000Z",
+      "2026-01-20T11:00:00.000Z",
+      "2026-01-21T14:15:00.000Z"
     ]
   },
   {
-    "notionPageId": "2e35fc42-3c97-813e-986e-f844acc594b9",
-    "companyName": "Østlandske Partner",
+    "notionPageId": "2e35fc42-3c97-81d7-99e2-f1895e54b165",
+    "companyName": "Øverdal",
     "meetingTimes": [
-      "2026-01-21T08:30:00.000Z",
-      "2026-01-22T09:00:00.000Z",
-      "2026-01-23T09:00:00.000Z"
+      "2026-01-20T10:30:00.000Z",
+      "2026-01-21T12:45:00.000Z",
+      "2026-01-22T16:00:00.000Z"
     ]
   },
   {
-    "notionPageId": "2e35fc42-3c97-8193-b9e1-fc914781dc50",
-    "companyName": "Østhus & Maskin",
+    "notionPageId": "2e35fc42-3c97-817d-8b70-fd984a418f9e",
+    "companyName": "Øy",
     "meetingTimes": [
-      "2026-01-21T12:00:00.000Z",
-      "2026-01-22T14:00:00.000Z",
-      "2026-01-23T14:00:00.000Z"
+      "2026-01-20T08:15:00.000Z",
+      "2026-01-21T10:30:00.000Z",
+      "2026-01-22T13:45:00.000Z"
     ]
   },
   {
-    "notionPageId": "2e35fc42-3c97-81db-ad54-ded169bcb7d5",
-    "companyName": "Østheim Fornyelse",
+    "notionPageId": "2e35fc42-3c97-81bd-873f-deafedce8fa7",
+    "companyName": "Øynebråten Steknikk",
     "meetingTimes": [
-      "2026-01-21T14:00:00.000Z",
-      "2026-01-22T08:30:00.000Z",
-      "2026-01-23T10:00:00.000Z"
+      "2026-01-20T09:30:00.000Z",
+      "2026-01-21T11:45:00.000Z",
+      "2026-01-22T14:00:00.000Z"
     ]
   },
   {
-    "notionPageId": "2e35fc42-3c97-81a3-b8bf-d81ddf0f3747",
-    "companyName": "Østfold Sten",
+    "notionPageId": "2e35fc42-3c97-816c-a3af-f6538ec20f14",
+    "companyName": "Mester Øystein Henriksen",
+    "meetingTimes": [
+      "2026-01-20T11:45:00.000Z",
+      "2026-01-22T14:45:00.000Z",
+      "2026-01-23T17:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-811e-a302-c045ef5dc93c",
+    "companyName": "Virtus",
+    "meetingTimes": [
+      "2026-01-20T08:00:00.000Z",
+      "2026-01-21T10:15:00.000Z",
+      "2026-01-22T13:30:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-816b-8cd0-c1b58ecdb344",
+    "companyName": "Åsane Mesterforretning",
+    "meetingTimes": [
+      "2026-01-16T09:30:00.000Z",
+      "2026-01-17T12:15:00.000Z",
+      "2026-01-18T15:30:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-8103-bbfd-d5800bc2d3f5",
+    "companyName": "Åsen & Øvrelid Nordvest",
+    "meetingTimes": [
+      "2026-01-16T08:00:00.000Z",
+      "2026-01-17T10:15:00.000Z",
+      "2026-01-18T13:30:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-8125-aa74-ee6faf99e012",
+    "companyName": "Åsmund Pettersen & Sønn",
+    "meetingTimes": [
+      "2026-01-16T10:00:00.000Z",
+      "2026-01-18T13:45:00.000Z",
+      "2026-01-19T17:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-8144-9be7-f7b5f5a3f15d",
+    "companyName": "Åsmund Vangstad",
+    "meetingTimes": [
+      "2026-01-16T11:15:00.000Z",
+      "2026-01-17T13:30:00.000Z",
+      "2026-01-18T16:45:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-8143-bef6-ffa240e71715",
+    "companyName": "Øen & Haugstad",
+    "meetingTimes": [
+      "2026-01-17T13:45:00.000Z",
+      "2026-01-18T16:00:00.000Z",
+      "2026-01-19T19:15:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-8155-9f0b-e0b1de6a55c6",
+    "companyName": "Øen Hytte",
+    "meetingTimes": [
+      "2026-01-18T12:15:00.000Z",
+      "2026-01-19T14:30:00.000Z",
+      "2026-01-20T17:45:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-81ef-a9e4-c2a7bde32a40",
+    "companyName": "Øijord & Aanes Forretning",
+    "meetingTimes": [
+      "2026-01-17T08:30:00.000Z",
+      "2026-01-18T10:45:00.000Z",
+      "2026-01-19T13:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-8123-9e01-e0fb899a67e3",
+    "companyName": "Vestviken",
     "meetingTimes": [
       "2026-01-19T12:00:00.000Z",
+      "2026-01-20T13:00:00.000Z",
+      "2026-01-21T12:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-811c-aa30-ecfd3388099e",
+    "companyName": "Vest Stål & Fasade",
+    "meetingTimes": [
+      "2026-01-20T09:00:00.000Z",
+      "2026-01-21T10:00:00.000Z",
+      "2026-01-22T13:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-81e8-8d1d-c1224ddce6a7",
+    "companyName": "Vest Teknikk",
+    "meetingTimes": [
+      "2026-01-20T12:00:00.000Z",
+      "2026-01-21T14:00:00.000Z",
+      "2026-01-22T09:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-815c-9431-c173307280d6",
+    "companyName": "Vest Betong",
+    "meetingTimes": [
       "2026-01-20T08:30:00.000Z",
-      "2026-01-21T10:00:00.000Z"
+      "2026-01-21T09:00:00.000Z",
+      "2026-01-22T08:30:00.000Z"
     ]
   },
   {
-    "notionPageId": "2e35fc42-3c97-81af-ac02-ccb33b8cdeb8",
-    "companyName": "Østfold Brønnboring",
+    "notionPageId": "2e35fc42-3c97-81c0-96a2-cabc3814df15",
+    "companyName": "Veidekke Logistikk",
     "meetingTimes": [
+      "2026-01-21T08:30:00.000Z",
       "2026-01-22T12:00:00.000Z",
-      "2026-01-23T12:00:00.000Z",
-      "2026-01-26T08:30:00.000Z"
+      "2026-01-23T13:00:00.000Z"
     ]
   },
   {
-    "notionPageId": "2e35fc42-3c97-81d5-84d4-f0424dd34c3e",
-    "companyName": "Østfold Betongsaging",
-    "meetingTimes": [
-      "2026-01-22T13:00:00.000Z",
-      "2026-01-23T13:00:00.000Z",
-      "2026-01-26T10:00:00.000Z"
-    ]
-  },
-  {
-    "notionPageId": "2e35fc42-3c97-81fc-9545-dc8c58f90e3b",
-    "companyName": "Østfold Asfalt",
+    "notionPageId": "2e35fc42-3c97-8199-bf22-e68d9053cfa9",
+    "companyName": "Veidekke Felles",
     "meetingTimes": [
       "2026-01-22T10:00:00.000Z",
+      "2026-01-23T10:00:00.000Z",
+      "2026-01-26T09:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-812a-91f6-e8c52e544b93",
+    "companyName": "Veidekke",
+    "meetingTimes": [
       "2026-01-23T08:30:00.000Z",
-      "2026-01-26T14:00:00.000Z"
-    ]
-  },
-  {
-    "notionPageId": "2e35fc42-3c97-819a-aa60-e2b75ff48ec8",
-    "companyName": "Østerdalen E",
-    "meetingTimes": [
-      "2026-01-26T12:00:00.000Z",
-      "2026-01-27T09:00:00.000Z",
-      "2026-01-28T13:00:00.000Z"
-    ]
-  },
-  {
-    "notionPageId": "2e35fc42-3c97-8122-adb2-ee5bb3271c13",
-    "companyName": "Øster Hus",
-    "meetingTimes": [
-      "2026-01-26T09:00:00.000Z",
-      "2026-01-27T14:00:00.000Z",
-      "2026-01-28T09:00:00.000Z"
-    ]
-  },
-  {
-    "notionPageId": "2e35fc42-3c97-81d3-b91e-ecaf75dc339f",
-    "companyName": "Østby Aarskog",
-    "meetingTimes": [
       "2026-01-26T13:00:00.000Z",
-      "2026-01-27T10:00:00.000Z",
+      "2026-01-27T14:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-815f-8b7f-ff756f6aa32f",
+    "companyName": "Vef",
+    "meetingTimes": [
+      "2026-01-23T14:00:00.000Z",
+      "2026-01-26T10:00:00.000Z",
+      "2026-01-27T10:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-8177-803f-eb6348a7ecfd",
+    "companyName": "Vedal",
+    "meetingTimes": [
+      "2026-01-23T09:00:00.000Z",
+      "2026-01-26T12:00:00.000Z",
+      "2026-01-27T09:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-817f-adfb-f438311bc4ff",
+    "companyName": "Vbm Fornyelse",
+    "meetingTimes": [
+      "2026-01-23T12:00:00.000Z",
+      "2026-01-26T14:00:00.000Z",
+      "2026-01-27T13:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-819e-8ad5-da5d4ba9aa5b",
+    "companyName": "Vavik Tønnessen",
+    "meetingTimes": [
+      "2026-01-26T08:30:00.000Z",
+      "2026-01-27T12:00:00.000Z",
       "2026-01-28T14:00:00.000Z"
     ]
   },
   {
-    "notionPageId": "2e35fc42-3c97-818e-9688-e89316049102",
-    "companyName": "Ømf Wito",
-    "meetingTimes": [
-      "2026-01-27T13:00:00.000Z",
-      "2026-01-28T10:00:00.000Z",
-      "2026-01-29T12:00:00.000Z"
-    ]
-  },
-  {
-    "notionPageId": "2e35fc42-3c97-81d4-b001-caabfb6ecb0d",
-    "companyName": "Årsland Maskin",
-    "meetingTimes": [
-      "2026-01-27T12:00:00.000Z",
-      "2026-01-28T12:00:00.000Z",
-      "2026-01-29T09:00:00.000Z"
-    ]
-  },
-  {
-    "notionPageId": "2e35fc42-3c97-81de-8977-eac2aaaf48d0",
-    "companyName": "Årdal Skeie",
+    "notionPageId": "2e35fc42-3c97-812f-a1c1-fd88837e2a1d",
+    "companyName": "Vassfjellet Vinterpark",
     "meetingTimes": [
       "2026-01-27T08:30:00.000Z",
+      "2026-01-28T10:00:00.000Z",
+      "2026-01-29T13:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-810e-8b1f-f0e6d3aea363",
+    "companyName": "Varp",
+    "meetingTimes": [
+      "2026-01-28T09:00:00.000Z",
+      "2026-01-29T14:00:00.000Z",
+      "2026-01-30T09:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-81d5-ae90-e81d29b6d512",
+    "companyName": "Varja",
+    "meetingTimes": [
       "2026-01-28T08:30:00.000Z",
-      "2026-01-29T14:00:00.000Z"
+      "2026-01-29T08:30:00.000Z",
+      "2026-01-30T12:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-8140-9ed4-f277ec6b7aaa",
+    "companyName": "Varhaug & Montasje",
+    "meetingTimes": [
+      "2026-01-28T13:00:00.000Z",
+      "2026-01-29T09:00:00.000Z",
+      "2026-01-30T14:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-8199-ae5a-da99b54b8b49",
+    "companyName": "Varden",
+    "meetingTimes": [
+      "2026-01-28T12:00:00.000Z",
+      "2026-01-29T10:00:00.000Z",
+      "2026-01-30T08:30:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-81de-b87b-fd5c26d89511",
+    "companyName": "Valdres",
+    "meetingTimes": [
+      "2026-01-29T12:00:00.000Z",
+      "2026-01-30T10:00:00.000Z",
+      "2026-02-02T12:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-816b-9f6f-da71f7582f16",
+    "companyName": "V.r. Vedlikehold",
+    "meetingTimes": [
+      "2026-01-30T13:00:00.000Z",
+      "2026-02-02T09:00:00.000Z",
+      "2026-02-03T14:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-814a-b8dd-f50557ef5723",
+    "companyName": "V M",
+    "meetingTimes": [
+      "2026-02-02T10:00:00.000Z",
+      "2026-02-03T12:00:00.000Z",
+      "2026-02-04T13:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-81ae-a8b8-ffb1030e8a50",
+    "companyName": "Utvik",
+    "meetingTimes": [
+      "2026-02-02T14:00:00.000Z",
+      "2026-02-03T13:00:00.000Z",
+      "2026-02-04T10:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-8176-ab79-c89de49dee86",
+    "companyName": "Unu",
+    "meetingTimes": [
+      "2026-02-02T08:30:00.000Z",
+      "2026-02-03T10:00:00.000Z",
+      "2026-02-04T09:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-8179-8b5b-e5703c646a47",
+    "companyName": "Uniqon",
+    "meetingTimes": [
+      "2026-02-02T13:00:00.000Z",
+      "2026-02-03T09:00:00.000Z",
+      "2026-02-04T12:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-819c-9d7f-ef13353c928c",
+    "companyName": "S Undal",
+    "meetingTimes": [
+      "2026-02-03T08:30:00.000Z",
+      "2026-02-04T08:30:00.000Z",
+      "2026-02-05T13:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-814a-bc83-ef35799b4e02",
+    "companyName": "Udnes & Aas",
+    "meetingTimes": [
+      "2026-02-04T14:00:00.000Z",
+      "2026-02-05T09:00:00.000Z",
+      "2026-02-06T13:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-819e-ab22-e53fd887dbcf",
+    "companyName": "Uanz",
+    "meetingTimes": [
+      "2026-02-05T10:00:00.000Z",
+      "2026-02-06T14:00:00.000Z",
+      "2026-02-09T10:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-8198-93d7-e81966cf94e0",
+    "companyName": "Uab Partner",
+    "meetingTimes": [
+      "2026-02-05T08:30:00.000Z",
+      "2026-02-06T10:00:00.000Z",
+      "2026-02-09T12:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-8124-b74e-e7fd59f5a153",
+    "companyName": "Uab Antonas",
+    "meetingTimes": [
+      "2026-02-05T12:00:00.000Z",
+      "2026-02-06T12:00:00.000Z",
+      "2026-02-09T08:30:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-81f4-ab61-f03a66fd3b9e",
+    "companyName": "Tømrermester Skjørdal",
+    "meetingTimes": [
+      "2026-02-05T14:00:00.000Z",
+      "2026-02-06T09:00:00.000Z",
+      "2026-02-09T14:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-81bc-ac32-cc5983554690",
+    "companyName": "Tømrermester Sandvold",
+    "meetingTimes": [
+      "2026-02-06T08:30:00.000Z",
+      "2026-02-09T13:00:00.000Z",
+      "2026-02-10T08:30:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-81da-889e-f208a06bc393",
+    "companyName": "Tømrermester Kjetil Eriksen",
+    "meetingTimes": [
+      "2026-02-09T09:00:00.000Z",
+      "2026-02-10T12:00:00.000Z",
+      "2026-02-11T12:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-8184-acfe-d86fed8fa35e",
+    "companyName": "Tømrermester Jo Morten Hagen",
+    "meetingTimes": [
+      "2026-02-10T09:00:00.000Z",
+      "2026-02-11T09:00:00.000Z",
+      "2026-02-12T08:30:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-8106-a7ca-cc9b4b581db3",
+    "companyName": "Tømrermester Henning Berntsen",
+    "meetingTimes": [
+      "2026-02-10T14:00:00.000Z",
+      "2026-02-11T14:00:00.000Z",
+      "2026-02-12T13:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-8156-b4d7-d3b5bf938c14",
+    "companyName": "Tømrermester G Sætheren",
+    "meetingTimes": [
+      "2026-02-10T13:00:00.000Z",
+      "2026-02-11T08:30:00.000Z",
+      "2026-02-12T14:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-81cc-a287-f843259f05e2",
+    "companyName": "Tømrermester E Johansen",
+    "meetingTimes": [
+      "2026-02-10T10:00:00.000Z",
+      "2026-02-11T13:00:00.000Z",
+      "2026-02-12T09:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-814b-b7db-da95f45033b7",
+    "companyName": "Austin Lyngmyr & Co",
+    "meetingTimes": [
+      "2026-02-11T10:00:00.000Z",
+      "2026-02-12T12:00:00.000Z",
+      "2026-02-13T13:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-817d-9bc3-f5351b5a8364",
+    "companyName": "Aurlien Vordahl & Co",
+    "meetingTimes": [
+      "2026-02-12T10:00:00.000Z",
+      "2026-02-13T09:00:00.000Z",
+      "2026-02-16T13:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-811d-b5a3-dfc6b67bbc9b",
+    "companyName": "Angell",
+    "meetingTimes": [
+      "2026-02-13T12:00:00.000Z",
+      "2026-02-16T09:00:00.000Z",
+      "2026-02-17T09:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-81d1-8ffd-f936153f4e92",
+    "companyName": "Agp Advokater",
+    "meetingTimes": [
+      "2026-02-13T10:00:00.000Z",
+      "2026-02-16T14:00:00.000Z",
+      "2026-02-17T12:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-81a9-ade0-e9b2d63a9863",
+    "companyName": "Øverbø Gjørtz",
+    "meetingTimes": [
+      "2026-02-13T08:30:00.000Z",
+      "2026-02-16T08:30:00.000Z",
+      "2026-02-17T08:30:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-8188-a664-f2d8f5a465b5",
+    "companyName": "Økland & Co",
+    "meetingTimes": [
+      "2026-02-13T14:00:00.000Z",
+      "2026-02-16T10:00:00.000Z",
+      "2026-02-17T14:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-81a9-aa91-f1430f3f1f40",
+    "companyName": "Ytterbøl & Co",
+    "meetingTimes": [
+      "2026-02-16T12:00:00.000Z",
+      "2026-02-17T13:00:00.000Z",
+      "2026-02-18T09:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-81fb-8996-c6cfa13260da",
+    "companyName": "Wiersholm",
+    "meetingTimes": [
+      "2026-02-17T10:00:00.000Z",
+      "2026-02-18T12:00:00.000Z",
+      "2026-02-19T09:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-8169-ba79-f6de14ebbb1b",
+    "companyName": "Varder",
+    "meetingTimes": [
+      "2026-02-18T13:00:00.000Z",
+      "2026-02-19T13:00:00.000Z",
+      "2026-02-20T08:30:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-819c-8209-d252ab5cba46",
+    "companyName": "Thommessen",
+    "meetingTimes": [
+      "2026-02-18T10:00:00.000Z",
+      "2026-02-19T08:30:00.000Z",
+      "2026-02-20T09:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-8160-9abe-d0cfe5ed2451",
+    "companyName": "Thallaug",
+    "meetingTimes": [
+      "2026-02-18T14:00:00.000Z",
+      "2026-02-19T10:00:00.000Z",
+      "2026-02-20T10:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-81d3-b7a9-c60f28db41b0",
+    "companyName": "Sulland",
+    "meetingTimes": [
+      "2026-02-18T08:30:00.000Z",
+      "2026-02-19T12:00:00.000Z",
+      "2026-02-20T12:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-8193-9248-dfa07e552b32",
+    "companyName": "Strand & Co",
+    "meetingTimes": [
+      "2026-02-19T14:00:00.000Z",
+      "2026-02-20T14:00:00.000Z",
+      "2026-02-23T09:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-8190-9d11-d47da25f1174",
+    "companyName": "Storrvik",
+    "meetingTimes": [
+      "2026-02-20T13:00:00.000Z",
+      "2026-02-23T08:30:00.000Z",
+      "2026-02-24T10:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-81a7-bee8-f15fe1bf5042",
+    "companyName": "Staff",
+    "meetingTimes": [
+      "2026-02-23T10:00:00.000Z",
+      "2026-02-24T13:00:00.000Z",
+      "2026-02-25T09:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-81c6-beef-ca3b9e6ea5ce",
+    "companyName": "Sjødinmeling",
+    "meetingTimes": [
+      "2026-02-23T13:00:00.000Z",
+      "2026-02-24T12:00:00.000Z",
+      "2026-02-25T12:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-8168-abdd-ee71057b394c",
+    "companyName": "Simonsen Vogt Wiig",
+    "meetingTimes": [
+      "2026-02-23T14:00:00.000Z",
+      "2026-02-24T14:00:00.000Z",
+      "2026-02-25T10:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-8194-877e-cb9aaa2f90e3",
+    "companyName": "Sgb",
+    "meetingTimes": [
+      "2026-02-23T12:00:00.000Z",
+      "2026-02-24T09:00:00.000Z",
+      "2026-02-25T13:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-81b2-9925-d06cfbf5d15e",
+    "companyName": "Selmer",
+    "meetingTimes": [
+      "2026-02-24T08:30:00.000Z",
+      "2026-02-25T14:00:00.000Z",
+      "2026-02-26T12:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-81fc-aaa8-ef9d524d04c9",
+    "companyName": "Schjødt",
+    "meetingTimes": [
+      "2026-02-25T08:30:00.000Z",
+      "2026-02-26T13:00:00.000Z",
+      "2026-02-27T08:30:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-8181-a807-c9e5d976a48b",
+    "companyName": "Salomon Johansen",
+    "meetingTimes": [
+      "2026-02-26T14:00:00.000Z",
+      "2026-02-27T09:00:00.000Z",
+      "2026-03-02T09:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-81d1-bfc4-fbff034a9436",
+    "companyName": "Rogstad",
+    "meetingTimes": [
+      "2026-02-26T08:30:00.000Z",
+      "2026-02-27T12:00:00.000Z",
+      "2026-03-02T08:30:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-8112-a8c5-eae697a8bdc8",
+    "companyName": "Responsa",
+    "meetingTimes": [
+      "2026-02-26T09:00:00.000Z",
+      "2026-02-27T10:00:00.000Z",
+      "2026-03-02T13:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-8160-92dc-d620d100c335",
+    "companyName": "Pricewaterhousecoopers",
+    "meetingTimes": [
+      "2026-02-26T10:00:00.000Z",
+      "2026-02-27T13:00:00.000Z",
+      "2026-03-02T14:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-81c1-973f-c822f296b4b8",
+    "companyName": "Ness Lundin",
+    "meetingTimes": [
+      "2026-02-27T14:00:00.000Z",
+      "2026-03-02T10:00:00.000Z",
+      "2026-03-03T13:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-81b3-bbf3-e65f1b733764",
+    "companyName": "Mageli",
+    "meetingTimes": [
+      "2026-03-02T12:00:00.000Z",
+      "2026-03-03T09:00:00.000Z",
+      "2026-03-04T08:30:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-8104-b3f5-fa0328024d4e",
+    "companyName": "Lærum, Lier, Stende & Berven",
+    "meetingTimes": [
+      "2026-03-03T12:00:00.000Z",
+      "2026-03-04T09:00:00.000Z",
+      "2026-03-05T13:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e35fc42-3c97-814d-a086-c820e6e33eb8",
+    "companyName": "Lund & Co",
+    "meetingTimes": [
+      "2026-03-03T10:00:00.000Z",
+      "2026-03-04T14:00:00.000Z",
+      "2026-03-05T09:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e45fc42-3c97-81f4-9887-d451e6615a72",
+    "companyName": "Legalis",
+    "meetingTimes": [
+      "2026-03-03T08:30:00.000Z",
+      "2026-03-04T13:00:00.000Z",
+      "2026-03-05T14:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e45fc42-3c97-81a7-9901-c8047c13a6cc",
+    "companyName": "Kyrre",
+    "meetingTimes": [
+      "2026-03-03T14:00:00.000Z",
+      "2026-03-04T12:00:00.000Z",
+      "2026-03-05T12:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e45fc42-3c97-812a-94f5-ff6142fdb4ad",
+    "companyName": "Hjort",
+    "meetingTimes": [
+      "2026-03-04T10:00:00.000Z",
+      "2026-03-05T10:00:00.000Z",
+      "2026-03-06T13:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e45fc42-3c97-813e-b633-d1367151478a",
+    "companyName": "Helmr",
+    "meetingTimes": [
+      "2026-03-05T08:30:00.000Z",
+      "2026-03-06T08:30:00.000Z",
+      "2026-03-09T14:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e45fc42-3c97-810b-9ed8-ed7c4622bdb0",
+    "companyName": "Hasle",
+    "meetingTimes": [
+      "2026-03-06T12:00:00.000Z",
+      "2026-03-09T09:00:00.000Z",
+      "2026-03-10T13:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e45fc42-3c97-8134-a897-e33f67d7c502",
+    "companyName": "Halvorsen & Co",
+    "meetingTimes": [
+      "2026-03-06T09:00:00.000Z",
+      "2026-03-09T12:00:00.000Z",
+      "2026-03-10T14:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e45fc42-3c97-811e-a032-e9770a6b2faf",
+    "companyName": "Glittertind",
+    "meetingTimes": [
+      "2026-03-06T14:00:00.000Z",
+      "2026-03-09T10:00:00.000Z",
+      "2026-03-10T09:00:00.000Z"
+    ]
+  },
+  {
+    "notionPageId": "2e45fc42-3c97-8148-a9bf-e1c43dcd09fd",
+    "companyName": "Frøy",
+    "meetingTimes": [
+      "2026-03-11T09:00:00.000Z",
+      "2026-03-12T12:00:00.000Z",
+      "2026-03-13T10:00:00.000Z"
     ]
   }
 ]

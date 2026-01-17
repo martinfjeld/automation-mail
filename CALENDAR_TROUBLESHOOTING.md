@@ -17,6 +17,7 @@ render logs -s automation-mail-backend --tail 100 | grep -i "calendar\|meeting\|
 ## Common Failure Reasons
 
 ### 1. **Google Calendar API Rate Limits**
+
 - Google Calendar API has quota limits
 - Check if you're hitting rate limits
 - Look for errors like: `429 Too Many Requests` or `quotaExceeded`
@@ -24,21 +25,25 @@ render logs -s automation-mail-backend --tail 100 | grep -i "calendar\|meeting\|
 **Solution**: Added retry logic with exponential backoff (now in code)
 
 ### 2. **Token Expiration**
+
 - Refresh tokens can expire or become invalid
 - Look for: `invalid_grant` or `Token has been expired or revoked`
 
 **Solution**: Regenerate refresh token:
+
 ```bash
 node get-refresh-token.js
 ```
 
 ### 3. **Calendar Busy/Free Query Timeout**
+
 - Network timeouts when checking calendar availability
 - Look for: `ETIMEDOUT`, `ECONNRESET`, `socket hang up`
 
 **Solution**: Already added retry logic
 
 ### 4. **Insufficient Permissions**
+
 - OAuth scope issues
 - Look for: `insufficient permissions` or `access_denied`
 
@@ -58,11 +63,13 @@ node get-refresh-token.js
 ## What to Look For
 
 Good logs (success):
+
 ```
 ✅ Generated 3 meeting proposals
 ```
 
 Bad logs (failure):
+
 ```
 ❌ Attempt 1/3 failed: [error message]
 ⚠️ ALL RETRIES EXHAUSTED - Email will be sent without meeting proposals
@@ -71,6 +78,7 @@ Bad logs (failure):
 ## Environment Variables Check
 
 Make sure these are set in Render:
+
 - `GOOGLE_CLIENT_ID`
 - `GOOGLE_CLIENT_SECRET`
 - `GOOGLE_REFRESH_TOKEN`

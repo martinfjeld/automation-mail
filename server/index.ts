@@ -20,7 +20,10 @@ import proposedMeetingsRoutes from "./routes/proposed-meetings";
 import proffQueueRoutes from "./routes/proff-queue";
 import migrateProffUrlsRoutes from "./routes/migrate-proff-urls";
 import migrateImagesGeneratedRoutes from "./routes/migrate-images-generated";
+import syncRoutes from "./routes/sync";
+import sanityRoutes from "./routes/sanity";
 import { errorHandler } from "./middleware/errorHandler";
+import { AutoSyncService } from "./services/autoSyncService";
 
 // Load .env file from project root - try multiple paths for robustness
 const envPath = path.resolve(__dirname, "../.env");
@@ -81,6 +84,8 @@ app.use("/api/booking", bookingRoutes); // Booking confirmations
 app.use("/book", calendarRoutes); // Shorter alias: /book/:token instead of /api/calendar/:token
 app.use("/s", shortRoutes); // Short URL redirects: /s/:code
 app.use("/api/short-urls", shortUrlsRoutes); // API to create short URLs
+app.use("/api/sync", syncRoutes); // Auto-sync with production
+app.use("/api/sanity", sanityRoutes); // Sanity-specific operations
 app.use("/api/proposed-meetings", proposedMeetingsRoutes); // Track proposed meeting times
 app.use("/api/proff-queue", proffQueueRoutes); // Proff company queue
 app.use("/api/migrate-proff-urls", migrateProffUrlsRoutes); // Migrate proffUrl to history
@@ -98,6 +103,10 @@ app.use(errorHandler);
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
   console.log(`📝 Environment: ${process.env.NODE_ENV || "development"}`);
+
+  // Start automatic syncing with production
+  const autoSync = AutoSyncService.getInstance();
+  autoSync.startAutoSync();
 });
 
 export default app;

@@ -1,6 +1,120 @@
 @import "../../styles/variables";
 @import "../../styles/mixins";
 
+// Startup loading screen
+.startupScreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #0f0f0f;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.startupContent {
+  text-align: center;
+  padding: $spacing-lg;
+}
+
+.startupFooter {
+  position: absolute;
+  bottom: $spacing-lg;
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 0.875rem;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+}
+
+.startupSpinner {
+  width: 60px;
+  height: 60px;
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-top-color: #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto $spacing-lg;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.startupTitle {
+  font-size: 2.5rem;
+  font-family: "Europa Grotesk SH", sans-serif;
+  font-weight: normal;
+  text-transform: uppercase;
+  @include gradient-text;
+  margin-bottom: $spacing-md;
+}
+
+.startupMessage {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1rem;
+  margin-bottom: $spacing-lg;
+  min-height: 24px;
+}
+
+.progressBarContainer {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: $spacing-sm;
+}
+
+.progressBar {
+  height: 100%;
+  background: $linearBackground;
+  transition: width 0.3s ease;
+  border-radius: 999px;
+}
+
+.progressText {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.rollingPercentage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: fit-content;
+  margin: auto;
+  margin-top: $spacing-md;
+  font-family: "Europa Grotesk SH", sans-serif;
+  font-weight: 600;
+  .digitContainer {
+    display: inline-flex;
+    align-items: flex-start;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+    background: transparent;
+    border-radius: 6px;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6);
+    // Size is controlled dynamically via inline styles from fontSize prop
+  }
+}
+
+.percentSymbol {
+  margin-left: 6px;
+  opacity: 0.8;
+  // Size is controlled dynamically via inline styles
+}
+
 .generator {
   min-height: 100vh;
   padding: $spacing-lg;
@@ -77,7 +191,7 @@ h3 {
   height: 32px;
   overflow: hidden;
   position: relative;
-  width: 25px;
+  width: 19px;
   background: #000000;
   border-radius: 3px;
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.6);
@@ -1050,23 +1164,35 @@ h3 {
 }
 
 .refillButton {
-  padding: 6px 12px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 6px;
-  color: $text-light;
+  padding: 8px 16px;
+  background: white;
+  border: none;
+  border-radius: 999px;
+  color: #0f0f0f;
   cursor: pointer;
-  font-size: 0.875rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1;
   transition: all 0.2s ease;
+  font-family: inherit;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 
   &:hover:not(:disabled) {
-    background: rgba(255, 255, 255, 0.15);
-    border-color: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.9);
+    transform: translateY(-1px);
   }
 
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+  }
+
+  @include respond(mobile) {
+    font-size: 0.75rem;
+    padding: 6px 12px;
   }
 }
 
@@ -1151,10 +1277,87 @@ h3 {
 .queueList {
   display: flex;
   flex-direction: column;
-  gap: $spacing-xs;
+  gap: 24px;
+}
+
+.queueItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: $spacing-sm;
+  font-family: "Europa Grotesk SH", sans-serif;
+
+  background: linear-gradient(#232323, #0f0f0f);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.465);
+  border: 1px solid rgba(255, 255, 255, 0.066);
+  border-radius: 12px;
+  padding: 24px;
+
+  @include respond(mobile) {
+    gap: $spacing-xs;
+  }
+}
+
+.buttonGroup {
+  display: flex;
+  gap: $spacing-sm;
+
+  @include respond(mobile) {
+    gap: $spacing-xs;
+  }
+}
+
+.generateButton {
+  padding: 8px 16px;
+  background: white;
+  border: none;
+  border-radius: 999px;
+  color: #0f0f0f;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+
+  &:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.9);
+    transform: translateY(-1px);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  @include respond(mobile) {
+    font-size: 0.75rem;
+    padding: 6px 12px;
+  }
+}
+
+.sparkleIcon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.companyName {
+  flex: 1;
+  color: $text-light;
+  font-size: 0.9375rem;
+  text-align: left;
+
+  @include respond(mobile) {
+    font-size: 0.875rem;
+  }
 }
 
 .queueButton {
+  flex: 1;
   padding: $spacing-sm $spacing-md;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -1183,25 +1386,73 @@ h3 {
   }
 }
 
-.generateAllButton {
-  padding: $spacing-xs $spacing-sm;
-  background: rgba(76, 175, 80, 0.2);
-  border: 1px solid rgba(76, 175, 80, 0.4);
-  border-radius: 4px;
-  color: #4caf50;
-  font-size: 0.875rem;
+.removeButton {
+  padding: 8px 16px;
+  background: #ff4444;
+  border: none;
+  border-radius: 999px;
+  color: white;
   cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1;
   transition: all 0.2s ease;
-  font-weight: 500;
+  font-family: inherit;
+  white-space: nowrap;
+  flex-shrink: 0;
 
   &:hover:not(:disabled) {
-    background: rgba(76, 175, 80, 0.3);
-    border-color: rgba(76, 175, 80, 0.6);
+    background: darken(#ff4444, 10%);
+    transform: translateY(-1px);
   }
 
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+  }
+
+  @include respond(mobile) {
+    font-size: 0.75rem;
+    padding: 6px 12px;
+  }
+}
+
+.generateAllButton {
+  padding: 8px 16px;
+  background: $linearBackground;
+  border: none;
+  border-radius: 999px;
+  color: #0f0f0f;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 50px;
+
+  svg {
+    width: 36px;
+    height: 36px;
+  }
+
+  &:hover:not(:disabled) {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  @include respond(mobile) {
+    font-size: 0.75rem;
+    padding: 6px 12px;
   }
 }
 

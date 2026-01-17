@@ -1,9 +1,11 @@
 import { Router, Request, Response } from "express";
 import { ProffQueueService } from "../services/proffQueueService";
 import { ScraperService } from "../services/scraperService";
+import { BanListService } from "../services/banListService";
 
 const router = Router();
 const queueService = new ProffQueueService();
+const banListService = new BanListService();
 
 /**
  * GET /api/proff-queue
@@ -162,6 +164,40 @@ router.put("/search-url", async (req: Request, res: Response) => {
     res.status(500).json({
       success: false,
       error: error.message || "Failed to update search URL",
+    });
+  }
+});
+
+/**
+ * POST /api/proff-queue/ban
+ * Ban a company (add to ban list and remove from queue)
+ */
+router.post("/ban", async (req: Request, res: Response) => {
+  try {
+    const { id, proffUrl, companyName } = req.body;
+
+    if (!id || !proffUrl || !companyName) {
+      return res.status(400).json({
+        success: false,
+        error: "id, proffUrl, and companyName are required",
+      });
+    }
+
+    // Add to ban list
+    banListService.addToBanList(proffUrl, companyName);
+
+    // Remove from queue
+    queueService.removeFromQueue(id);
+
+    res.json({
+      success: true,
+      message: `${companyName} has been banned and removed from queue`,
+    });
+  } catch (error: any) {
+    console.error("Ban company error:", error);
+    res.status(500).json({
+      success: false,
+      error: error.message || "Failed to ban company",
     });
   }
 });

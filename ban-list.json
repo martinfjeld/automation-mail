@@ -19,6 +19,66 @@
       "proffUrl": "https://www.proff.no/selskap/%C3%B8mf-hamar-as/hamar/-/930220760",
       "companyName": "Ømf Hamar",
       "bannedAt": "2026-01-09T13:45:52.538Z"
+    },
+    {
+      "proffUrl": "https://www.proff.no/selskap/%C3%B8be-as/kl%C3%B8fta/-/921863993",
+      "companyName": "Øbe",
+      "bannedAt": "2026-01-09T17:06:35.403Z"
+    },
+    {
+      "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-simonsen-vogt-wiig-trondheim-as/trondheim/-/985851514",
+      "companyName": "ADVOKATFIRMAET SIMONSEN VOGT WIIG TRONDHEIM AS",
+      "bannedAt": "2026-01-09T18:09:04.042Z"
+    },
+    {
+      "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-simonsen-vogt-wiig-kristiansand-da/kristiansand-s/-/988343412",
+      "companyName": "ADVOKATFIRMAET SIMONSEN VOGT WIIG KRISTIANSAND DA",
+      "bannedAt": "2026-01-09T18:09:10.243Z"
+    },
+    {
+      "proffUrl": "https://www.proff.no/selskap/%C3%A5sen-%C3%B8vrelid-as/f%C3%B8rde/-/976742117",
+      "companyName": "Åsen & Øvrelid",
+      "bannedAt": "2026-01-10T00:02:58.594Z"
+    },
+    {
+      "proffUrl": "https://www.proff.no/selskap/%C3%A5rsland-maskin-as/vigrestad/-/889884452",
+      "companyName": "Årsland Maskin",
+      "bannedAt": "2026-01-10T01:01:00.789Z"
+    },
+    {
+      "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-eurojuris-haugesund-as/haugesund/-/995483335",
+      "companyName": "Eurojuris Haugesund",
+      "bannedAt": "2026-01-10T08:04:46.353Z"
+    },
+    {
+      "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-finn-as/harstad/-/991340580",
+      "companyName": "Finn",
+      "bannedAt": "2026-01-10T08:05:09.322Z"
+    },
+    {
+      "proffUrl": "https://www.proff.no/selskap/zeiner-bolig-h%C3%A5ndverk-as/n%C3%B8tter%C3%B8y/-/948974487",
+      "companyName": "Zeiner Bolig Håndverk",
+      "bannedAt": "2026-01-10T09:19:06.344Z"
+    },
+    {
+      "proffUrl": "https://www.proff.no/selskap/ze-bra-vei-as/moss/-/950420103",
+      "companyName": "Cleanosol",
+      "bannedAt": "2026-01-10T09:19:24.078Z"
+    },
+    {
+      "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-f%C3%B8yen-as/oslo/-/885719392",
+      "companyName": "Føyen",
+      "bannedAt": "2026-01-10T10:32:37.500Z"
+    },
+    {
+      "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-haavind-as/oslo/-/986420177",
+      "companyName": "Haavind",
+      "bannedAt": "2026-01-10T10:33:13.543Z"
+    },
+    {
+      "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-lippestad-as/oslo/-/996400832",
+      "companyName": "Lippestad",
+      "bannedAt": "2026-01-10T10:33:35.519Z"
     }
   ]
 }

@@ -5,15 +5,18 @@ export interface HistoryEntry {
   id: string;
   companyName: string;
   contactPerson: string;
+  contactPersonUrl?: string;
   email: string;
   phone?: string;
   website: string;
   address?: string;
   city?: string;
+  linkedIn?: string;
   service: string;
   notionPageId: string;
   proffUrl?: string; // Proff.no URL for queue filtering
   sanityPresentationId?: string;
+  sanityUniqueId?: string;
   presentationUrl?: string;
   emailContent?: string;
   industry?: string;
@@ -21,13 +24,21 @@ export interface HistoryEntry {
   automationText1?: string;
   automationText2?: string;
   logoUrl?: string;
+  logoMode?: string;
+  hasScreenshots?: boolean;
+  desktopScreenshot?: string;
+  mobileScreenshot?: string;
   imagesGenerated?: boolean;
   emailSent?: boolean;
+  emailLocked?: boolean;
   leadStatus?: string;
   meetingDates?: string[]; // Array of 3 ISO date strings from meeting proposals
   bookingLinks?: string[]; // Array of 3 short URLs for booking
   møtedato?: string; // The actual booked meeting date (when customer confirms)
   bookedSlotIndex?: number; // Which slot was booked (0, 1, or 2)
+  eventId?: string; // Google Calendar event ID for meeting cancellation
+  eventLink?: string; // Google Calendar event link
+  meetLink?: string; // Google Meet link
   createdAt: string;
   updatedAt: string;
 }
