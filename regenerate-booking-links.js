@@ -48,7 +48,8 @@ async function regenerateBookingLinks() {
 
       const startMs = proposalDate.getTime();
       const endMs = endDate.getTime();
-      const tokenData = `${startMs}|${endMs}|${myEmail}`;
+      const customerEmailForToken = entry.email || myEmail; // Use customer email in token
+      const tokenData = `${startMs}|${endMs}|${customerEmailForToken}`;
       const bookingToken = Buffer.from(tokenData).toString("base64url");
 
       // Create booking URL with customer info
