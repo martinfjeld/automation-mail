@@ -30,12 +30,13 @@
       "www.no-offence.io/s/b9d349"
     ],
     "createdAt": "2026-01-10T02:38:38.557Z",
-    "updatedAt": "2026-01-10T15:59:48.858Z",
+    "updatedAt": "2026-01-17T09:09:14.560Z",
     "logoMode": "light",
     "linkedIn": "https://www.linkedin.com/in/tor-kristian-nordhus-plahte-904007209/",
     "imagesGenerated": true,
-    "bookedSlotIndex": 1,
-    "møtedato": "2026-03-12T12:00:00.000+00:00"
+    "bookedSlotIndex": 0,
+    "industry": "advokat",
+    "møtedato": "2026-03-13T10:00:00.000Z"
   },
   {
     "id": "2e45fc42-3c97-811e-a032-e9770a6b2faf",
@@ -71,7 +72,8 @@
     "updatedAt": "2026-01-10T10:39:53.337Z",
     "logoMode": "light",
     "linkedIn": "https://www.linkedin.com/in/emanuel-feinberg-19a231174/",
-    "imagesGenerated": true
+    "imagesGenerated": true,
+    "industry": "advokat"
   },
   {
     "id": "2e45fc42-3c97-8134-a897-e33f67d7c502",
@@ -107,7 +109,8 @@
     "updatedAt": "2026-01-10T11:07:20.609Z",
     "linkedIn": "https://www.linkedin.com/in/lotte-lundby-kristiansen-38442498/",
     "logoMode": "light",
-    "imagesGenerated": true
+    "imagesGenerated": true,
+    "industry": "advokat"
   },
   {
     "id": "2e45fc42-3c97-810b-9ed8-ed7c4622bdb0",
@@ -143,7 +146,8 @@
     "updatedAt": "2026-01-10T16:15:02.205Z",
     "imagesGenerated": true,
     "logoMode": "light",
-    "linkedIn": ""
+    "linkedIn": "",
+    "industry": "advokat"
   },
   {
     "id": "2e45fc42-3c97-813e-b633-d1367151478a",
@@ -179,7 +183,8 @@
     "updatedAt": "2026-01-10T17:42:56.763Z",
     "logoMode": "dark",
     "linkedIn": "https://www.linkedin.com/in/thor-arne-wullum-8099a733/",
-    "imagesGenerated": true
+    "imagesGenerated": true,
+    "industry": "advokat"
   },
   {
     "id": "2e45fc42-3c97-812a-94f5-ff6142fdb4ad",
@@ -195,7 +200,7 @@
     "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-hjort-as/oslo/-/929191811",
     "sanityPresentationId": "fJ8g4Op5RbsDsqbs0b2o2a",
     "presentationUrl": "https://www.no-offence.io/presentation/hjort/1768011708636-7ungq5l",
-    "emailContent": "Hei Anne,\n\nJeg heter Martin Fjeld og er gründer av et kreativt design- og digitalbyrå kalt No Offence. Jeg har satt sammen en presentasjon som viser hvordan deres nye nettsider kan se ut:\nhttps://www.no-offence.io/presentation/hjort/1768011708636-7ungq5l\n\nNettsiden deres har 100% synlighet i søkemotorer. Noe annet vi så var at hastigheten kunne vært litt bedre.\n\n\nJeg foreslår at vi tar en uforpliktende prat over en kopp kaffe for å diskutere mulighetene.\n\n\n\nHer har du tre forslag til møter. Trykk på linken for å booke:\n\n1. Ons 4. mar, 11:00–11:30 - www.no-offence.io/s/4b5257\n\n2. Tor 5. mar, 11:00–11:30 - www.no-offence.io/s/c43183\n\n3. Fre 6. mar, 14:00–14:30 - www.no-offence.io/s/439fb4\n\nMed vennlig hilsen,",
+    "emailContent": "Hei Anne,\n\nJeg heter Martin Fjeld og er gründer av et kreativt design- og digitalbyrå kalt No Offence. Jeg har satt sammen en presentasjon som viser hvordan deres nye nettsider kan se ut:\nhttps://www.no-offence.io/presentation/hjort/1768011708636-7ungq5l\n\nNettsiden deres har 100% synlighet i søkemotorer. Noe annet vi så var at hastigheten kunne vært litt bedre.\n\n[Presentasjon og Lighthouse-analyse]\n\nJeg foreslår at vi tar en uforpliktende prat over en kopp kaffe for å diskutere mulighetene.\n\n\n\nHer har du tre forslag til møter. Trykk på linken for å booke:\n\n1. Ons 4. mar, 11:00–11:30 - www.no-offence.io/s/4b5257\n\n2. Tor 5. mar, 11:00–11:30 - www.no-offence.io/s/c43183\n\n3. Fre 6. mar, 14:00–14:30 - www.no-offence.io/s/439fb4\n\nMed vennlig hilsen,",
     "automationIndustry": "Advokat",
     "automationText1": "Advokatfirmaet",
     "automationText2": "Hjort",
@@ -215,7 +220,8 @@
     "updatedAt": "2026-01-10T17:50:09.321Z",
     "linkedIn": "https://www.linkedin.com/in/annemariedue/",
     "logoMode": "light",
-    "imagesGenerated": true
+    "imagesGenerated": true,
+    "industry": "advokat"
   },
   {
     "id": "2e45fc42-3c97-81a7-9901-c8047c13a6cc",
@@ -251,7 +257,8 @@
     "updatedAt": "2026-01-10T17:56:08.571Z",
     "linkedIn": "https://www.linkedin.com/in/jakob-chr-christensen-3069b0274/",
     "logoMode": "light",
-    "imagesGenerated": true
+    "imagesGenerated": true,
+    "industry": "advokat"
   },
   {
     "id": "2e45fc42-3c97-81f4-9887-d451e6615a72",
@@ -285,7 +292,8 @@
     ],
     "createdAt": "2026-01-10T02:19:43.884Z",
     "updatedAt": "2026-01-17T08:11:46.070Z",
-    "emailSent": false
+    "emailSent": false,
+    "industry": "advokat"
   },
   {
     "id": "2e35fc42-3c97-814d-a086-c820e6e33eb8",
@@ -321,7 +329,8 @@
     "updatedAt": "2026-01-09T23:21:36.016Z",
     "imagesGenerated": true,
     "logoMode": "dark",
-    "linkedIn": "linkedin.com/in/hilde-k-ellingsen-0b36891a6?originalSubdomain=no"
+    "linkedIn": "linkedin.com/in/hilde-k-ellingsen-0b36891a6?originalSubdomain=no",
+    "industry": "advokat"
   },
   {
     "id": "2e35fc42-3c97-8104-b3f5-fa0328024d4e",
@@ -357,7 +366,8 @@
     "updatedAt": "2026-01-09T23:27:49.497Z",
     "imagesGenerated": true,
     "linkedIn": "https://www.linkedin.com/in/gunhild-l%C3%A6rum-6b17ba98/",
-    "logoMode": "light"
+    "logoMode": "light",
+    "industry": "advokat"
   },
   {
     "id": "2e35fc42-3c97-81b3-bbf3-e65f1b733764",
@@ -392,7 +402,8 @@
     "updatedAt": "2026-01-10T01:44:56.277Z",
     "linkedIn": "https://www.linkedin.com/in/trude-holmen-6215a383/",
     "logoMode": "dark",
-    "imagesGenerated": true
+    "imagesGenerated": true,
+    "industry": "advokat"
   },
   {
     "id": "2e35fc42-3c97-81c1-973f-c822f296b4b8",
@@ -425,7 +436,8 @@
       "www.no-offence.io/s/c73fc5"
     ],
     "createdAt": "2026-01-09T18:43:41.137Z",
-    "updatedAt": "2026-01-09T18:43:41.137Z"
+    "updatedAt": "2026-01-09T18:43:41.137Z",
+    "industry": "advokat"
   },
   {
     "id": "2e35fc42-3c97-8160-92dc-d620d100c335",
@@ -457,7 +469,8 @@
       "www.no-offence.io/s/f54683"
     ],
     "createdAt": "2026-01-09T18:42:35.345Z",
-    "updatedAt": "2026-01-09T18:42:35.345Z"
+    "updatedAt": "2026-01-09T18:42:35.345Z",
+    "industry": "advokat"
   },
   {
     "id": "2e35fc42-3c97-8112-a8c5-eae697a8bdc8",
@@ -490,7 +503,8 @@
       "www.no-offence.io/s/a21309"
     ],
     "createdAt": "2026-01-09T18:42:01.439Z",
-    "updatedAt": "2026-01-09T18:42:01.439Z"
+    "updatedAt": "2026-01-09T18:42:01.439Z",
+    "industry": "advokat"
   },
   {
     "id": "2e35fc42-3c97-81d1-bfc4-fbff034a9436",
@@ -522,7 +536,8 @@
       "www.no-offence.io/s/4047c9"
     ],
     "createdAt": "2026-01-09T18:40:53.902Z",
-    "updatedAt": "2026-01-09T18:40:53.902Z"
+    "updatedAt": "2026-01-09T18:40:53.902Z",
+    "industry": "advokat"
   },
   {
     "id": "2e35fc42-3c97-8181-a807-c9e5d976a48b",
@@ -555,7 +570,8 @@
       "www.no-offence.io/s/66ebed"
     ],
     "createdAt": "2026-01-09T18:39:46.326Z",
-    "updatedAt": "2026-01-09T18:39:46.326Z"
+    "updatedAt": "2026-01-09T18:39:46.326Z",
+    "industry": "advokat"
   },
   {
     "id": "2e35fc42-3c97-81fc-aaa8-ef9d524d04c9",
@@ -588,7 +604,8 @@
       "www.no-offence.io/s/7f2276"
     ],
     "createdAt": "2026-01-09T18:38:40.166Z",
-    "updatedAt": "2026-01-09T18:38:40.166Z"
+    "updatedAt": "2026-01-09T18:38:40.166Z",
+    "industry": "advokat"
   },
   {
     "id": "2e35fc42-3c97-81b2-9925-d06cfbf5d15e",
@@ -621,7 +638,8 @@
       "www.no-offence.io/s/06653f"
     ],
     "createdAt": "2026-01-09T18:37:38.912Z",
-    "updatedAt": "2026-01-09T18:37:38.912Z"
+    "updatedAt": "2026-01-09T18:37:38.912Z",
+    "industry": "advokat"
   },
   {
     "id": "2e35fc42-3c97-8194-877e-cb9aaa2f90e3",
@@ -637,7 +655,7 @@
     "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-sgb-as/oslo/-/986552073",
     "sanityPresentationId": "fJ8g4Op5RbsDsqbs0HWMu0",
     "presentationUrl": "https://www.no-offence.io/presentation/sgb/1767983792998-71ohix8",
-    "emailContent": "Hei Haakon,\n\nJeg heter Martin Fjeld og er gründer av et kreativt design- og digitalbyrå kalt No Offence. Jeg har satt sammen en presentasjon som viser hvordan deres nye nettsider kan se ut:\nhttps://www.no-offence.io/presentation/sgb/1767983792998-71ohix8\n\nNettsiden deres har 100% synlighet i søkemotorer. Noe annet vi så var at brukervennligheten for alle kunne vært litt bedre. Vi kan hjelpe med dette.\n\n[Presentasjonslenken og Lighthouse-analyse]\n\nJeg foreslår at vi tar en uforpliktende prat over en kopp kaffe for å diskutere mulighetene.\n\n\n\nHer har du tre forslag til møter. Trykk på linken for å booke:\n\n1. Man 23. feb, 13:00–13:30 - www.no-offence.io/s/a46918\n\n2. Tir 24. feb, 10:00–10:30 - www.no-offence.io/s/1b7e07\n\n3. Ons 25. feb, 14:00–14:30 - www.no-offence.io/s/94742b\n\nMed vennlig hilsen,",
+    "emailContent": "Hei Haakon,\n\nJeg heter Martin Fjeld og er gründer av et kreativt design- og digitalbyrå kalt No Offence. Jeg har satt sammen en presentasjon som viser hvordan deres nye nettsider kan se ut:\nhttps://www.no-offence.io/presentation/sgb/1767983792998-71ohix8\n\nNettsiden deres har 100% synlighet i søkemotorer. Noe annet vi så var at brukervennligheten for alle kunne vært litt bedre. Vi kan hjelpe med dette.\n\n[Presentasjonslenken og Lighthouse-analyse]\n\nJeg foreslår at vi tar en uforpliktende prat over en kopp kaffe for å diskutere mulighetene.\n\n\n\nHer har du tre forslag til møter. Trykk på linken for å booke:\n\n1. Man 23. feb, 13:00–13:30 - www.no-offence.io/s/a46918\n\n2. Tir 24. feb, 10:00���10:30 - www.no-offence.io/s/1b7e07\n\n3. Ons 25. feb, 14:00–14:30 - www.no-offence.io/s/94742b\n\nMed vennlig hilsen,",
     "automationIndustry": "Advokat",
     "automationText1": "Advokatfirmaet",
     "automationText2": "Sgb",
@@ -654,7 +672,8 @@
       "www.no-offence.io/s/94742b"
     ],
     "createdAt": "2026-01-09T18:36:34.874Z",
-    "updatedAt": "2026-01-09T18:36:34.874Z"
+    "updatedAt": "2026-01-09T18:36:34.874Z",
+    "industry": "advokat"
   },
   {
     "id": "2e35fc42-3c97-8168-abdd-ee71057b394c",
@@ -687,7 +706,8 @@
       "www.no-offence.io/s/563620"
     ],
     "createdAt": "2026-01-09T18:35:39.202Z",
-    "updatedAt": "2026-01-09T18:35:39.202Z"
+    "updatedAt": "2026-01-09T18:35:39.202Z",
+    "industry": "advokat"
   },
   {
     "id": "2e35fc42-3c97-81c6-beef-ca3b9e6ea5ce",
@@ -720,7 +740,8 @@
       "www.no-offence.io/s/5d720c"
     ],
     "createdAt": "2026-01-09T18:34:30.936Z",
-    "updatedAt": "2026-01-09T18:34:30.936Z"
+    "updatedAt": "2026-01-09T18:34:30.936Z",
+    "industry": "advokat"
   },
   {
     "id": "2e35fc42-3c97-81a7-bee8-f15fe1bf5042",
@@ -753,7 +774,8 @@
       "www.no-offence.io/s/d44f5c"
     ],
     "createdAt": "2026-01-09T18:33:30.850Z",
-    "updatedAt": "2026-01-09T18:33:30.850Z"
+    "updatedAt": "2026-01-09T18:33:30.850Z",
+    "industry": "advokat"
   },
   {
     "id": "2e35fc42-3c97-8190-9d11-d47da25f1174",
@@ -786,7 +808,8 @@
       "www.no-offence.io/s/412ea5"
     ],
     "createdAt": "2026-01-09T18:32:35.251Z",
-    "updatedAt": "2026-01-09T18:32:35.251Z"
+    "updatedAt": "2026-01-09T18:32:35.251Z",
+    "industry": "advokat"
   },
   {
     "id": "2e35fc42-3c97-8193-9248-dfa07e552b32",
@@ -819,7 +842,8 @@
       "www.no-offence.io/s/41a7aa"
     ],
     "createdAt": "2026-01-09T18:31:27.027Z",
-    "updatedAt": "2026-01-09T18:31:27.027Z"
+    "updatedAt": "2026-01-09T18:31:27.027Z",
+    "industry": "advokat"
   },
   {
     "id": "2e35fc42-3c97-81d3-b7a9-c60f28db41b0",
@@ -852,7 +876,8 @@
       "www.no-offence.io/s/2f1246"
     ],
     "createdAt": "2026-01-09T18:30:18.999Z",
-    "updatedAt": "2026-01-09T18:30:18.999Z"
+    "updatedAt": "2026-01-09T18:30:18.999Z",
+    "industry": "advokat"
   },
   {
     "id": "2e35fc42-3c97-8160-9abe-d0cfe5ed2451",
@@ -885,7 +910,8 @@
       "www.no-offence.io/s/cfed90"
     ],
     "createdAt": "2026-01-09T18:29:13.082Z",
-    "updatedAt": "2026-01-09T18:29:13.082Z"
+    "updatedAt": "2026-01-09T18:29:13.082Z",
+    "industry": "advokat"
   },
   {
     "id": "2e35fc42-3c97-819c-8209-d252ab5cba46",
@@ -918,7 +944,8 @@
       "www.no-offence.io/s/60a035"
     ],
     "createdAt": "2026-01-09T18:01:52.170Z",
-    "updatedAt": "2026-01-09T18:01:52.170Z"
+    "updatedAt": "2026-01-09T18:01:52.170Z",
+    "industry": "advokat"
   },
   {
     "id": "2e35fc42-3c97-8169-ba79-f6de14ebbb1b",
@@ -951,7 +978,8 @@
       "www.no-offence.io/s/67e06e"
     ],
     "createdAt": "2026-01-09T18:00:44.113Z",
-    "updatedAt": "2026-01-09T18:00:44.113Z"
+    "updatedAt": "2026-01-09T18:00:44.113Z",
+    "industry": "advokat"
   },
   {
     "id": "2e35fc42-3c97-81fb-8996-c6cfa13260da",
@@ -967,7 +995,7 @@
     "proffUrl": "https://www.proff.no/selskap/advokatfirmaet-wiersholm-as/oslo/-/981371593",
     "sanityPresentationId": "S6obyrU4ey6rmIvHJuJtVu",
     "presentationUrl": "https://www.no-offence.io/presentation/wiersholm/1767981530849-6ty1j97",
-    "emailContent": "Hei Stephan,\n\nJeg heter Martin Fjeld og er gründer av et kreativt design- og digitalbyrå kalt No Offence. Jeg har satt sammen en presentasjon som viser hvordan deres nye nettsider kan se ut:\nhttps://www.no-offence.io/presentation/wiersholm/1767981530849-6ty1j97\n\nNettsiden deres har høy synlighet i s��kemotorer. Noe annet vi så var at hastigheten kunne vært litt bedre. Vi kan hjelpe med forbedringer.\n\n[TOM LINJE]\n\nJeg foreslår at vi tar en uforpliktende prat over en kopp kaffe for å diskutere mulighetene.\n\n\n\nHer har du tre forslag til møter. Trykk på linken for å booke:\n\n1. Tir 17. feb, 11:00–11:30 - www.no-offence.io/s/24159f\n\n2. Ons 18. feb, 13:00–13:30 - www.no-offence.io/s/2ed250\n\n3. Tor 19. feb, 10:00–10:30 - www.no-offence.io/s/f19ddc\n\nMed vennlig hilsen,",
+    "emailContent": "Hei Stephan,\n\nJeg heter Martin Fjeld og er gründer av et kreativt design- og digitalbyrå kalt No Offence. Jeg har satt sammen en presentasjon som viser hvordan deres nye nettsider kan se ut:\nhttps://www.no-offence.io/presentation/wiersholm/1767981530849-6ty1j97\n\nNettsiden deres har høy synlighet i søkemotorer. Noe annet vi så var at hastigheten kunne vært litt bedre. Vi kan hjelpe med forbedringer.\n\n[TOM LINJE]\n\nJeg foreslår at vi tar en uforpliktende prat over en kopp kaffe for å diskutere mulighetene.\n\n\n\nHer har du tre forslag til møter. Trykk på linken for å booke:\n\n1. Tir 17. feb, 11:00–11:30 - www.no-offence.io/s/24159f\n\n2. Ons 18. feb, 13:00–13:30 - www.no-offence.io/s/2ed250\n\n3. Tor 19. feb, 10:00–10:30 - www.no-offence.io/s/f19ddc\n\nMed vennlig hilsen,",
     "automationIndustry": "Advokat",
     "automationText1": "Advokatfirmaet",
     "automationText2": "Wiersholm",
@@ -984,7 +1012,8 @@
       "www.no-offence.io/s/f19ddc"
     ],
     "createdAt": "2026-01-09T17:58:52.794Z",
-    "updatedAt": "2026-01-09T17:58:52.794Z"
+    "updatedAt": "2026-01-09T17:58:52.794Z",
+    "industry": "advokat"
   },
   {
     "id": "2e35fc42-3c97-81a9-aa91-f1430f3f1f40",
@@ -1017,7 +1046,8 @@
       "www.no-offence.io/s/68abaf"
     ],
     "createdAt": "2026-01-09T17:57:54.941Z",
-    "updatedAt": "2026-01-09T17:57:54.941Z"
+    "updatedAt": "2026-01-09T17:57:54.941Z",
+    "industry": "advokat"
   },
   {
     "id": "2e35fc42-3c97-8188-a664-f2d8f5a465b5",
@@ -1050,7 +1080,8 @@
       "www.no-offence.io/s/e326d8"
     ],
     "createdAt": "2026-01-09T17:56:49.832Z",
-    "updatedAt": "2026-01-09T17:56:49.832Z"
+    "updatedAt": "2026-01-09T17:56:49.832Z",
+    "industry": "advokat"
   },
   {
     "id": "2e35fc42-3c97-81a9-ade0-e9b2d63a9863",
@@ -1083,7 +1114,8 @@
       "www.no-offence.io/s/8688b7"
     ],
     "createdAt": "2026-01-09T17:55:45.690Z",
-    "updatedAt": "2026-01-09T17:55:45.690Z"
+    "updatedAt": "2026-01-09T17:55:45.690Z",
+    "industry": "advokat"
   },
   {
     "id": "2e35fc42-3c97-81d1-8ffd-f936153f4e92",
@@ -1116,7 +1148,8 @@
       "www.no-offence.io/s/86d99d"
     ],
     "createdAt": "2026-01-09T17:54:56.554Z",
-    "updatedAt": "2026-01-09T17:54:56.554Z"
+    "updatedAt": "2026-01-09T17:54:56.554Z",
+    "industry": "advokat"
   },
   {
     "id": "2e35fc42-3c97-811d-b5a3-dfc6b67bbc9b",
@@ -1149,7 +1182,8 @@
       "www.no-offence.io/s/654c5f"
     ],
     "createdAt": "2026-01-09T17:54:01.092Z",
-    "updatedAt": "2026-01-09T17:54:01.092Z"
+    "updatedAt": "2026-01-09T17:54:01.092Z",
+    "industry": "advokat"
   },
   {
     "id": "2e35fc42-3c97-817d-9bc3-f5351b5a8364",
@@ -1182,7 +1216,8 @@
       "www.no-offence.io/s/dc85b1"
     ],
     "createdAt": "2026-01-09T17:53:00.741Z",
-    "updatedAt": "2026-01-09T17:53:00.741Z"
+    "updatedAt": "2026-01-09T17:53:00.741Z",
+    "industry": "advokat"
   },
   {
     "id": "2e35fc42-3c97-814b-b7db-da95f45033b7",
@@ -1215,7 +1250,8 @@
       "www.no-offence.io/s/bf7a5f"
     ],
     "createdAt": "2026-01-09T17:51:51.933Z",
-    "updatedAt": "2026-01-09T17:51:51.933Z"
+    "updatedAt": "2026-01-09T17:51:51.933Z",
+    "industry": "advokat"
   },
   {
     "id": "2e35fc42-3c97-81cc-a287-f843259f05e2",
@@ -1251,7 +1287,8 @@
     "updatedAt": "2026-01-10T11:21:05.463Z",
     "logoMode": "light",
     "linkedIn": "https://www.linkedin.com/in/einar-johansen-617899156/",
-    "imagesGenerated": true
+    "imagesGenerated": true,
+    "industry": "bygg"
   },
   {
     "id": "2e35fc42-3c97-8156-b4d7-d3b5bf938c14",
@@ -1287,7 +1324,8 @@
     "updatedAt": "2026-01-10T12:00:28.396Z",
     "logoMode": "light",
     "linkedIn": "https://www.linkedin.com/in/torbjorn-opsahl-a241a3136/",
-    "imagesGenerated": true
+    "imagesGenerated": true,
+    "industry": "bygg"
   },
   {
     "id": "2e35fc42-3c97-8106-a7ca-cc9b4b581db3",
@@ -1322,7 +1360,7 @@
     "createdAt": "2026-01-09T17:23:11.926Z",
     "updatedAt": "2026-01-10T13:08:49.970Z",
     "bookedSlotIndex": 1,
-    "møtedato": "2026-02-12T13:00:00.000Z"
+    "industry": "bygg"
   },
   {
     "id": "2e35fc42-3c97-8184-acfe-d86fed8fa35e",
@@ -1355,7 +1393,8 @@
       "www.no-offence.io/s/d156b4"
     ],
     "createdAt": "2026-01-09T17:21:52.022Z",
-    "updatedAt": "2026-01-09T17:21:52.022Z"
+    "updatedAt": "2026-01-09T17:21:52.022Z",
+    "industry": "bygg"
   },
   {
     "id": "2e35fc42-3c97-81da-889e-f208a06bc393",
@@ -1387,7 +1426,8 @@
       "www.no-offence.io/s/a872ef"
     ],
     "createdAt": "2026-01-09T17:20:59.971Z",
-    "updatedAt": "2026-01-09T17:20:59.971Z"
+    "updatedAt": "2026-01-09T17:20:59.971Z",
+    "industry": "bygg"
   },
   {
     "id": "2e35fc42-3c97-81bc-ac32-cc5983554690",
@@ -1420,7 +1460,8 @@
       "www.no-offence.io/s/b7c283"
     ],
     "createdAt": "2026-01-09T17:20:28.726Z",
-    "updatedAt": "2026-01-09T17:20:28.726Z"
+    "updatedAt": "2026-01-09T17:20:28.726Z",
+    "industry": "bygg"
   },
   {
     "id": "2e35fc42-3c97-81f4-ab61-f03a66fd3b9e",
@@ -1453,7 +1494,8 @@
       "www.no-offence.io/s/39102b"
     ],
     "createdAt": "2026-01-09T17:19:12.620Z",
-    "updatedAt": "2026-01-09T17:19:12.620Z"
+    "updatedAt": "2026-01-09T17:19:12.620Z",
+    "industry": "bygg"
   },
   {
     "id": "2e35fc42-3c97-8124-b74e-e7fd59f5a153",
@@ -1486,7 +1528,8 @@
       "www.no-offence.io/s/f85dd4"
     ],
     "createdAt": "2026-01-09T17:18:11.734Z",
-    "updatedAt": "2026-01-09T17:18:11.734Z"
+    "updatedAt": "2026-01-09T17:18:11.734Z",
+    "industry": "bygg"
   },
   {
     "id": "2e35fc42-3c97-8198-93d7-e81966cf94e0",
@@ -1518,7 +1561,8 @@
       "www.no-offence.io/s/d1618e"
     ],
     "createdAt": "2026-01-09T17:17:16.532Z",
-    "updatedAt": "2026-01-09T17:17:16.532Z"
+    "updatedAt": "2026-01-09T17:17:16.532Z",
+    "industry": "bygg"
   },
   {
     "id": "2e35fc42-3c97-819e-ab22-e53fd887dbcf",
@@ -1550,7 +1594,8 @@
       "www.no-offence.io/s/9487dc"
     ],
     "createdAt": "2026-01-09T17:16:52.606Z",
-    "updatedAt": "2026-01-09T17:16:52.606Z"
+    "updatedAt": "2026-01-09T17:16:52.606Z",
+    "industry": "bygg"
   },
   {
     "id": "2e35fc42-3c97-814a-bc83-ef35799b4e02",
@@ -1583,7 +1628,8 @@
       "www.no-offence.io/s/f90e15"
     ],
     "createdAt": "2026-01-09T17:15:43.507Z",
-    "updatedAt": "2026-01-09T17:15:43.507Z"
+    "updatedAt": "2026-01-09T17:15:43.507Z",
+    "industry": "bygg"
   },
   {
     "id": "2e35fc42-3c97-819c-9d7f-ef13353c928c",
@@ -1616,7 +1662,8 @@
       "www.no-offence.io/s/39c310"
     ],
     "createdAt": "2026-01-09T17:13:59.365Z",
-    "updatedAt": "2026-01-09T17:13:59.365Z"
+    "updatedAt": "2026-01-09T17:13:59.365Z",
+    "industry": "bygg"
   },
   {
     "id": "2e35fc42-3c97-8179-8b5b-e5703c646a47",
@@ -1649,7 +1696,8 @@
       "www.no-offence.io/s/81444d"
     ],
     "createdAt": "2026-01-09T17:12:53.327Z",
-    "updatedAt": "2026-01-09T17:12:53.327Z"
+    "updatedAt": "2026-01-09T17:12:53.327Z",
+    "industry": "bygg"
   },
   {
     "id": "2e35fc42-3c97-8176-ab79-c89de49dee86",
@@ -1681,7 +1729,8 @@
       "www.no-offence.io/s/94bcf5"
     ],
     "createdAt": "2026-01-09T17:11:38.595Z",
-    "updatedAt": "2026-01-09T17:11:38.595Z"
+    "updatedAt": "2026-01-09T17:11:38.595Z",
+    "industry": "bygg"
   },
   {
     "id": "2e35fc42-3c97-81ae-a8b8-ffb1030e8a50",
@@ -1714,7 +1763,8 @@
       "www.no-offence.io/s/621d3b"
     ],
     "createdAt": "2026-01-09T17:10:59.263Z",
-    "updatedAt": "2026-01-09T17:10:59.263Z"
+    "updatedAt": "2026-01-09T17:10:59.263Z",
+    "industry": "bygg"
   },
   {
     "id": "2e35fc42-3c97-814a-b8dd-f50557ef5723",
@@ -1747,7 +1797,8 @@
       "www.no-offence.io/s/b2daa1"
     ],
     "createdAt": "2026-01-09T17:10:04.246Z",
-    "updatedAt": "2026-01-09T17:10:04.246Z"
+    "updatedAt": "2026-01-09T17:10:04.246Z",
+    "industry": "bygg"
   },
   {
     "id": "2e35fc42-3c97-816b-9f6f-da71f7582f16",
@@ -1779,7 +1830,8 @@
       "www.no-offence.io/s/e3c824"
     ],
     "createdAt": "2026-01-09T17:08:56.065Z",
-    "updatedAt": "2026-01-09T17:08:56.065Z"
+    "updatedAt": "2026-01-09T17:08:56.065Z",
+    "industry": "Bygg"
   },
   {
     "id": "2e35fc42-3c97-81de-b87b-fd5c26d89511",
@@ -1812,7 +1864,8 @@
       "www.no-offence.io/s/ec7fe9"
     ],
     "createdAt": "2026-01-09T17:08:27.365Z",
-    "updatedAt": "2026-01-09T17:08:27.365Z"
+    "updatedAt": "2026-01-09T17:08:27.365Z",
+    "industry": "bygg"
   },
   {
     "id": "2e35fc42-3c97-81bc-a3ab-e0c592bd6497",
@@ -1835,7 +1888,8 @@
     "logoUrl": "https://www.valtec.no/wp-content/uploads/2020/09/transparentlogo.png",
     "leadStatus": "Ikke startet",
     "createdAt": "2026-01-09T16:28:56.977Z",
-    "updatedAt": "2026-01-09T16:28:56.977Z"
+    "updatedAt": "2026-01-09T16:28:56.977Z",
+    "industry": "bygg"
   },
   {
     "id": "2e35fc42-3c97-8150-93ba-d54382a20d0b",
@@ -1858,7 +1912,8 @@
     "logoUrl": "https://valvatne.no/wp-content/uploads/2024/09/cropped-Skjermbilde-2024-09-24-kl.-14.08.47-180x180.png",
     "leadStatus": "Ikke startet",
     "createdAt": "2026-01-09T16:27:57.030Z",
-    "updatedAt": "2026-01-09T16:27:57.030Z"
+    "updatedAt": "2026-01-09T16:27:57.030Z",
+    "industry": "bygg"
   },
   {
     "id": "2e35fc42-3c97-81ea-b696-c082aeb10bd5",
@@ -1880,7 +1935,8 @@
     "automationText2": "Vang",
     "leadStatus": "Ikke startet",
     "createdAt": "2026-01-09T16:26:45.932Z",
-    "updatedAt": "2026-01-09T16:26:45.932Z"
+    "updatedAt": "2026-01-09T16:26:45.932Z",
+    "industry": "bygg"
   },
   {
     "id": "2e35fc42-3c97-8199-ae5a-da99b54b8b49",
@@ -1913,7 +1969,8 @@
       "www.no-offence.io/s/9673bd"
     ],
     "createdAt": "2026-01-09T16:25:38.252Z",
-    "updatedAt": "2026-01-09T16:25:38.252Z"
+    "updatedAt": "2026-01-09T16:25:38.252Z",
+    "industry": "bygg"
   },
   {
     "id": "2e35fc42-3c97-8140-9ed4-f277ec6b7aaa",
@@ -1946,7 +2003,8 @@
       "www.no-offence.io/s/a6799f"
     ],
     "createdAt": "2026-01-09T16:24:43.993Z",
-    "updatedAt": "2026-01-09T16:24:43.993Z"
+    "updatedAt": "2026-01-09T16:24:43.993Z",
+    "industry": "bygg"
   },
   {
     "id": "2e35fc42-3c97-81d5-ae90-e81d29b6d512",
@@ -1979,7 +2037,8 @@
       "www.no-offence.io/s/15382d"
     ],
     "createdAt": "2026-01-09T16:23:36.117Z",
-    "updatedAt": "2026-01-09T16:23:36.117Z"
+    "updatedAt": "2026-01-09T16:23:36.117Z",
+    "industry": "bygg"
   },
   {
     "id": "2e35fc42-3c97-810e-8b1f-f0e6d3aea363",
@@ -2012,7 +2071,8 @@
       "www.no-offence.io/s/b0f791"
     ],
     "createdAt": "2026-01-09T16:22:33.843Z",
-    "updatedAt": "2026-01-09T16:22:33.843Z"
+    "updatedAt": "2026-01-09T16:22:33.843Z",
+    "industry": "bygg"
   },
   {
     "id": "2e35fc42-3c97-812f-a1c1-fd88837e2a1d",
@@ -2045,7 +2105,8 @@
       "www.no-offence.io/s/c571ae"
     ],
     "createdAt": "2026-01-09T16:21:21.883Z",
-    "updatedAt": "2026-01-09T16:21:21.883Z"
+    "updatedAt": "2026-01-09T16:21:21.883Z",
+    "industry": "sportsaktiviteter"
   },
   {
     "id": "2e35fc42-3c97-819e-8ad5-da5d4ba9aa5b",
@@ -2078,7 +2139,8 @@
       "www.no-offence.io/s/2c3457"
     ],
     "createdAt": "2026-01-09T16:20:22.759Z",
-    "updatedAt": "2026-01-09T16:20:22.759Z"
+    "updatedAt": "2026-01-09T16:20:22.759Z",
+    "industry": "bygg"
   },
   {
     "id": "2e35fc42-3c97-817f-adfb-f438311bc4ff",
@@ -2111,7 +2173,8 @@
       "www.no-offence.io/s/1bac8d"
     ],
     "createdAt": "2026-01-09T16:19:27.787Z",
-    "updatedAt": "2026-01-09T16:19:27.787Z"
+    "updatedAt": "2026-01-09T16:19:27.787Z",
+    "industry": "bygg"
   },
   {
     "id": "2e35fc42-3c97-8177-803f-eb6348a7ecfd",
@@ -2144,7 +2207,8 @@
       "www.no-offence.io/s/9692fb"
     ],
     "createdAt": "2026-01-09T16:18:31.867Z",
-    "updatedAt": "2026-01-09T16:18:31.867Z"
+    "updatedAt": "2026-01-09T16:18:31.867Z",
+    "industry": "bygg"
   },
   {
     "id": "2e35fc42-3c97-815f-8b7f-ff756f6aa32f",
@@ -2176,7 +2240,8 @@
       "www.no-offence.io/s/be666e"
     ],
     "createdAt": "2026-01-09T16:17:31.434Z",
-    "updatedAt": "2026-01-09T16:17:31.434Z"
+    "updatedAt": "2026-01-09T16:17:31.434Z",
+    "industry": "bygg"
   },
   {
     "id": "2e35fc42-3c97-812a-91f6-e8c52e544b93",
@@ -2209,7 +2274,8 @@
       "www.no-offence.io/s/63130d"
     ],
     "createdAt": "2026-01-09T16:16:27.952Z",
-    "updatedAt": "2026-01-09T16:16:27.952Z"
+    "updatedAt": "2026-01-09T16:16:27.952Z",
+    "industry": "bygg"
   },
   {
     "id": "2e35fc42-3c97-8199-bf22-e68d9053cfa9",
@@ -2242,7 +2308,8 @@
       "www.no-offence.io/s/54d68f"
     ],
     "createdAt": "2026-01-09T16:15:21.497Z",
-    "updatedAt": "2026-01-09T16:15:21.497Z"
+    "updatedAt": "2026-01-09T16:15:21.497Z",
+    "industry": "bygg"
   },
   {
     "id": "2e35fc42-3c97-81c0-96a2-cabc3814df15",
@@ -2275,7 +2342,8 @@
       "www.no-offence.io/s/c27a25"
     ],
     "createdAt": "2026-01-09T16:14:23.435Z",
-    "updatedAt": "2026-01-09T16:14:23.435Z"
+    "updatedAt": "2026-01-09T16:14:23.435Z",
+    "industry": "bygg"
   },
   {
     "id": "2e35fc42-3c97-815c-9431-c173307280d6",
@@ -2308,7 +2376,8 @@
       "www.no-offence.io/s/dc2c64"
     ],
     "createdAt": "2026-01-09T16:13:17.421Z",
-    "updatedAt": "2026-01-09T16:13:17.421Z"
+    "updatedAt": "2026-01-09T16:13:17.421Z",
+    "industry": "bygg"
   },
   {
     "id": "2e35fc42-3c97-81e8-8d1d-c1224ddce6a7",
@@ -2340,7 +2409,8 @@
       "www.no-offence.io/s/3aba8c"
     ],
     "createdAt": "2026-01-09T16:11:49.428Z",
-    "updatedAt": "2026-01-09T16:11:49.428Z"
+    "updatedAt": "2026-01-09T16:11:49.428Z",
+    "industry": "bygg"
   },
   {
     "id": "2e35fc42-3c97-811c-aa30-ecfd3388099e",
@@ -2373,7 +2443,8 @@
       "www.no-offence.io/s/04534d"
     ],
     "createdAt": "2026-01-09T16:11:08.568Z",
-    "updatedAt": "2026-01-09T16:11:08.568Z"
+    "updatedAt": "2026-01-09T16:11:08.568Z",
+    "industry": "bygg"
   },
   {
     "id": "2e35fc42-3c97-8123-9e01-e0fb899a67e3",
@@ -2405,7 +2476,8 @@
       "www.no-offence.io/s/83ddac"
     ],
     "createdAt": "2026-01-09T16:08:13.455Z",
-    "updatedAt": "2026-01-09T16:08:13.455Z"
+    "updatedAt": "2026-01-09T16:08:13.455Z",
+    "industry": "bygg"
   },
   {
     "id": "2e35fc42-3c97-8152-b438-f8e53b23e78d",
@@ -2439,7 +2511,8 @@
       "www.no-offence.io/s/129b5e",
       "www.no-offence.io/s/b62e9f"
     ],
-    "imagesGenerated": true
+    "imagesGenerated": true,
+    "industry": "Bygg- og anleggsleverandører"
   },
   {
     "id": "2e35fc42-3c97-8123-a593-f9a1dd1b2425",
@@ -2473,7 +2546,8 @@
       "www.no-offence.io/s/9385e5",
       "www.no-offence.io/s/1f92d5"
     ],
-    "logoMode": "light"
+    "logoMode": "light",
+    "industry": "bygg"
   },
   {
     "id": "2e35fc42-3c97-8199-a21c-f34ceb2d63e1",
@@ -2508,7 +2582,8 @@
     ],
     "logoMode": "light",
     "linkedIn": "",
-    "imagesGenerated": true
+    "imagesGenerated": true,
+    "industry": "bygg"
   },
   {
     "id": "2e35fc42-3c97-81f5-8be8-fb65d87426ff",
@@ -2546,7 +2621,7 @@
     "logoMode": "light",
     "linkedIn": "",
     "bookedSlotIndex": 0,
-    "møtedato": "2026-01-16T10:30:00.000+00:00"
+    "industry": "bygg"
   },
   {
     "id": "2e35fc42-3c97-815d-ab59-f20d2a9d976b",
@@ -2582,7 +2657,8 @@
     ],
     "logoMode": "dark",
     "linkedIn": "https://www.linkedin.com/in/arild-sand-63878092/",
-    "imagesGenerated": true
+    "imagesGenerated": true,
+    "industry": "bygg"
   },
   {
     "id": "2e35fc42-3c97-8173-943f-e2fa86ed14fc",
@@ -2618,7 +2694,8 @@
     ],
     "logoMode": "dark",
     "linkedIn": "https://www.linkedin.com/in/kristian-vidvei-b179471a5",
-    "imagesGenerated": true
+    "imagesGenerated": true,
+    "industry": "bygg"
   },
   {
     "id": "2e35fc42-3c97-81de-8977-eac2aaaf48d0",
@@ -2653,7 +2730,8 @@
     "updatedAt": "2026-01-10T00:44:28.907Z",
     "logoMode": "dark",
     "linkedIn": "https://www.linkedin.com/in/magnus-skeie-470bb9109/",
-    "imagesGenerated": true
+    "imagesGenerated": true,
+    "industry": "bygg"
   },
   {
     "id": "2e35fc42-3c97-813f-af87-e179ff1f7aaa",
@@ -3333,8 +3411,7 @@
     "createdAt": "2026-01-09T09:43:34.004Z",
     "updatedAt": "2026-01-09T13:34:42.019Z",
     "proffUrl": "https://www.proff.no/selskap/%C3%B8stu-stettin-hoch-und-tiefbau-gmbh-nuf/kvits%C3%B8y/-/924271043",
-    "imagesGenerated": true,
-    "møtedato": "2026-01-20T13:00:00.000+00:00"
+    "imagesGenerated": true
   },
   {
     "id": "2e35fc42-3c97-81d7-99e2-f1895e54b165",

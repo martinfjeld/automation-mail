@@ -163,8 +163,8 @@ router.get("/:token", async (req: Request, res: Response) => {
       startISO,
       endISO,
       [
-        { email: myEmail }, // Testing mode: only invite yourself
-        // { email: customerEmail }, // Uncomment this line for production
+        { email: myEmail },
+        { email: customerEmail }, // Production mode: invite customer
       ]
     );
 
@@ -247,8 +247,8 @@ router.post("/book", async (req: Request, res: Response) => {
       startISO,
       endISO,
       [
-        { email: myEmail }, // Testing mode: only invite yourself
-        // { email: clientEmail }, // Uncomment this line for production
+        { email: myEmail },
+        { email: clientEmail }, // Production mode: invite customer
       ]
     );
 
