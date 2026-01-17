@@ -32,6 +32,8 @@ interface GenerateResult {
   hasScreenshots?: boolean;
   logoUrl?: string;
   leadStatus?: string;
+  meetingDates?: string[];
+  bookingLinks?: string[];
 }
 
 const RollingDigit: React.FC<{
@@ -1539,6 +1541,47 @@ const Generator: React.FC = () => {
         "💾 Save button: Syncing all fields to history.json, Sanity, and Notion..."
       );
 
+      // Check if email has changed and entry has meeting dates
+      const emailChanged = result.email !== editableEmail;
+      const hasMeetingDates = result.meetingDates && result.meetingDates.length > 0;
+
+      let updatedEmailContent = editableEmailContent;
+      let bookingLinks = result.bookingLinks;
+
+      // If email changed and there are meeting dates, regenerate booking links
+      if (emailChanged && hasMeetingDates) {
+        console.log("📧 Email changed, regenerating booking links...");
+        
+        try {
+          const regenerateResponse = await fetch(
+            `${LOCAL_API_URL}/api/booking/regenerate`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                notionPageId: result.notionPageId,
+                customerEmail: editableEmail,
+                customerName: result.contactPerson,
+              }),
+            }
+          );
+
+          if (regenerateResponse.ok) {
+            const regenerateData = await regenerateResponse.json();
+            updatedEmailContent = regenerateData.emailContent;
+            bookingLinks = regenerateData.bookingLinks;
+            setEditableEmailContent(regenerateData.emailContent);
+            console.log("✅ Booking links regenerated successfully");
+          } else {
+            console.warn("⚠️ Failed to regenerate booking links, continuing with save");
+          }
+        } catch (regenerateError) {
+          console.warn("⚠️ Error regenerating booking links:", regenerateError);
+        }
+      }
+
       const requestBody = {
         pageId: result.notionPageId,
         companyName: editableCompanyName,
@@ -1549,7 +1592,7 @@ const Generator: React.FC = () => {
         city: editableCity,
         linkedIn: editableLinkedIn,
         website: result.website,
-        emailContent: editableEmailContent,
+        emailContent: updatedEmailContent,
         meetingDates: [meetingDate1, meetingDate2, meetingDate3],
         logoMode: logoMode,
         sanityPresentationId: result.sanityPresentationId,
@@ -1594,7 +1637,8 @@ const Generator: React.FC = () => {
               address: editableAddress,
               city: editableCity,
               linkedIn: editableLinkedIn,
-              emailContent: editableEmailContent,
+              emailContent: updatedEmailContent,
+              bookingLinks: bookingLinks,
             }
           : prev
       );
